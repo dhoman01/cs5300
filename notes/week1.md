@@ -162,18 +162,76 @@ This ^^^ paradigm has these advantages
  * 10 - exit
 
 ## Distance
+```mips
+# Author: Dustin Homan
+# P1=($a0, $a1), P2=($a2, $a3)
+# Calculate Dist^2 of P1 and P2
+main:
+	# Create P1, P2
+	li $a0, 4
+	li $a1, 4
+	li $a2, 6
+	li $a3, 6
+	
+	# Find x-dist
+	sub $t0, $a0, $a2 # sub x points
+	mult $t0, $t0     # mult result
+	mflo $t0
+	
+	# Find y-dist
+	sub $t1, $a1, $a3 # sub y points
+	mult $t1, $t1     # mult result
+	mflo $t1
+	
+	# Add x and y dists
+	add $a0, $t0, $t1
+	
+	# Print result
+	li $v0, 1
+	syscall
+	
+	# Terminate
+	li $v0, 10
+	syscall
+```
 
 ## Sum of array
-'''mips
+```mips
+# $a0 - array address
+# $a1 - array size
+# $v0 - return sum
 li $t1, 0 #has index
 loopbegin:  beq $t1, $a1, loopend
                 add $t3, $t1, $a0
                 lw $t2, 0($t3)
                 add $v0, $t2, $v0
                 addi $t1, $t1, 1
-                j loopbeg
+                j loopbegin
 
 loopend:
-'''
+```
 
 ## Write Recursive Factorial
+```mips
+# Author: Dustin Homan
+# $a0 = n
+# Recursively calculate n!
+main:
+	li $a0, 4
+	addi $t0, $a0, 0
+	addi $t1, $a0, 0
+	factorial: # calcs $a0!
+		addi $t1, $t1, -1
+		beq $t1, $zero, factend
+			mult $t0, $t1
+			mflo $t0
+			j factorial
+	# Print result of factorial
+	factend:
+		addi $a0, $t0, 0
+		li $v0, 1
+		syscall
+
+	li $v0, 10
+	syscall
+```
