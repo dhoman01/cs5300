@@ -2,12 +2,18 @@ cmake_minimum_required(VERSION 3.0.2)
 project(cpslcc)
 
 find_package(FLEX)
+find_package(BISON)
 if(NOT FLEX_FOUND)
     message(FATAL_ERROR "Missing dependancies! Please install flex before running again...")
 endif()
+if(NOT BISON_FOUND)
+    message(FATAL_ERROR "Missing dependancies! Please install bison before running again...")
+endif()
 
-FLEX_TARGET(scanner ../project/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.c)
+BISON_TARGET(parser ../project/parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.c)
+FLEX_TARGET(lexer ../project/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.c)
 add_executable(cpslcc
     main.cpp
-    ${FLEX_scanner_OUTPUTS}
+    ${FLEX_lexer_OUTPUTS}
+    ${BISON_parser_OUTPUT_SOURCE}
 )

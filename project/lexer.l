@@ -1,11 +1,14 @@
 /* Lexer for CPSL */
 %{
 #include <stdlib.h>
+
+#include "parser.tab.h"
+
+int line = 0, yycolno = 0;
 %}
 
-/* Remove for future assignments */
 %option noyywrap
-                     int line = 0, col = 0;
+%option yylineno
 
 /* Keywords (Section 2.2) (NOTE: (?i:...) tells flex to be case insenstive for the following rule) */
 KEYWORD              (?i:array|begin|chr|const|do|downto|else|elseif|end|for|forward|function|if|of|ord|pred|procedure|read|record|ref|repeat|return|stop|succ|then|to|type|until|var|while|write)
@@ -38,79 +41,87 @@ COMMENT              $.*\n
 
 [ \t]+              {
                         /* remove whitespace */
-                        col += yyleng;
+                        yycolno += yyleng;
                     }
 
 {KEYWORD}           {
-                        printf( "A keyword: %s\n", yytext );
-                        col += yyleng;
+                        yycolno += yyleng;
+                        yylval.str = yytext;
+                        return KEYWORD;
                     }
 
 {ID}                {
-                        printf( "An identifier: %s\n", yytext );
-                        col += yyleng;
+                        yycolno += yyleng;
+                        yylval.str = yytext;
+                        return IDENTIFIER;
                     }
 
 {OPERATOR}          {
-                        printf( "An operator: %s\n", yytext );
-                        col += yyleng;
+                        yycolno += yyleng;
+                        yylval.str = yytext;
+                        return OPERATOR;
                     }
 
 {OCTAL}             {
-                        printf( "An integer constant (octal): %s\n", yytext );
-                        col += yyleng;
+                        yycolno += yyleng;
+                        yylval.str = yytext;
+                        return OCTAL;
                     }
 
 {HEX}               {
-                        printf( "An integer constant (hexadecimal): %s\n", yytext );
-                        col += yyleng;
+                        yycolno += yyleng;
+                        yylval.str = yytext;
+                        return HEX;
                     }
 
 {DIGIT}             {
-                        printf( "An integer constant (decimal): %s\n", yytext );
-                        col += yyleng;
+                        yycolno += yyleng;
+                        yylval.integer = atoi(yytext);
+                        return INTEGER;
                     }
 
 {CHR}               {
-                        printf( "A character constant: %s\n", yytext );
-                        col += yyleng;
+                        yycolno += yyleng;
+                        yylval.chr = yytext[0];
+                        return CHAR;
                     }
 
 {EMPTY_CHR}         {
-                        fprintf( stderr, "Lexical Error(%d:%d): Empty character constant.\n", line + 1, col + 1 );
-                        col += yyleng;
+                        fprintf( stderr, "Lexical Error(%d:%d): Empty character constant.\n", line + 1, yycolno + 1 );
+                        yycolno += yyleng;
                     }
 
 {NON_TERM_CHR}      {
-                        fprintf( stderr, "Lexical Error(%d:%d): Non-terminating character constant. Maybe an unescaped character?\n", line + 1, col + 1 );
-                        col += yyleng;
+                        fprintf( stderr, "Lexical Error(%d:%d): Non-terminating character constant. Maybe an unescaped character?\n", line + 1, yycolno + 1 );
+                        yycolno += yyleng;
                     }
 
 {STRING}            {
-                        printf( "A string constant: %s\n", yytext );
-                        col += yyleng;
+                        yycolno += yyleng;
+                        yylval.str = yytext;
+                        return STRING;
                     }
 
 {NON_TERM_STRING}   {
-                        fprintf( stderr, "Lexical Error (%d:%d): Non-terminating string constant. Maybe an unescaped double quote?\n", line + 1, col + 1 );
-                        col += yyleng;
+                        fprintf( stderr, "Lexical Error (%d:%d): Non-terminating string constant. Maybe an unescaped double quote?\n", line + 1, yycolno + 1 );
+                        yycolno += yyleng;
                     }
 
 
 {COMMENT}           { 
                         ++line;  /* remove comments */
-                        col = 0;
+                        yycolno = 0;
                     }
 
 \n                  {
                         ++line;  /* increment line count */
-                        col = 0;
+                        yycolno = 0;
                     }
 
 .                   {
                         /* All other lexeme are invalid (Section 2.1) */
-                        fprintf( stderr, "Lexical Error (%d:%d): Invalid token %s\n", line, col + 1, yytext );
-                        ++col;
+                        fprintf( stderr, "Lexical Error (%d:%d): Invalid token %s\n", line, yycolno + 1, yytext );
+                        ++yycolno;
                     }
 
 %%

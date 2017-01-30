@@ -3,7 +3,7 @@
 extern FILE* yyin;
 extern "C"
 {
-    int yylex(void);  
+    int yyparse(void);  
 } 
 
 int main( int argc, char **argv )
@@ -14,5 +14,5 @@ int main( int argc, char **argv )
     else
             yyin = stdin;
 
-    yylex();
+    yyparse();
 }
