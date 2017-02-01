@@ -12,6 +12,8 @@ endif()
 
 BISON_TARGET(parser ../project/parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.c)
 FLEX_TARGET(lexer ../project/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.c)
+add_flex_bison_dependancy(lexer parser)
+
 add_executable(cpslcc
     main.cpp
     ${FLEX_lexer_OUTPUTS}
