@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(cpslcc)
+project(cpsl_exe VERSION 0.0.1)
 
 find_package(FLEX)
 find_package(BISON)
@@ -12,7 +12,7 @@ endif()
 
 BISON_TARGET(parser ../project/parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.c)
 FLEX_TARGET(lexer ../project/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.c)
-add_flex_bison_dependancy(lexer parser)
+ADD_FLEX_BISON_DEPENDENCY(lexer parser)
 
 add_executable(cpslcc
     main.cpp
