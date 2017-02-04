@@ -3,8 +3,7 @@
 #include <stdlib.h>
 
 #include "parser.h"
-
-int line = 0, yycolno = 0;
+#include "globals.h"
 %}
 
 %option noyywrap
@@ -334,20 +333,18 @@ write|WRITE             {
 
  /* Comments (Section 2.5.5) */
 $.*\n                   { 
-                            ++line;
                             yycolno = 0;
                         }
 
  /* Increment line count */
 \n                      {
-                            ++line; 
                             yycolno = 0;
                         }
 
  /* All other lexeme are invalid (Section 2.1) */
 .                       {
-                            fprintf( stderr, "Lexical Error (%d:%d): Invalid token %s\n", line, yycolno + 1, yytext );
-                            ++yycolno;
+                            fprintf( stderr, "Lexical Error (%d:%d): Invalid token %s\n", yylineno, yycolno + 1, yytext );
+                            yycolno += yyleng;
                         }
 
 %%

@@ -1,8 +1,11 @@
 %{
 #include <stdlib.h>
 #include <stdio.h>
-int yyerror(char *s);
+int yyerror(const char *s);
 int yylex(void);
+
+extern int yylineno;
+extern int yycolno;
 %}
 
 %union {
@@ -79,18 +82,17 @@ int yylex(void);
 %left DIV_OP MOD_OP MULT_OP
 %right UMINUS_OP
 
-%type<str> IDENTIFIER
+%type<str> IDENTIFIER STRING_CONST identifier
+%type<chr> CHR_CONST
+%type<integer> INT_CONST
 
 %start program
 
 %%
-program: progHead block DOT { printf("Found program\n"); }
+program: progHead block DOT { printf("(%d:%d) Parser found program\n", yylineno, yycolno); }
     ;
 
-progHead: optConstDecl
-    | optTypeDecl
-    | optVarDecl
-    | optProcFuncs
+progHead: optConstDecl optTypeDecl optVarDecl optProcFuncs
     ;
 
 optConstDecl: CONST_KEY constDecls
@@ -101,7 +103,7 @@ constDecls: constDecls constDecl
     | constDecl
     ;
 
-constDecl: identifier EQ_OP expression SEMI_COL { printf("Found const declaration\n"); }
+constDecl: identifier EQ_OP expression SEMI_COL { printf("(%d:%d) Parser found const declaration\n", yylineno, yycolno); }
     ;
 
 optProcFuncs: optProcFuncs procedureDecl
@@ -109,25 +111,29 @@ optProcFuncs: optProcFuncs procedureDecl
     |
     ;
 
-procedureDecl: procedureSig FORWARD_KEY SEMI_COL { printf("Found procedure declaration\n"); }
-    | procedureSig body SEMI_COL { printf("Found procedure declaration\n"); }
+procedureDecl: procedureSig FORWARD_KEY SEMI_COL { printf("(%d:%d) Parser found procedure declaration\n", yylineno, yycolno); }
+    | procedureSig body SEMI_COL { printf("(%d:%d) Parser found procedure declaration\n", yylineno, yycolno); }
     ;
 
-procedureSig: PROCEDURE_KEY identifier OPEN_PAR formalParameters CLOSE_PAR SEMI_COL
+procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL
     ;
 
-functionDecl: functionSig FORWARD_KEY SEMI_COL { printf("Found function declaration\n"); }
-    | functionSig body SEMI_COL { printf("Found function declaration\n"); }
+functionDecl: functionSig FORWARD_KEY SEMI_COL { printf("(%d:%d) Parser found function declaration\n", yylineno, yycolno); }
+    | functionSig body SEMI_COL { printf("(%d:%d) Parser found function declaration\n", yylineno, yycolno); }
     ;
 
-functionSig: FUNCTION_KEY identifier OPEN_PAR formalParameters CLOSE_PAR COL type SEMI_COL
+functionSig: FUNCTION_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR COL type SEMI_COL
     ;
 
-formalParameters: formalParameters SEMI_COL
+optFormalParameters: formalParameters
+    |
+    ;
+
+formalParameters: formalParameters SEMI_COL formalParameter
     | formalParameter
     ;
 
-formalParameter: optVar identifierList COL type
+formalParameter: optVar identifierList COL type { printf("(%d:%d) Parser found formal parameter\n", yylineno, yycolno); }
     ;
 
 optVar: VAR_KEY
@@ -135,13 +141,10 @@ optVar: VAR_KEY
     |
     ;
 
-body: optConstDecl
-    | optTypeDecl
-    | optVarDecl
-    | block
+body: optConstDecl optTypeDecl optVarDecl block
     ;
 
-block: BEGIN_KEY statementList END_KEY { printf("Found block declaration\n"); }
+block: BEGIN_KEY statementList END_KEY { printf("(%d:%d) Parser found block\n", yylineno, yycolno); }
     ;
 
 optTypeDecl: TYPE_KEY typeDecls
@@ -152,12 +155,12 @@ typeDecls: typeDecls typeDecl
     | typeDecl
     ;
 
-typeDecl: identifier EQ_OP type SEMI_COL  { printf("Found type declaration\n"); }
+typeDecl: identifier EQ_OP type SEMI_COL  { printf("(%d:%d) Parser found type declaration\n", yylineno, yycolno); }
     ;
 
-type: simpleType  { printf("Found simple type declaration\n"); }
-    | recordType  { printf("Found record type declaration\n"); }
-    | arrayType   { printf("Found array type declaration\n"); }
+type: simpleType  { printf("(%d:%d) Parser found simple type declaration\n", yylineno, yycolno); }
+    | recordType  { printf("(%d:%d) Parser found record type declaration\n", yylineno, yycolno); }
+    | arrayType   { printf("(%d:%d) Parser found array type declaration\n", yylineno, yycolno); }
     ;
 
 simpleType: identifier
@@ -179,7 +182,7 @@ identifierList: identifierList COMMA identifier
     | identifier
     ;
 
-identifier: IDENTIFIER { printf("Found an identifier: %s\n", $1); }
+identifier: IDENTIFIER { printf("(%d:%d) Parser found an identifier: %s\n", yylineno, yycolno, $1); }
     ;
 
 optVarDecl: VAR_KEY varDecls
@@ -190,45 +193,48 @@ varDecls: varDecls varDecl
     | varDecl
     ;
 
-varDecl: identifierList COL type SEMI_COL { printf("Found var declaration\n"); }
+varDecl: identifierList COL type SEMI_COL { printf("(%d:%d) Parser found var declaration\n", yylineno, yycolno); }
     ;
 
 statementList: statementList SEMI_COL statement
     | statement
     ;
 
-statement: assignment   { printf("Found assignment statement\n"); }
-    | ifStatement       { printf("Found if statement\n"); }
-    | whileStatement    { printf("Found while statement\n"); }
-    | repeatStatement   { printf("Found repeat statement\n"); }
-    | forStatement      { printf("Found for statement\n"); }
-    | stopStatement     { printf("Found stop statement\n"); }
-    | returnStatement   { printf("Found return statement\n"); }
-    | readStatement     { printf("Found read statement\n"); }
-    | writeStatement    { printf("Found write statement\n"); }
-    | procedureCall     { printf("Found procedure callstatement\n"); }
-    | nullStatement     { printf("Found null statement\n"); }
+statement: assignment   { printf("(%d:%d) Parser found assignment statement\n", yylineno, yycolno); }
+    | ifStatement       { printf("(%d:%d) Parser found if statement\n", yylineno, yycolno); }
+    | whileStatement    { printf("(%d:%d) Parser found while statement\n", yylineno, yycolno); }
+    | repeatStatement   { printf("(%d:%d) Parser found repeat statement\n", yylineno, yycolno); }
+    | forStatement      { printf("(%d:%d) Parser found for statement\n", yylineno, yycolno); }
+    | stopStatement     { printf("(%d:%d) Parser found stop statement\n", yylineno, yycolno); }
+    | returnStatement   { printf("(%d:%d) Parser found return statement\n", yylineno, yycolno); }
+    | readStatement     { printf("(%d:%d) Parser found read statement\n", yylineno, yycolno); }
+    | writeStatement    { printf("(%d:%d) Parser found write statement\n", yylineno, yycolno); }
+    | procedureCall     { printf("(%d:%d) Parser found procedure callstatement\n", yylineno, yycolno); }
+    | nullStatement     { printf("(%d:%d) Parser found null statement\n", yylineno, yycolno); }
     ;
 
 assignment: lvalue ASSIGN_OP expression
     ;
 
-ifStatement: IF_KEY expression thenStatement elseIfStatements elseStatement END_KEY
+ifStatement: IF_KEY expression thenStatement optElseIfStatements elseStatement END_KEY
     ;
 
-elseIfStatements: elseIfStatements elseStatement thenStatement
-    | elseIfStatement thenStatement
-    | 
+thenStatement: THEN_KEY statementList
     ;
 
-elseIfStatement: ELSE_IF_KEY expression
+optElseIfStatements: elseIfStatements
+    |
+    ;
+
+elseIfStatements: elseIfStatements elseIfStatement
+    | elseIfStatement
+    ;
+
+elseIfStatement: ELSE_IF_KEY expression thenStatement
     ;
 
 elseStatement: ELSE_KEY statementList
     |
-    ;
-
-thenStatement: THEN_KEY statementList
     ;
 
 whileStatement: WHILE_KEY expression DO_KEY statementList END_KEY
@@ -237,11 +243,14 @@ whileStatement: WHILE_KEY expression DO_KEY statementList END_KEY
 repeatStatement: REPEAT_KEY statementList UNTIL_KEY expression
     ;
 
-forStatement: FOR_KEY identifier ASSIGN_OP expression optTo expression DO_KEY statementList END_KEY
+forStatement: forHead DO_KEY statementList END_KEY
     ;
 
-optTo: TO_KEY
-    | DOWN_TO_KEY
+forHead: FOR_KEY identifier ASSIGN_OP expression optTo expression { printf("(%d:%d) Parser found for signature\n", yylineno, yycolno); }
+    ;
+
+optTo: TO_KEY       { printf("(%d:%d) Parser found \"to\" for\n", yylineno, yycolno); }
+    | DOWN_TO_KEY   { printf("(%d:%d) Parser found \"downto\"\n", yylineno, yycolno); }
     ;
 
 stopStatement: STOP_KEY
@@ -267,35 +276,35 @@ optExpressionList: expressionList
     |
     ;
 
-expressionList: expressionList COMMA
+expressionList: expressionList COMMA expression
     | expression
     ;
 
-expression: expression OR_OP expression                 { printf("Found | expression\n"); }
-    | expression AND_OP expression                      { printf("Found & expression\n"); }
-    | expression EQ_OP expression                       { printf("Found = expression\n"); }
-    | expression NOT_EQ_OP expression                   { printf("Found <> expression\n"); }
-    | expression LT_EQ_OP expression                    { printf("Found <= expression\n"); }
-    | expression GT_EQ_OP expression                    { printf("Found >= expression\n"); }
-    | expression LT_OP expression                       { printf("Found < expression\n"); }
-    | expression GT_OP expression                       { printf("Found > expression\n"); }
-    | expression PLUS_OP expression                     { printf("Found + expression\n"); }
-    | expression MINUS_OP expression                    { printf("Found - expression\n"); }
-    | expression MULT_OP expression                     { printf("Found * expression\n"); }
-    | expression DIV_OP expression                      { printf("Found \ expression\n"); }
-    | expression MOD_OP expression                      { printf("Found % expression\n"); }
-    | NOT_OP expression                                 { printf("Found ~ expression\n"); }
-    | MINUS_OP expression %prec UMINUS_OP               { printf("Found u- expression\n"); }
-    | OPEN_PAR expression CLOSE_PAR                     { printf("Found (exp) expression\n"); }
-    | identifier OPEN_PAR optExpressionList CLOSE_PAR   { printf("Found function call expression\n"); }
-    | CHR_KEY OPEN_PAR expression CLOSE_PAR             { printf("Found chr (exp) expression\n"); }
-    | ORD_KEY OPEN_PAR expression CLOSE_PAR             { printf("Found ord (exp) expression\n"); }
-    | PRED_KEY OPEN_PAR expression CLOSE_PAR            { printf("Found pred (exp) expression\n"); }
-    | SUCC_KEY OPEN_PAR expression CLOSE_PAR            { printf("Found succ (exp) expression\n"); }
-    | INT_CONST                                         { printf("Found int const expression\n"); }
-    | CHR_CONST                                         { printf("Found chr const expression\n"); }
-    | STRING_CONST                                      { printf("Found chr* const expression\n"); }
-    | lvalue                                            { printf("Found lvalue expression\n"); }
+expression: expression OR_OP expression                 { printf("(%d:%d) Parser found | expression\n", yylineno, yycolno); }
+    | expression AND_OP expression                      { printf("(%d:%d) Parser found & expression\n", yylineno, yycolno); }
+    | expression EQ_OP expression                       { printf("(%d:%d) Parser found = expression\n", yylineno, yycolno); }
+    | expression NOT_EQ_OP expression                   { printf("(%d:%d) Parser found <> expression\n", yylineno, yycolno); }
+    | expression LT_EQ_OP expression                    { printf("(%d:%d) Parser found <= expression\n", yylineno, yycolno); }
+    | expression GT_EQ_OP expression                    { printf("(%d:%d) Parser found >= expression\n", yylineno, yycolno); }
+    | expression LT_OP expression                       { printf("(%d:%d) Parser found < expression\n", yylineno, yycolno); }
+    | expression GT_OP expression                       { printf("(%d:%d) Parser found > expression\n", yylineno, yycolno); }
+    | expression PLUS_OP expression                     { printf("(%d:%d) Parser found + expression\n", yylineno, yycolno); }
+    | expression MINUS_OP expression                    { printf("(%d:%d) Parser found - expression\n", yylineno, yycolno); }
+    | expression MULT_OP expression                     { printf("(%d:%d) Parser found * expression\n", yylineno, yycolno); }
+    | expression DIV_OP expression                      { printf("(%d:%d) Parser found \\ expression\n", yylineno, yycolno); }
+    | expression MOD_OP expression                      { printf("(%d:%d) Parser found %% expression\n", yylineno, yycolno); }
+    | NOT_OP expression                                 { printf("(%d:%d) Parser found ~ expression\n", yylineno, yycolno); }
+    | MINUS_OP expression %prec UMINUS_OP               { printf("(%d:%d) Parser found u- expression\n", yylineno, yycolno); }
+    | OPEN_PAR expression CLOSE_PAR                     { printf("(%d:%d) Parser found (exp) expression\n", yylineno, yycolno); }
+    | identifier OPEN_PAR optExpressionList CLOSE_PAR   { printf("(%d:%d) Parser found function call expression\n", yylineno, yycolno); }
+    | CHR_KEY OPEN_PAR expression CLOSE_PAR             { printf("(%d:%d) Parser found chr (exp) expression\n", yylineno, yycolno); }
+    | ORD_KEY OPEN_PAR expression CLOSE_PAR             { printf("(%d:%d) Parser found ord (exp) expression\n", yylineno, yycolno); }
+    | PRED_KEY OPEN_PAR expression CLOSE_PAR            { printf("(%d:%d) Parser found pred (exp) expression\n", yylineno, yycolno); }
+    | SUCC_KEY OPEN_PAR expression CLOSE_PAR            { printf("(%d:%d) Parser found succ (exp) expression\n", yylineno, yycolno); }
+    | INT_CONST                                         { printf("(%d:%d) Parser found int const expression: %d\n", yylineno, yycolno, $1); }
+    | CHR_CONST                                         { printf("(%d:%d) Parser found chr const expression: %c\n", yylineno, yycolno, $1); }
+    | STRING_CONST                                      { printf("(%d:%d) Parser found chr* const expression: %s\n", yylineno, yycolno, $1); }
+    | lvalue                                            { printf("(%d:%d) Parser found lvalue expression\n", yylineno, yycolno); }
     ;
 
 lvalueList: lvalueList COMMA
@@ -309,9 +318,7 @@ lvalue: lvalue DOT identifier
 
 %%
 
-int yyerror(char* s){
-    extern int yylineno;
-    extern int yycolno;
+int yyerror(const char* s){
     extern char* yytext;
     printf("ERROR: Incorrect value \"%s\" on line %d column %d\n", yytext, yylineno, yycolno);
     exit(1);
