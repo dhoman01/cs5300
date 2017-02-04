@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <cstdio>
 
 extern FILE* yyin;
