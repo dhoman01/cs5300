@@ -10,8 +10,8 @@ if(NOT BISON_FOUND)
     message(FATAL_ERROR "Missing dependancies! Please install bison before running again...")
 endif()
 
-BISON_TARGET(parser ../project/parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.c)
-FLEX_TARGET(lexer ../project/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.c)
+BISON_TARGET(parser ../project/parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c VERBOSE ${CMAKE_CURRENT_BINARY_DIR}/parser.log)
+FLEX_TARGET(lexer ../project/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lex.c)
 ADD_FLEX_BISON_DEPENDENCY(lexer parser)
 
 add_executable(cpslcc
