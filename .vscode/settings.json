@@ -1,5 +1,6 @@
 // Place your settings in this file to overwrite default and user settings.
 {
     "files.encoding": "utf8",
-    "files.associations": {}
+    "files.associations": {},
+    "cmake.sourceDirectory": "${workspaceRoot}/project"
 }
