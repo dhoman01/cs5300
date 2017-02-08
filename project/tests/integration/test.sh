@@ -9,9 +9,12 @@ if [ -z $1 ]; then
     exit 1;
 fi
 
+echo -e "${DARK_GREY}Input: $@${NC}"
+
 filelist=($@)
 echo -e "${DARK_GREY} ${#filelist[@]} file(s) being parsed${NC}"
 mkdir parser_logs
+PASSED=0
 for ((i=0; i < ${#filelist[@]}-1; i++)); do
     filepatharr=(${filelist[$i]//\// })
     filename=${filepatharr[${#filepatharr[@]}-1]}
@@ -22,5 +25,8 @@ for ((i=0; i < ${#filelist[@]}-1; i++)); do
       echo -e "${GREEN}Successfully parsed ${filename}${NC}"
     else
       echo -e "${RED}Parse errors in ${filename}${RED}"
+      PASSED=1
     fi
 done
+
+return PASSED
