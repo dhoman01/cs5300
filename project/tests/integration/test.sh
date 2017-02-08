@@ -9,8 +9,6 @@ if [ -z $1 ]; then
     exit 1;
 fi
 
-echo -e "${DARK_GREY}Input: $@${NC}"
-
 filelist=($@)
 echo -e "${DARK_GREY} ${#filelist[@]} file(s) being parsed${NC}"
 mkdir parser_logs
@@ -21,7 +19,7 @@ for ((i=0; i < ${#filelist[@]}-1; i++)); do
     echo -e "${DARK_GREY}Parsing ${filelist[$i]}${NC}"
     result="$(${@: -1} ${filelist[$i]})"
     echo "${result}" > parser_logs/${filename}_output.txt
-    if [[ $result == *"Parser found program"* ]]; then
+    if [[ $result != *"SYNTAX ERROR"* ]]; then
       echo -e "${GREEN}Successfully parsed ${filename}${NC}"
     else
       echo -e "${RED}Parse errors in ${filename}${RED}"
@@ -29,4 +27,4 @@ for ((i=0; i < ${#filelist[@]}-1; i++)); do
     fi
 done
 
-return PASSED
+exit ${PASSED}
