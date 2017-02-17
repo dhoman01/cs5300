@@ -1,18 +1,12 @@
 #ifndef EXPRESSIONS_HPP
 #define EXPRESSIONS_HPP
-class ExpressionSingleton
+namespace cpsl
 {
-    private:
-        ExpressionSingleton();
-    public:
-        static ExpressionSingleton& getInstance()
-        {
-            static ExpressionSingleton instance;
 
-            return instance;
-        }
-        ExpressionSingleton(ExpressionSingleton const&) = delete;
-        void operator=(ExpressionSingleton const&)      = delete;
+class Expression
+{
+    public:
+        Expression();
 
         int AndExpression(int, int);
         int OrExpression(int, int);
@@ -29,5 +23,7 @@ class ExpressionSingleton
         int ModExpression(int, int);
         int NotExpression(int);
         int UMinusExpression(int);
+};
+
 };
 #endif

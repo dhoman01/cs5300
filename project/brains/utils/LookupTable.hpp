@@ -4,8 +4,10 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <exception>
+#include <stdexcept>
 
+namespace cpsl
+{
 template<typename Info>
 class LookUpTable
 {
@@ -44,14 +46,19 @@ public:
         return lookupTable.size() == 3u;
     }
 private:
-    std::vector<std::map<std::string, Info>> lookupTable;
+    std::vector< std::map<std::string, Info> > lookupTable;
+    std::vector<int> localLocations;
 };
-/* Need
-struct VariableInfo
-{
-    type*;
-    location;
-}
-*/
+
+struct cpslType {
+    int size;
+    std::string id;
+};
+
+struct VariableInfo {
+    cpslType* TYPE;
+    std::string LOCATION;
+};
+};
 
 #endif

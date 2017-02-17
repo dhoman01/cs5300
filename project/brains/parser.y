@@ -6,6 +6,21 @@ int yylex(void);
 
 extern int yylineno;
 extern int yycolno;
+
+#include "Brain.hpp"
+cpsl::Brain brain = cpsl::Brain.getInstance();
+brain.enterScope();
+
+cpsl::cpslType integer;
+integer.size = 4;
+integer.id = "integer";
+brain.store(integer.id, integer);
+
+cpsl::cpslType character;
+character.size = 4;
+character.id = "char";
+brain.store(character.id, character);
+
 %}
 
 %union {

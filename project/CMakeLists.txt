@@ -18,8 +18,8 @@ endif()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/brains)
 
-BISON_TARGET(parser brains/parser.y ${CMAKE_CURRENT_BINARY_DIR}/brains/parser.c VERBOSE ${CMAKE_CURRENT_BINARY_DIR}/brains/parser.log)
-FLEX_TARGET(lexer brains/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/brains/lex.c)
+BISON_TARGET(parser brains/parser.y ${CMAKE_CURRENT_BINARY_DIR}/brains/parser.cpp VERBOSE ${CMAKE_CURRENT_BINARY_DIR}/brains/parser.log)
+FLEX_TARGET(lexer brains/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/brains/lex.cpp)
 ADD_FLEX_BISON_DEPENDENCY(lexer parser)
 
 enable_testing()
@@ -45,10 +45,16 @@ source_group("Brains" FILES ${brains_srcs})
 set(compiler_srcs ${brains_srcs})
 
 set(expression_srcs
-    brains/expressions/ExpressionSingleton.hpp
-    brains/expressions/ExpressionSingleton.cpp
+    brains/expressions/Expression.hpp
+    brains/expressions/Expression.cpp
     )
 source_group("Brains/Expressions" FILES ${expression_srcs})
+list(APPEND compiler_srcs ${expression_srcs})
+
+set(utils_srcs
+    brains/utils/LookupTable.hpp
+    )
+source_group("Brains/Utils" FILES ${utils_srcs})
 list(APPEND compiler_srcs ${expression_srcs})
 
 file(GLOB tests tests/unit/*.cpp)
