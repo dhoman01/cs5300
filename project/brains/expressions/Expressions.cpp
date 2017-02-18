@@ -1,123 +1,561 @@
 #include "Expressions.hpp"
+#include <iostream>
+#include <string>
+#include <vector>
 
-Expression* Expressions::AndExpression(Expression* a, Expression* b)
+Expression* AndExpression(Expression* a, Expression* b)
 {
-    Expression expr;
-    expr.type = "boolean";
-    expr.value = a->value && b->value;
+    Expression* expr = new Expression();
+    expr->type = "boolean";
+    expr->value = a->value && b->value;
     std::cout << "\t# Anding " << a->value << " and " << b->value;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
     if(a->isConstant && b->isConstant){
-        expr.isContant = true;
+        expr->isConstant = true;
         return expr;
     }
 
-    Register reg = Expressions::regPool.pop_back();
-    expr.reg = reg;
-    expr.isConstant = false;
-    if(a->isConstant){
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+        std::cout << "\tand " << reg.name << " " << a->reg.name << " " << b->reg.name;
+    else if(a->isConstant)
         std::cout << "\tandi " << reg.name << " " << b->reg.name << " " << a->value;
-        return expr;
-    }
-
-    if(b.isConstant){
+    else if(b->isConstant)
         std::cout << "\tandi " << reg.name << " " << a->reg.name << " " << b->value;
+
+    return expr;
+}
+
+Expression*int OrExpression(Expression* a, Expression* b)
+{
+    Expression* expr = new Expression();
+    expr->type = "boolean";
+    expr->value = a->value || b->value;
+    std::cout << "\t# Oring " << a->value << " and " << b->value;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
         return expr;
     }
 
-    std::cout << "\tand " << reg.name << " " << a->reg.name << " " << b->reg.name;
-    return &expr;
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+        std::cout << "\tor " << reg.name << " " << a->reg.name << " " << b->reg.name;
+    else if(a->isConstant)
+        std::cout << "\ori " << reg.name << " " << b->reg.name << " " << a->value;
+    else if(b->isConstant)
+        std::cout << "\tori " << reg.name << " " << a->reg.name << " " << b->value;
+
+    return expr;
 }
 
-int cpsl::Expressions::OrExpression(int a, int b)
+int EqExpression(int a, int b)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "boolean";
+    expr->value = a->value == b->value;
+    std::cout << "\t# Equality check " << a->value << " and " << b->value;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+        std::cout << "\tseq " << reg.name << " " << a->reg.name << " " << b->reg.name;
+    else if(a->isConstant)
+        std::cout << "\seqi " << reg.name << " " << b->reg.name << " " << a->value;
+    else if(b->isConstant)
+        std::cout << "\tseqi " << reg.name << " " << a->reg.name << " " << b->value;
+
+    return expr;
 }
 
-int cpsl::Expressions::EqExpression(int a, int b)
+int NotEqExpression(int a, int b)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "boolean";
+    expr->value = a->value != b->value;
+    std::cout << "\t# Not Equal " << a->value << " and " << b->value;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+        std::cout << "\tsne " << reg.name << " " << a->reg.name << " " << b->reg.name;
+    else if(a->isConstant)
+        std::cout << "\snei " << reg.name << " " << b->reg.name << " " << a->value;
+    else if(b->isConstant)
+        std::cout << "\tsnei " << reg.name << " " << a->reg.name << " " << b->value;
+    
+    return expr;
 }
 
-int cpsl::Expressions::NotEqExpression(int a, int b)
+int LtEqExpression(int a, int b)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "boolean";
+    expr->value = a->value <= b->value;
+    std::cout << "\t# <= " << a->value << " and " << b->value;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+    if(!a->isConstant && !b->isConstant)
+        std::cout << "\tsle " << reg.name << " " << a->reg.name << " " << b->reg.name;
+    else if(a->isConstant)
+        std::cout << "\slei " << reg.name << " " << b->reg.name << " " << a->value;
+    else if(b->isConstant)
+        std::cout << "\tslei " << reg.name << " " << a->reg.name << " " << b->value;
+
+    return expr;
 }
 
-int cpsl::Expressions::LtEqExpression(int a, int b)
+int GtEqExpression(int a, int b)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "boolean";
+    expr->value = a->value >= b->value;
+    std::cout << "\t# >= " << a->value << " and " << b->value;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+        std::cout << "\tsge " << reg.name << " " << a->reg.name << " " << b->reg.name;
+    else if(a->isConstant)
+        std::cout << "\sgei " << reg.name << " " << b->reg.name << " " << a->value;
+    else if(b->isConstant)
+        std::cout << "\tsgei " << reg.name << " " << a->reg.name << " " << b->value;
+    
+    return expr;
 }
 
-int cpsl::Expressions::GtEqExpression(int a, int b)
+int LtExpression(int a, int b)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "boolean";
+    expr->value = a->value < b->value;
+    std::cout << "\t# " << a->value << " < " << b->value;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+        std::cout << "\tslt " << reg.name << " " << a->reg.name << " " << b->reg.name;
+    else if(a->isConstant)
+        std::cout << "\slti " << reg.name << " " << b->reg.name << " " << a->value;
+    else if(b->isConstant)
+        std::cout << "\tslti " << reg.name << " " << a->reg.name << " " << b->value;
+    
+    return expr;
 }
 
-int cpsl::Expressions::LtExpression(int a, int b)
+int GtExpression(int a, int b)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "boolean";
+    expr->value = a->value > b->value;
+    std::cout << "\t# " << a->value << " > " << b->value;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+        std::cout << "\tsgt " << reg.name << " " << a->reg.name << " " << b->reg.name;
+    else if(a->isConstant)
+        std::cout << "\sgti " << reg.name << " " << b->reg.name << " " << a->value;
+    else if(b->isConstant)
+        std::cout << "\tsgti " << reg.name << " " << a->reg.name << " " << b->value;
+    
+    return expr;
 }
 
-int cpsl::Expressions::GtExpression(int a, int b)
+int PlusExpression(int a, int b)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "integer";
+    expr->value = a->value + b->value;
+    std::cout << "\t# " << a->value << " + " << b->value << std::endl;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+        std::cout << "\tadd " << reg.name << " " << a->reg.name << " " << b->reg.name << std::endl;
+    else if(a->isConstant)
+        std::cout << "\addi " << reg.name << " " << b->reg.name << " " << a->value << std::endl;
+    else if(b->isConstant)
+        std::cout << "\taddi " << reg.name << " " << a->reg.name << " " << b->value << std::endl;
+    
+    return expr;
 }
 
-int cpsl::Expressions::PlusExpression(int a, int b)
+int MinusExpression(int a, int b)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "integer";
+    expr->value = a->value - b->value;
+    std::cout << "\t# " << a->value << " - " << b->value << std::endl;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+    {
+        std::cout << "\tsub " << reg.name << " " << a->reg.name << " " << b->reg.name << std::endl;
+    }
+    else if(a->isConstant)
+    {
+        Register reg2 = regPool.back();
+        std::cout << "\tli " << reg2.name << " " << a->value << std::endl;
+        std::cout << "\tsub " << reg.name << " " << reg2.name << " " << b->reg.name << std::endl;
+    }
+    else if(b->isConstant)
+    {
+        std::cout << "\tsubi " << reg.name << " " << a->reg.name << " " << b->value << std::endl;
+    }
+
+    return expr;
 }
 
-int cpsl::Expressions::MinusExpression(int a, int b)
+int MultExpression(int a, int b)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "integer";
+    expr->value = a->value * b->value;
+    std::cout << "\t# " << a->value << " * " << b->value << std::endl;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+    {
+        std::cout << "\tmult " << a->reg.name << " " << b->reg.name << std::endl;
+        std::cout << "\tmflo " << reg.name << std::endl;
+    } 
+    else if(a->isConstant)
+    {
+        Register reg2 = regPool.back();
+        std::cout << "li " << reg2.name << " " << a->value << std::endl;
+        std::cout << "\tmult " << reg2.name << " " << b->reg.name << std::endl;
+        std::cout << "\tmflo " << reg.name << std::endl;
+    } 
+    else if(b->isConstant)
+    {
+        Register reg2 = regPool.back();
+        std::cout << "li " << reg2.name << " " << b->value << std::endl;
+        std::cout << "\tmult " << a->reg.name << " " << reg2.name << std::endl;
+        std::cout << "\tmflo " << reg.name << std::endl;
+    }
+
+    return expr;
 }
 
-int cpsl::Expressions::MultExpression(int a, int b)
+int DivExpression(int a, int b)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "integer";
+    expr->value = a->value / b->value;
+    std::cout << "\t# " << a->value << " / " << b->value << std::endl;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+    {
+        std::cout << "\tdiv " << a->reg.name << " " << b->reg.name << std::endl;
+        std::cout << "\tmflo " << reg.name << std::endl;
+    } 
+    else if(a->isConstant)
+    {
+        Register reg2 = regPool.back();
+        std::cout << "li " << reg2.name << " " << a->value << std::endl;
+        std::cout << "\tdiv " << reg2.name << " " << b->reg.name << std::endl;
+        std::cout << "\tmflo " << reg.name << std::endl;
+    } 
+    else if(b->isConstant)
+    {
+        Register reg2 = regPool.back();
+        std::cout << "li " << reg2.name << " " << b->value << std::endl;
+        std::cout << "\tdiv " << a->reg.name << " " << reg2.name << std::endl;
+        std::cout << "\tmflo " << reg.name << std::endl;
+    }
+
+    return expr;
 }
 
-int cpsl::Expressions::DivExpression(int a, int b)
+int ModExpression(int a, int b)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "integer";
+    expr->value = a->value % b->value;
+    std::cout << "\t# " << a->value << " % " << b->value << std::endl;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    if(!a->isConstant && !b->isConstant)
+    {
+        std::cout << "\tdiv " << a->reg.name << " " << b->reg.name << std::endl;
+        std::cout << "\tmfhi " << reg.name << std::endl;
+    } 
+    else if(a->isConstant)
+    {
+        Register reg2 = regPool.back();
+        std::cout << "li " << reg2.name << " " << a->value << std::endl;
+        std::cout << "\tdiv " << reg2.name << " " << b->reg.name << std::endl;
+        std::cout << "\tmfhi " << reg.name << std::endl;
+    } 
+    else if(b->isConstant)
+    {
+        Register reg2 = regPool.back();
+        std::cout << "li " << reg2.name << " " << b->value << std::endl;
+        std::cout << "\tdiv " << a->reg.name << " " << reg2.name << std::endl;
+        std::cout << "\tmfhi " << reg.name << std::endl;
+    }
+
+    return expr;
 }
 
-int cpsl::Expressions::ModExpression(int a, int b)
+int NotExpression(int a)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "boolean";
+    expr->value = !a->value;
+    std::cout << "\t# !" << a->value << std::endl;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    std::cout << "\tnot " << reg.name << " " << a->reg.name << std::endl;
+
+    return expr;
 }
 
-int cpsl::Expressions::NotExpression(int a)
+int UMinusExpression(int a)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->type = "integer";
+    expr->value = --a->value;
+    std::cout << "\t# -" << a->value << std::endl;
+
+    // If a && b are constants this is a
+    // constant expression. No MIPS emitted.
+    if(a->isConstant && b->isConstant)
+    {
+        expr->isConstant = true;
+        return expr;
+    }
+
+    // a || b are not constants. This is not
+    // a constant expression. Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool.back();
+    regPool.pop_back();
+    expr->reg = reg;
+    expr->isConstant = false;
+
+    std::cout << "\taddi " << reg.name << " " << a->reg.name << " -1" << std::endl;
+
+    return expr;
 }
 
-int cpsl::Expressions::UMinusExpression(int a)
+Expression* IntConstant(int a)
 {
-    return 0;
+    Expression* expr = new Expression();
+    expr->isConstant = true;
+    expr->type = "integer";
+    expr->value  = a;
+    return expr;
 }
 
-Expression* Expressions::IntConstant(int a)
+Expression* CharConstant(char a)
 {
-    Expression expr;
-    expr.isConstant = true;
-    expr.type = "integer";
-    expr.value  = a;
+    Expression* expr = new Expression();
+    expr->isConstant = true;
+    expr->type = "char";
+    expr->value  = a;
+    return expr;
 }
 
-Expression* Expressions::CharConstant(char a)
+Expression* StringConstant(char* a)
 {
-    Expression expr;
-    expr.isConstant = true;
-    expr.type = "char";
-    expr.value  = a;
-}
-
-Expression* Expressions::IntConstant(char* a)
-{
-    Expression expr;
-    expr.isConstant = true;
-    expr.type = "string";
-    expr.value  = a;
+    StringConst* expr = new StringConst();
+    expr->isConstant = true;
+    expr->type = "string";
+    expr->value  = a;
+    return expr;
 }

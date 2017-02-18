@@ -24,7 +24,8 @@
         "*hppcctype": "cpp",
         "*hpp*hpp*hpp*hppctime": "cpp",
         "*hpp*hpp*hpp*hpp*hppcstdarg": "cpp",
-        "*hpp*hpp*hppcmath": "cpp"
+        "*hpp*hpp*hppcmath": "cpp",
+        "system_error": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceRoot}/project"
 }

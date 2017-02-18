@@ -6,10 +6,39 @@
 namespace cpsl
 {
 
+struct Register {
+    std::string name;
+};
+
+struct Expression {
+    bool isConstant;
+    Register reg;
+    int value;
+    std::string type;
+};
+
+struct StringConst : Expression {
+    char* value;
+};
+
 class Brain
 {
     private:
-        Brain() : globalLocation(0) {};
+        Brain() : globalLocation(0) {
+            InitPoolAndFile();
+        };
+
+        void InitPoolAndFile(){
+            for(int i = 8; i < 28; i++){
+                Register reg;
+                reg.name = "$" + std::to_string(i);
+                regPool.push_back(reg);
+            }
+            std::cout << ".globl main" << std::endl;
+            std::cout << ".text\n" << std::endl;
+
+            std::cout << "main:   la $gp, GA" << std::endl;
+        }
     public:
         static Brain& getInstance()
         {
@@ -31,6 +60,8 @@ class Brain
         void operator=(Brain const&) = delete;
         LookUpTable<Info> symbolTable;
         int globalLocation;
+        std::vector<Register> regPool;
+
 };
 
 };
