@@ -18,9 +18,6 @@ endif()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/brains)
 
-BISON_TARGET(parser brains/parser.y ${CMAKE_CURRENT_BINARY_DIR}/brains/parser.cpp VERBOSE ${CMAKE_CURRENT_BINARY_DIR}/brains/parser.log)
-FLEX_TARGET(lexer brains/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/brains/lex.cpp)
-ADD_FLEX_BISON_DEPENDENCY(lexer parser)
 
 enable_testing()
 include_directories(
@@ -36,26 +33,29 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++14")
 set(main_srcs main.cpp)
 source_group("Main" FILES ${main_srcs})
 
-set(brains_srcs
-    brains/globals.h
-    ${FLEX_lexer_OUTPUTS}
-    ${BISON_parser_OUTPUTS}
-    )
-source_group("Brains" FILES ${brains_srcs})
-set(compiler_srcs ${brains_srcs})
-
-set(expression_srcs
-    brains/expressions/Expression.hpp
-    brains/expressions/Expression.cpp
-    )
-source_group("Brains/Expressions" FILES ${expression_srcs})
-list(APPEND compiler_srcs ${expression_srcs})
-
 set(utils_srcs
     brains/utils/LookupTable.hpp
     )
 source_group("Brains/Utils" FILES ${utils_srcs})
 list(APPEND compiler_srcs ${expression_srcs})
+
+set(expression_srcs
+    brains/expressions/Expressions.hpp
+    brains/expressions/Expressions.cpp
+    )
+source_group("Brains/Expressions" FILES ${expression_srcs})
+list(APPEND compiler_srcs ${expression_srcs})
+
+BISON_TARGET(parser brains/parser.ypp ${CMAKE_CURRENT_BINARY_DIR}/brains/parser.cpp VERBOSE ${CMAKE_CURRENT_BINARY_DIR}/brains/parser.log)
+FLEX_TARGET(lexer brains/lexer.lpp ${CMAKE_CURRENT_BINARY_DIR}/brains/lex.cpp)
+ADD_FLEX_BISON_DEPENDENCY(lexer parser)
+set(brains_srcs
+    brains/globals.h
+    ${BISON_parser_OUTPUTS}
+    ${FLEX_lexer_OUTPUTS}
+    )
+source_group("Brains" FILES ${brains_srcs})
+set(compiler_srcs ${brains_srcs})
 
 file(GLOB tests tests/unit/*.cpp)
 set(test_srcs ${tests}

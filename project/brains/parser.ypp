@@ -1,25 +1,17 @@
+
 %{
 #include <stdlib.h>
 #include <stdio.h>
-int yyerror(const char *s);
-int yylex(void);
+#include "Brain.hpp"
+#include "expressions/Expressions.hpp"
+
+void yyerror(const char *s);
+extern int yylex(void);
 
 extern int yylineno;
 extern int yycolno;
 
-#include "Brain.hpp"
-cpsl::Brain brain = cpsl::Brain.getInstance();
-brain.enterScope();
-
-cpsl::cpslType integer;
-integer.size = 4;
-integer.id = "integer";
-brain.store(integer.id, integer);
-
-cpsl::cpslType character;
-character.size = 4;
-character.id = "char";
-brain.store(character.id, character);
+Expressions expressions;
 
 %}
 
@@ -27,6 +19,7 @@ brain.store(character.id, character);
     char* str;
     char chr;
     int integer;
+    struct Expression* expr;
 }
 
 %error-verbose
@@ -97,9 +90,10 @@ brain.store(character.id, character);
 %left DIV_OP MOD_OP MULT_OP
 %right UMINUS_OP
 
-%type<str> IDENTIFIER STRING_CONST identifier
+%type<str> STRING_CONST
 %type<chr> CHR_CONST
 %type<integer> INT_CONST
+%type<expr> IDENTIFIER expression identifier lvalue
 
 %start program
 
@@ -296,7 +290,7 @@ expressionList: expressionList COMMA expression
     ;
 
 expression: expression OR_OP expression                 
-    | expression AND_OP expression                      
+    | expression AND_OP expression                      { $$ = expressions.AndExpression($1, $3); }                 
     | expression EQ_OP expression                       
     | expression NOT_EQ_OP expression                   
     | expression LT_EQ_OP expression                    
@@ -308,18 +302,18 @@ expression: expression OR_OP expression
     | expression MULT_OP expression                     
     | expression DIV_OP expression                      
     | expression MOD_OP expression                      
-    | NOT_OP expression                                 
-    | MINUS_OP expression %prec UMINUS_OP               
-    | OPEN_PAR expression CLOSE_PAR                     
-    | identifier OPEN_PAR optExpressionList CLOSE_PAR   
-    | CHR_KEY OPEN_PAR expression CLOSE_PAR             
-    | ORD_KEY OPEN_PAR expression CLOSE_PAR             
-    | PRED_KEY OPEN_PAR expression CLOSE_PAR            
-    | SUCC_KEY OPEN_PAR expression CLOSE_PAR            
-    | INT_CONST                                         
-    | CHR_CONST                                         
-    | STRING_CONST                                      
-    | lvalue                                            
+    | NOT_OP expression                                 { $$ = $2; }             
+    | MINUS_OP expression %prec UMINUS_OP               { $$ = $2; }   
+    | OPEN_PAR expression CLOSE_PAR                     { $$ = $2; }
+    | identifier OPEN_PAR optExpressionList CLOSE_PAR   { $$ = $1; } 
+    | CHR_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
+    | ORD_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
+    | PRED_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
+    | SUCC_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
+    | INT_CONST                                         { $$ = expressions.IntConstant($1); }
+    | CHR_CONST                                         { $$ = expressions.CharConstant($1); }
+    | STRING_CONST                                      { $$ = expressions.StringConstant($1); }
+    | lvalue                                            { $$ = $1; }
     ;
 
 lvalueList: lvalueList COMMA
@@ -333,7 +327,7 @@ lvalue: lvalue DOT identifier
 
 %%
 
-int yyerror(const char* s){
+void yyerror(const char* s){
     extern char* yytext;
     printf("SYNTAX ERROR: Incorrect value \"%s\" on line %d column %d\n", yytext, yylineno, yycolno);
     exit(1);

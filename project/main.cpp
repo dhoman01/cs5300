@@ -2,10 +2,7 @@
 #include <cstdio>
 
 extern FILE* yyin;
-extern "C"
-{
-    int yyparse(void);  
-} 
+extern int yyparse(void); 
 
 int main( int argc, char **argv )
 {

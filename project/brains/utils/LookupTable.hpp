@@ -50,12 +50,16 @@ private:
     std::vector<int> localLocations;
 };
 
-struct cpslType {
+struct Info {
+    std::string INFO;
+};
+
+struct cpslType : Info {
     int size;
     std::string id;
 };
 
-struct VariableInfo {
+struct VariableInfo : Info {
     cpslType* TYPE;
     std::string LOCATION;
 };

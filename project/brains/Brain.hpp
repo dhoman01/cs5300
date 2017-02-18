@@ -13,13 +13,23 @@ class Brain
     public:
         static Brain& getInstance()
         {
-            static Brain instance;
+            static Brain brain;
+            brain.symbolTable.enterScope();
 
-            return instance;
+            cpsl::cpslType integerType;
+            integerType.size = 4;
+            integerType.id = "integer";
+            brain.symbolTable.store(integerType.id, integerType);
+
+            cpsl::cpslType characterType;
+            characterType.size = 4;
+            characterType.id = "char";
+            brain.symbolTable.store(characterType.id, characterType);
+            return brain;
         }
         Brain(Brain const&)          = delete;
         void operator=(Brain const&) = delete;
-        LookUpTable<VariableInfo> symbolTable;
+        LookUpTable<Info> symbolTable;
         int globalLocation;
 };
 

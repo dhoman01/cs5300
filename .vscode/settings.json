@@ -1,6 +1,30 @@
 // Place your settings in this file to overwrite default and user settings.
 {
     "files.encoding": "utf8",
-    "files.associations": {},
+    "files.associations": {
+        "*hppatomic": "cpp",
+        "atomic": "cpp",
+        "*h*h*h*h*h*h*hcstdio": "cpp",
+        "cstdio": "cpp",
+        "exception": "cpp",
+        "*h*hcwchar": "cpp",
+        "cwchar": "cpp",
+        "cstdint": "cpp",
+        "cctype": "cpp",
+        "*hclocale": "cpp",
+        "cwctype": "cpp",
+        "type_traits": "cpp",
+        "*hinitializer_list": "cpp",
+        "*htypeinfo": "cpp",
+        "cstdlib": "cpp",
+        "new": "cpp",
+        "cstddef": "cpp",
+        "*hpp*hpp*hpp*hpp*hpp*hpp*hppcwchar": "cpp",
+        "cstring": "cpp",
+        "*hppcctype": "cpp",
+        "*hpp*hpp*hpp*hppctime": "cpp",
+        "*hpp*hpp*hpp*hpp*hppcstdarg": "cpp",
+        "*hpp*hpp*hppcmath": "cpp"
+    },
     "cmake.sourceDirectory": "${workspaceRoot}/project"
 }
