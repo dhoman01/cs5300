@@ -1,23 +1,32 @@
-%{
-#include <stdlib.h>
-#include <stdio.h>
-#include "Brain.hpp"
-#include "expressions/Expressions.hpp"
+%skeleton "lalr1.cc"
+%require "3.0"
+%debug
+%defines
+%define api.namespace {cpsl}
+%define parser_class_name {cpsl_Parser}
 
-void yyerror(const char *s);
-extern int yylex(void);
+%code requires {
+    namespace cpsl {
+        struct Expression;
+        class Brain;
+        class cpsl_Lexer;
+    }
+}
 
-extern int yylineno;
-extern int yycolno;
+%parse-param { cpsl_Lexer& lexer }
+%parse-param { Brain& brain}
 
+%code{
+#include <iostream>
+#include "brains/Brain.hpp"
+#include "brains/structures.hpp"
+
+#undef yylex
+#define yylex lexer.yylex
 %}
 
-%union {
-    char* str;
-    char chr;
-    int integer;
-    struct Expression* expr;
-}
+%define api.value.type variant
+%define parse.assert
 
 %error-verbose
 %token ARRAY_KEY
@@ -87,18 +96,21 @@ extern int yycolno;
 %left DIV_OP MOD_OP MULT_OP
 %right UMINUS_OP
 
-%type<str> STRING_CONST
-%type<chr> CHR_CONST
-%type<integer> INT_CONST
-%type<expr> IDENTIFIER expression identifier lvalue
+%type<char*> STRING_CONST
+%type<char> CHR_CONST
+%type<int> INT_CONST
+%type<Expression*> IDENTIFIER expression identifier lvalue
+
+%locations
 
 %start program
 
 %%
+
 program: progHead block DOT
     ;
 
-progHead: optConstDecl optTypeDecl optVarDecl optProcFuncs  { InitPool(); }
+progHead: optConstDecl optTypeDecl optVarDecl optProcFuncs  {  }
     ;
 
 optConstDecl: CONST_KEY constDecls
@@ -287,7 +299,7 @@ expressionList: expressionList COMMA expression
     ;
 
 expression: expression OR_OP expression                 
-    | expression AND_OP expression                      { $$ = AndExpression($1, $3); }                 
+    | expression AND_OP expression                      { $$ = brain.expressions.AndExpression($1, $3); }                 
     | expression EQ_OP expression                       
     | expression NOT_EQ_OP expression                   
     | expression LT_EQ_OP expression                    
@@ -307,9 +319,9 @@ expression: expression OR_OP expression
     | ORD_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
     | PRED_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
     | SUCC_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
-    | INT_CONST                                         { $$ = IntConstant($1); }
-    | CHR_CONST                                         { $$ = CharConstant($1); }
-    | STRING_CONST                                      { $$ = StringConstant($1); }
+    | INT_CONST                                         { $$ = brain.expressions.IntConstant($1); }
+    | CHR_CONST                                         { $$ = brain.expressions.CharConstant($1); }
+    | STRING_CONST                                      { $$ = brain.expressions.StringConstant($1); }
     | lvalue                                            { $$ = $1; }
     ;
 
@@ -324,8 +336,7 @@ lvalue: lvalue DOT identifier
 
 %%
 
-void yyerror(const char* s){
-    extern char* yytext;
-    printf("SYNTAX ERROR: Incorrect value \"%s\" on line %d column %d\n", yytext, yylineno, yycolno);
-    exit(1);
+void cpsl::cpsl_Parser::error(const location_type& l, const std::string& err_message)
+{
+    std::cerr << "Error: " << err_message << " at " << l << "\n";
 }

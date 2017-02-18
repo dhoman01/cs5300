@@ -12,7 +12,7 @@ template<typename Info>
 class LookUpTable
 {
 public:
-    LookUpTable();
+    LookUpTable(){};
     void store(std::string id, Info info)
     {
         auto f = lookupTable.back().find(id);

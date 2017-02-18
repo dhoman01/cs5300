@@ -1,17 +1,19 @@
 #include <cstdlib>
 #include <cstdio>
+#include <iostream>
 
-extern FILE* yyin;
-extern int yyparse(void); 
+#include "brains/Brain.hpp"
 
 int main( int argc, char **argv )
 {
+    cpsl::Brain brain;
     ++argv, --argc;  /* skip over program name */
-    if ( argc > 0 )
-        yyin = fopen( argv[0], "r" );
-    else
-        yyin = stdin;
+    if ( argc > 0 ){
+        brain.parse(argv[0]);
+        return EXIT_SUCCESS;
+    }
+    
+    brain.parse(std::cin);
 
-    yyparse();
     return EXIT_SUCCESS;
 }

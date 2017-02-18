@@ -1,66 +1,56 @@
 #ifndef BRAIN_HPP
 #define BRAIN_HPP
 
-#include "utils/LookupTable.hpp"
+#include <string>
+#include <cstddef>
+#include <istream>
+#include <fstream>
+
+#include "brains/cpsl_parser.hpp"
+#include "brains/cpsl_lexer.hpp"
+
+#include "brains/utils/LookupTable.hpp"
+#include "brains/expressions/Expressions.hpp"
+#include "brains/structures.hpp"
 
 namespace cpsl
 {
 
-struct Register {
-    std::string name;
-};
+class Brain{
+public:
+    Brain() = default;
+    Brain(std::string output_file = "");
+    virtual ~Brain();
 
-struct Expression {
-    bool isConstant;
-    Register reg;
-    int value;
-    std::string type;
-};
+    // Parse a file
+    void parse( const char* filename);
 
-struct StringConst : Expression {
-    char* value;
-};
+    // Parse from stdin
+    void parse( std::istream& iss);
 
-class Brain
-{
-    private:
-        Brain() : globalLocation(0) {
-            InitPoolAndFile();
-        };
+    // Track position
+    void add_line();
+    void add_chars(int);
 
-        void InitPoolAndFile(){
-            for(int i = 8; i < 28; i++){
-                Register reg;
-                reg.name = "$" + std::to_string(i);
-                regPool.push_back(reg);
-            }
-            std::cout << ".globl main" << std::endl;
-            std::cout << ".text\n" << std::endl;
+    Expressions expressions;
+    LookUpTable<Info> symbolTable;
+    int globalLocation;
+    std::vector<Register> regPool;
 
-            std::cout << "main:   la $gp, GA" << std::endl;
-        }
-    public:
-        static Brain& getInstance()
-        {
-            static Brain brain;
-            brain.symbolTable.enterScope();
+private:
+    void parse_helper( std::istream &stream);
+    std::size_t lines = 0;
+    std::size_t chars = 0;
 
-            cpsl::cpslType integerType;
-            integerType.size = 4;
-            integerType.id = "integer";
-            brain.symbolTable.store(integerType.id, integerType);
+    cpsl::cpsl_Parser* parser = nullptr;
+    cpsl::cpsl_Lexer* lexer = nullptr;
 
-            cpsl::cpslType characterType;
-            characterType.size = 4;
-            characterType.id = "char";
-            brain.symbolTable.store(characterType.id, characterType);
-            return brain;
-        }
-        Brain(Brain const&)          = delete;
-        void operator=(Brain const&) = delete;
-        LookUpTable<Info> symbolTable;
-        int globalLocation;
-        std::vector<Register> regPool;
+    std::string output_file;
+
+    void InitRegPool();
+    void InitMIPS();
+    void InitPredefinedSymbols();
+    void Init();
 
 };
 

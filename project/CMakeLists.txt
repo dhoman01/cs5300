@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.0.2)
-project(cpslc VERSION 0.0.1)
+cmake_minimum_required(VERSION 3.1)
+project(cpslc VERSION 0.0.3)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   list(APPEND CMAKE_FIND_LIBRARY_SUFFIXES ".a")
@@ -7,14 +7,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   set(WINDOWS_GNU "C:/Program Files (x86)/GnuWin32/include")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
-find_package(FLEX)
-find_package(BISON)
-if(NOT FLEX_FOUND)
-    message(FATAL_ERROR "Missing dependancies! Please install flex before running again...")
-endif()
-if(NOT BISON_FOUND)
-    message(FATAL_ERROR "Missing dependancies! Please install bison before running again...")
-endif()
+find_package(FLEX REQUIRED)
+find_package(BISON REQUIRED)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/brains)
 
@@ -28,21 +22,29 @@ include_directories(
     ${WINDOWS_GNU}
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++14")
+set(EXTRA_COMPILE_FLAGS "-Wall -g -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}")
 
-BISON_TARGET(parser brains/parser.ypp ${CMAKE_CURRENT_BINARY_DIR}/brains/parser.cpp VERBOSE ${CMAKE_CURRENT_BINARY_DIR}/brains/parser.log)
-FLEX_TARGET(lexer brains/lexer.lpp ${CMAKE_CURRENT_BINARY_DIR}/brains/lex.cpp)
-ADD_FLEX_BISON_DEPENDENCY(lexer parser)
+set(parser_srcs
+    brains/cpsl_lexer.hpp
+    ${BISON_cpsl_parser_OUTPUTS}
+    ${FLEX_cpsl_lexer_OUTPUTS}
+    )
+source_group("Parser" FILES ${parser_srcs})
+set(compiler_srcs ${parser_srcs})
+
+BISON_TARGET(cpsl_parser brains/parser.ypp ${CMAKE_CURRENT_BINARY_DIR}/brains/cpsl_parser.cpp)
+FLEX_TARGET(cpsl_lexer brains/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/brains/cpsl_lexer.cpp)
+ADD_FLEX_BISON_DEPENDENCY(cpsl_lexer cpsl_parser)
+
 set(brains_srcs
-    brains/globals.h
-    ${BISON_parser_OUTPUTS}
-    ${FLEX_lexer_OUTPUTS}
+    brains/cpsl_lexer.hpp
+    brains/Brain.hpp
+    brains/Brain.cpp
+    brains/structures.hpp
     )
 source_group("Brains" FILES ${brains_srcs})
-set(compiler_srcs ${brains_srcs})
-
-set(main_srcs main.cpp)
-source_group("Main" FILES ${main_srcs})
+list(APPEND compiler_srcs ${brains_srcs})
 
 set(utils_srcs
     brains/utils/LookupTable.hpp
@@ -57,11 +59,14 @@ set(expression_srcs
 source_group("Brains/Expressions" FILES ${expression_srcs})
 list(APPEND compiler_srcs ${expression_srcs})
 
+set(main_srcs main.cpp)
+source_group("Main" FILES ${main_srcs})
+
 file(GLOB tests tests/unit/*.cpp)
 set(test_srcs ${tests}
     tests/main.cpp
-    ${BISON_parser_OUTPUTS}
-    ${FLEX_lexer_OUTPTUS}
+    ${BISON_cpsl_parser_OUTPUTS}
+    ${FLEX_cpsl_lexer_OUTPTUS}
     )
 source_group("Testing" FILES ${test_srcs})
 
@@ -69,7 +74,7 @@ set(CMAKE_INSTALL_RPATH ".")
 add_library(compiler_common STATIC ${compiler_srcs})
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set_target_properties(cpsl_common PROPERTIES MACOSX_RPATH "@loader_path/../lib")
+    set_target_properties(compiler_common PROPERTIES MACOSX_RPATH "@loader_path/../lib")
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 add_executable(cpslc ${main_srcs})
