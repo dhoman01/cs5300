@@ -8,6 +8,7 @@
 %code requires{
     namespace cpsl {
         class Brain;
+        struct Expression;
         class Scanner;
     }
 
@@ -31,6 +32,7 @@
     #include <fstream>
 
     #include "Brain.hpp"
+    #include "structures.hpp"
 
 #undef yylex
 #define yylex scanner.yylex
@@ -95,9 +97,9 @@
 %token OPEN_SQ
 %token SEMI_COL
 %token IDENTIFIER
-%token INT_CONST
-%token CHR_CONST
-%token STRING_CONST
+%token <int> INT_CONST
+%token <char> CHR_CONST
+%token <char*> STRING_CONST
 
 
 %left AND_OP OR_OP
@@ -106,6 +108,8 @@
 %left PLUS_OP MINUS_OP
 %left DIV_OP MOD_OP MULT_OP
 %right UMINUS_OP
+
+%type<cpsl::Expression*> expression IDENTIFIER identifier
 
 %locations
 
@@ -302,31 +306,31 @@ expressionList: expressionList COMMA expression
     | expression
     ;
 
-expression: expression OR_OP expression                 
-    | expression AND_OP expression                                   
-    | expression EQ_OP expression                       
-    | expression NOT_EQ_OP expression                   
-    | expression LT_EQ_OP expression                    
-    | expression GT_EQ_OP expression                    
-    | expression LT_OP expression                       
-    | expression GT_OP expression                       
-    | expression PLUS_OP expression                     
-    | expression MINUS_OP expression                    
-    | expression MULT_OP expression                     
-    | expression DIV_OP expression                      
-    | expression MOD_OP expression                      
-    | NOT_OP expression                                           
-    | MINUS_OP expression %prec UMINUS_OP               
-    | OPEN_PAR expression CLOSE_PAR                     
-    | identifier OPEN_PAR optExpressionList CLOSE_PAR  
-    | CHR_KEY OPEN_PAR expression CLOSE_PAR            
-    | ORD_KEY OPEN_PAR expression CLOSE_PAR             
-    | PRED_KEY OPEN_PAR expression CLOSE_PAR           
-    | SUCC_KEY OPEN_PAR expression CLOSE_PAR           
-    | INT_CONST                                         
-    | CHR_CONST                                        
-    | STRING_CONST                                      
-    | lvalue                                           
+expression: expression OR_OP expression                 { $$ = brain.expressions.OrExpression($1, $3); }            
+    | expression AND_OP expression                      { $$ = brain.expressions.AndExpression($1, $3); }              
+    | expression EQ_OP expression                       { $$ = brain.expressions.EqExpression($1, $3); } 
+    | expression NOT_EQ_OP expression                   { $$ = brain.expressions.NotEqExpression($1, $3); } 
+    | expression LT_EQ_OP expression                    { $$ = brain.expressions.LtEqExpression($1, $3); } 
+    | expression GT_EQ_OP expression                    { $$ = brain.expressions.GtEqExpression($1, $3); } 
+    | expression LT_OP expression                       { $$ = brain.expressions.LtExpression($1, $3); } 
+    | expression GT_OP expression                       { $$ = brain.expressions.GtExpression($1, $3); } 
+    | expression PLUS_OP expression                     { $$ = brain.expressions.PlusExpression($1, $3); } 
+    | expression MINUS_OP expression                    { $$ = brain.expressions.MinusExpression($1, $3); } 
+    | expression MULT_OP expression                     { $$ = brain.expressions.MultExpression($1, $3); }
+    | expression DIV_OP expression                      { $$ = brain.expressions.DivExpression($1, $3); } 
+    | expression MOD_OP expression                      { $$ = brain.expressions.ModExpression($1, $3); } 
+    | NOT_OP expression                                 { $$ = brain.expressions.NotExpression($2); }           
+    | MINUS_OP expression %prec UMINUS_OP               { $$ = brain.expressions.UMinusExpression($2); } 
+    | OPEN_PAR expression CLOSE_PAR                     { $$ = $2; } 
+    | identifier OPEN_PAR optExpressionList CLOSE_PAR   { $$ = $1; }
+    | CHR_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
+    | ORD_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
+    | PRED_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
+    | SUCC_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
+    | INT_CONST                                         { $$ = brain.expressions.IntConstant($1); }
+    | CHR_CONST                                         { $$ = brain.expressions.CharConstant($1); }
+    | STRING_CONST                                      { $$ = brain.expressions.StringConstant($1); } 
+    | lvalue                                            {  }
     ;
 
 lvalueList: lvalueList COMMA
