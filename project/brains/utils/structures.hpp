@@ -7,17 +7,17 @@ namespace cpsl
 {
 
 struct Info {
-    std::string INFO;
-};
-
-struct cpslType : Info {
-    int size;
+    virtual ~Info() {};
     std::string id;
 };
 
+struct cpslType : Info {
+    std::size_t size;
+};
+
 struct VariableInfo : Info {
-    cpslType TYPE;
-    std::string LOCATION;
+    cpslType* type;
+    std::string location;
 };
 
 struct Register {
@@ -31,8 +31,12 @@ struct Expression {
     std::string type;
 };
 
+struct CharConst : Expression {
+    char value;
+};
+
 struct StringConst : Expression {
-    char* value;
+    std::string value;
 };
 
 };

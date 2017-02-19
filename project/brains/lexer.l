@@ -1,7 +1,9 @@
 %{
+#include <cstring>
+#include <cstdlib>
 #include <string>
 
-#include "brains/parser/scanner.hpp"
+#include "scanner.hpp"
 #undef  YY_DECL
 #define YY_DECL int cpsl::Scanner::yylex(cpsl::Parser::semantic_type* const lval, cpsl::Parser::location_type* loc)
 

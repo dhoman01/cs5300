@@ -1,25 +1,17 @@
 VAR a,b:integer;
 
 BEGIN
-  write("2+2=",2+2,'\n');
-  write("2*2=",2*2,'\n');
-  write("2/2=",2/2,'\n');
-  write("2-2=",2-2,'\n');
-  write("Enter A:");
-  read(a);
-  write("\nEnter b:");
-  read(b);
-  write('\n');
-  
-  write("a+b=",a+b,'\n');
-  write("a-b=",a-b,'\n');
-  write("a*b=",a*b,'\n');
-  write("a/b=",a/b,'\n');
-  write("a%b=",a%b,'\n');
-  write("a=b=",a=b,'\n');
-  write("a<b=",a<b,'\n');
-  write("a>b=",a>b,'\n');
-  write("a<>b=",a<>b,'\n');
-  write("a<=b=",a<=b,'\n');
-  write("a>=b=",a>=b,'\n');
+
+a := 1;
+b := 2;
+$write(a,b);
+
+a := a + b; $a=3
+b := a + b; $b=5
+$write(a,b);
+
+a := a * b; $a=15
+b := a * b; $b=75
+$write(a,b);
+
 END.

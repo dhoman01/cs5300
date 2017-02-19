@@ -1,5 +1,8 @@
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-deprecated-register --std=c++14")
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 project(cpslc CXX)
 
 cmake_minimum_required(VERSION 3.1)
@@ -14,14 +17,13 @@ find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/brains)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/brains/parser)
 
 BISON_TARGET(parser 
-             brains/parser/parser.yy
-             ${CMAKE_CURRENT_BINARY_DIR}/brains/parser/parser.tab.cc)
+             brains/parser.yy
+             ${CMAKE_CURRENT_BINARY_DIR}/brains/parser.tab.cc)
 FLEX_TARGET(lexer
-            brains/parser/lexer.l
-            ${CMAKE_CURRENT_BINARY_DIR}/brains/parser/lexer.yy.cc)
+            brains/lexer.l
+            ${CMAKE_CURRENT_BINARY_DIR}/brains/lexer.yy.cc)
 ADD_FLEX_BISON_DEPENDENCY(lexer parser)
 
 enable_testing()
@@ -41,10 +43,10 @@ source_group("Main" FILES ${main_srcs})
 
 set(brains_srcs
     brains/Brain.hpp
-    brains/Brain.cpp 
-    
+    brains/Brain.cpp   
+    brains/scanner.hpp
     ${BISON_parser_OUTPUTS}
-    ${FLEX_lexer_OUTPTUS}   
+    ${FLEX_lexer_OUTPTUS} 
     )
 source_group("Brains" FILES ${brains_srcs})
 set(compiler_srcs ${brains_srcs})
@@ -55,12 +57,6 @@ set(expression_srcs
     )
 source_group("Brains/Expressions" FILES ${expression_srcs})
 list(APPEND compiler_srcs ${expression_srcs})
-
-set(parser_srcs
-    brains/parser/scanner.hpp
-    )
-source_group("Brains/Parser" FILES ${parser_srcs})
-list(APPEND compiler_srcs ${parser_srcs})
 
 set(utils_srcs
     brains/utils/LookupTable.hpp
@@ -86,13 +82,6 @@ ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 add_executable(cpslc ${main_srcs})
 add_executable(cpslc_test ${test_srcs})
-
-target_include_directories(cpslc
-    PRIVATE
-        .
-        ${CMAKE_CURRENT_BINARY_DIR})
-set_property(TARGET cpslc
-             PROPERTY CXX_STANDARD 14)
 
 target_link_libraries(cpslc compiler_common)
 target_link_libraries(cpslc_test compiler_common)

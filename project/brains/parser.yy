@@ -6,7 +6,7 @@
 %define parser_class_name {Parser}
 
 %code requires{
-    #include "brains/utils/structures.hpp"
+    #include "utils/structures.hpp"
     namespace cpsl {
         class Brain;
         struct Expression;
@@ -32,7 +32,7 @@
     #include <cstdlib>
     #include <fstream>
 
-    #include "brains/Brain.hpp"
+    #include "Brain.hpp"
 
 #undef yylex
 #define yylex scanner.yylex
@@ -96,10 +96,10 @@
 %token OPEN_PAR
 %token OPEN_SQ
 %token SEMI_COL
-%token IDENTIFIER
-%token <int> INT_CONST
-%token <char> CHR_CONST
-%token <char*> STRING_CONST
+%token <std::string> IDENTIFIER
+%token <std::string> INT_CONST
+%token <std::string> CHR_CONST
+%token <std::string> STRING_CONST
 
 
 %left AND_OP OR_OP
@@ -110,7 +110,10 @@
 %right UMINUS_OP
 
 %type<cpsl::Expression> expression
-%type<cpsl::VariableInfo> lvalue IDENTIFIER identifier
+%type<std::vector<std::string>> identifierList lvalueList
+%type<std::vector<cpsl::Expression>> expressionList optExpressionList
+%type<int> constDecl assignment
+%type<std::string> lvalue type identifier simpleType
 
 %locations
 
@@ -123,14 +126,14 @@ progHead: optConstDecl optTypeDecl optVarDecl optProcFuncs
     ;
 
 optConstDecl: CONST_KEY constDecls
-    | 
+    |
     ;
 
 constDecls: constDecls constDecl
     | constDecl
     ;
 
-constDecl: identifier EQ_OP expression SEMI_COL
+constDecl: identifier EQ_OP expression SEMI_COL { brain.statements.ConstDeclaration($1, $3); }
     ;
 
 optProcFuncs: optProcFuncs procedureDecl
@@ -152,15 +155,15 @@ functionDecl: functionSig FORWARD_KEY SEMI_COL
 functionSig: FUNCTION_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR COL type SEMI_COL
     ;
 
-optFormalParameters: formalParameters
-    |
+optFormalParameters: formalParameters {  }
+    | { }
     ;
 
-formalParameters: formalParameters SEMI_COL formalParameter
-    | formalParameter
+formalParameters: formalParameters SEMI_COL formalParameter { }
+    | formalParameter { }
     ;
 
-formalParameter: optVar identifierList COL type 
+formalParameter: optVar identifierList COL type {  }
     ;
 
 optVar: VAR_KEY
@@ -185,15 +188,15 @@ typeDecls: typeDecls typeDecl
 typeDecl: identifier EQ_OP type SEMI_COL  
     ;
 
-type: simpleType  
-    | recordType  
-    | arrayType   
+type: simpleType  { $$ = $1; }
+    | recordType  { }
+    | arrayType   { }
     ;
 
-simpleType: identifier
+simpleType: identifier { std::cout << "Found simple type " << $1 << std::endl; $$ = $1; }
     ;
 
-recordType: RECORD_KEY fields END_KEY
+recordType: RECORD_KEY fields END_KEY { }
     ;
 
 fields: fields field
@@ -202,14 +205,14 @@ fields: fields field
 field: identifierList COL type SEMI_COL
     ;
 
-arrayType: ARRAY_KEY OPEN_SQ expression COL expression CLOSE_SQ OF_KEY type
+arrayType: ARRAY_KEY OPEN_SQ expression COL expression CLOSE_SQ OF_KEY type { }
     ;
 
-identifierList: identifierList COMMA identifier
-    | identifier
+identifierList: identifierList COMMA identifier { $1.push_back($3); $$ = $1; }
+    | identifier { std::vector<std::string> list; list.push_back($1); $$ = list; }
     ;
 
-identifier: IDENTIFIER 
+identifier: IDENTIFIER { $$ = $1; }
     ;
 
 optVarDecl: VAR_KEY varDecls
@@ -220,7 +223,7 @@ varDecls: varDecls varDecl
     | varDecl
     ;
 
-varDecl: identifierList COL type SEMI_COL 
+varDecl: identifierList COL type SEMI_COL { std::cout << "Found Variable declaration for " << $1.size() << " variables.\n"; for(auto var : $1) { std::cout << var << ", "; } std::cout << std::endl; brain.statements.VariableDeclaration($1, $3); }
     ;
 
 statementList: statementList SEMI_COL statement
@@ -240,7 +243,7 @@ statement: assignment
     | nullStatement     
     ;
 
-assignment: lvalue ASSIGN_OP expression
+assignment: lvalue ASSIGN_OP expression { std::cout << "Found :=\n"; brain.statements.Assignment($1, $3); }
     ;
 
 ifStatement: IF_KEY expression thenStatement optElseIfStatements elseStatement END_KEY
@@ -299,48 +302,48 @@ procedureCall: identifier OPEN_PAR optExpressionList CLOSE_PAR
 nullStatement:
     ;
 
-optExpressionList: expressionList
-    |
+optExpressionList: expressionList { $$ = $1;}
+    | { $$ = std::vector<cpsl::Expression>(); }
     ;
 
-expressionList: expressionList COMMA expression
-    | expression
+expressionList: expressionList COMMA expression { $1.push_back($3); $$ = $1;}
+    | expression  { std::vector<cpsl::Expression> list; list.push_back($1); $$ = list;}
     ;
 
-expression: expression OR_OP expression                 { $$ = brain.expressions.OrExpression($1, $3); }            
-    | expression AND_OP expression                      { $$ = brain.expressions.AndExpression($1, $3); }              
-    | expression EQ_OP expression                       { $$ = brain.expressions.EqExpression($1, $3); } 
-    | expression NOT_EQ_OP expression                   { $$ = brain.expressions.NotEqExpression($1, $3); } 
-    | expression LT_EQ_OP expression                    { $$ = brain.expressions.LtEqExpression($1, $3); } 
-    | expression GT_EQ_OP expression                    { $$ = brain.expressions.GtEqExpression($1, $3); } 
-    | expression LT_OP expression                       { $$ = brain.expressions.LtExpression($1, $3); } 
-    | expression GT_OP expression                       { $$ = brain.expressions.GtExpression($1, $3); } 
-    | expression PLUS_OP expression                     { $$ = brain.expressions.PlusExpression($1, $3); } 
-    | expression MINUS_OP expression                    { $$ = brain.expressions.MinusExpression($1, $3); } 
-    | expression MULT_OP expression                     { $$ = brain.expressions.MultExpression($1, $3); }
-    | expression DIV_OP expression                      { $$ = brain.expressions.DivExpression($1, $3); } 
-    | expression MOD_OP expression                      { $$ = brain.expressions.ModExpression($1, $3); } 
-    | NOT_OP expression                                 { $$ = brain.expressions.NotExpression($2); }           
-    | MINUS_OP expression %prec UMINUS_OP               { $$ = brain.expressions.UMinusExpression($2); } 
-    | OPEN_PAR expression CLOSE_PAR                     { $$ = $2; } 
+expression: expression OR_OP expression                 { std::cout << "Found ||\n"; $$ = brain.expressions.OrExpression($1, $3); }            
+    | expression AND_OP expression                      { std::cout << "Found &&\n"; $$ = brain.expressions.AndExpression($1, $3); }              
+    | expression EQ_OP expression                       { std::cout << "Found =\n"; $$ = brain.expressions.EqExpression($1, $3); } 
+    | expression NOT_EQ_OP expression                   { std::cout << "Found <>\n"; $$ = brain.expressions.NotEqExpression($1, $3); } 
+    | expression LT_EQ_OP expression                    { std::cout << "Found <=\n"; $$ = brain.expressions.LtEqExpression($1, $3); } 
+    | expression GT_EQ_OP expression                    { std::cout << "Found >=\n"; $$ = brain.expressions.GtEqExpression($1, $3); } 
+    | expression LT_OP expression                       { std::cout << "Found <\n"; $$ = brain.expressions.LtExpression($1, $3); } 
+    | expression GT_OP expression                       { std::cout << "Found >\n"; $$ = brain.expressions.GtExpression($1, $3); } 
+    | expression PLUS_OP expression                     { std::cout << "Found +\n"; $$ = brain.expressions.PlusExpression($1, $3); } 
+    | expression MINUS_OP expression                    { std::cout << "Found -\n"; $$ = brain.expressions.MinusExpression($1, $3); } 
+    | expression MULT_OP expression                     { std::cout << "Found *\n"; $$ = brain.expressions.MultExpression($1, $3); }
+    | expression DIV_OP expression                      { std::cout << "Found \\n"; $$ = brain.expressions.DivExpression($1, $3); } 
+    | expression MOD_OP expression                      { std::cout << "Found %\n"; $$ = brain.expressions.ModExpression($1, $3); } 
+    | NOT_OP expression                                 { std::cout << "Found ~\n"; $$ = brain.expressions.NotExpression($2); }           
+    | MINUS_OP expression %prec UMINUS_OP               { std::cout << "Found --\n"; $$ = brain.expressions.UMinusExpression($2); } 
+    | OPEN_PAR expression CLOSE_PAR                     { std::cout << "Found (expr)\n"; $$ = $2; } 
     | identifier OPEN_PAR optExpressionList CLOSE_PAR   {  }
     | CHR_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
     | ORD_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
     | PRED_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
     | SUCC_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
-    | INT_CONST                                         { $$ = brain.expressions.IntConstant($1); }
-    | CHR_CONST                                         { $$ = brain.expressions.CharConstant($1); }
-    | STRING_CONST                                      { $$ = brain.expressions.StringConstant($1); } 
-    | lvalue                                            { $$ = brain.expressions.LoadValue($1); }
+    | INT_CONST                                         { std::cout << "Found INT\n"; $$ = brain.expressions.IntConstant($1); }
+    | CHR_CONST                                         { std::cout << "Found CHR\n"; $$ = brain.expressions.CharConstant($1); }
+    | STRING_CONST                                      { std::cout << "Found STRING\n"; $$ = brain.expressions.StringConstant($1); } 
+    | lvalue                                            { std::cout << "Found LVALUE\n"; $$ = brain.statements.LoadVariable($1); }
     ;
 
-lvalueList: lvalueList COMMA
-    | lvalue
+lvalueList: lvalueList COMMA lvalue { $$ = $1; }
+    | lvalue { std::vector<std::string> list; list.push_back($1); $$ = list;}
     ;
 
-lvalue: lvalue DOT identifier
-    | lvalue OPEN_SQ expression CLOSE_SQ
-    | identifier
+lvalue: lvalue DOT identifier { }
+    | lvalue OPEN_SQ expression CLOSE_SQ { }
+    | identifier { $$ = $1;}
     ;
 
 %%

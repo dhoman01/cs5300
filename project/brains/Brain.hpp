@@ -6,11 +6,12 @@
 #include <istream>
 #include <fstream>
 
-#include "brains/parser/scanner.hpp"
-#include "brains/parser/parser.tab.hh"
+#include "scanner.hpp"
+#include "parser.tab.hh"
 
-#include "brains/utils/LookupTable.hpp"
-#include "brains/expressions/Expressions.hpp"
+#include "utils/LookupTable.hpp"
+#include "expressions/Expressions.hpp"
+#include "statements/Statements.hpp"
 
 namespace cpsl
 {
@@ -18,8 +19,7 @@ namespace cpsl
 class Brain
 {
 public:
-    Brain() = default;
-    Brain(std::string output_file);
+    Brain(std::string output_file = "");
     virtual ~Brain();
 
     // Parse a file
@@ -29,8 +29,8 @@ public:
     void parse(std::istream& iss);
 
     Expressions expressions;
+    Statements statements;
     LookUpTable<Info> symbolTable;
-    int globalLocation;
     std::vector<Register> regPool;
 
 private:

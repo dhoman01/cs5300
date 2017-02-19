@@ -6,10 +6,10 @@
 
 cpsl::Brain::Brain(std::string file)
 {
-    globalLocation = 0;
     output_file = file;
     Init();
     expressions = Expressions(&regPool, output_file);
+    statements = Statements(&regPool, &symbolTable);
 };
 
 cpsl::Brain::~Brain()
@@ -18,6 +18,7 @@ cpsl::Brain::~Brain()
     scanner = nullptr;
     delete(parser);
     parser = nullptr;
+    std::cout << "\t.data" << std::endl << "GA:" << std::endl;
 }
 
 void cpsl::Brain::parse(const char * const filename)
@@ -99,6 +100,7 @@ void cpsl::Brain::InitMIPS()
     std::cout << ".text\n" << std::endl;
 
     std::cout << "main:   la $gp, GA" << std::endl;
+    std::cout << "\tori $fp, $sp, 0" << std::endl;
 
     if(!output_file.empty())
     {
@@ -111,15 +113,17 @@ void cpsl::Brain::InitPredefinedSymbols()
 {
     symbolTable.enterScope();
 
-    cpsl::cpslType integerType;
-    integerType.size = 4;
-    integerType.id = "integer";
-    symbolTable.store(integerType.id, integerType);
+    cpsl::cpslType* integerType = new cpsl::cpslType();
+    integerType->size = 4;
+    integerType->id = "integer";
+    symbolTable.store(integerType->id, integerType);
 
-    cpsl::cpslType characterType;
-    characterType.size = 4;
-    characterType.id = "char";
-    symbolTable.store(characterType.id, characterType);
+    cpsl::cpslType* characterType = new cpsl::cpslType();
+    characterType->size = 4;
+    characterType->id = "char";
+    symbolTable.store(characterType->id, characterType);
+
+    symbolTable.enterScope();
 }
 
 void cpsl::Brain::Init()

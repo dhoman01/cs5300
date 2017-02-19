@@ -455,14 +455,14 @@ cpsl::Expression cpsl::Expressions::GtExpression(cpsl::Expression a, cpsl::Expre
 cpsl::Expression cpsl::Expressions::PlusExpression(cpsl::Expression a, cpsl::Expression b)
 {
     if(a.type != "integer")
-        throw std::runtime_error("The value of " + std::to_string(a.value) + " is not integer.");
+        throw std::runtime_error("The value of " + a.type + " is not integer.");
     if(b.type != "integer")
-        throw std::runtime_error("The value of " + std::to_string(b.value) + " is not integer.");
+        throw std::runtime_error("The value of " + b.type + " is not integer.");
     
     cpsl::Expression expr;
     expr.type = "integer";
     expr.value = a.value + b.value;
-    std::cout << "\t# " << a.value << " + " << b.value << std::endl;
+    std::cout << "\t# Expression: " << a.value << " + " << b.value << std::endl;
 
     // If a && b are constants this is a
     // constant expression. No MIPS emitted.
@@ -492,12 +492,24 @@ cpsl::Expression cpsl::Expressions::PlusExpression(cpsl::Expression a, cpsl::Exp
         std::cout.rdbuf(psbuf);
     }
 
+    std::cout << "Got register " << reg.name << std::endl;
+
     if(!a.isConstant && !b.isConstant)
+    {
         std::cout << "\tadd " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
+    }
     else if(a.isConstant)
+    {
         std::cout << "\addi " << reg.name << " " << b.reg.name << " " << a.value << std::endl;
+        regPool->push_back(b.reg);        
+    }
     else if(b.isConstant)
+    {
         std::cout << "\taddi " << reg.name << " " << a.reg.name << " " << b.value << std::endl;
+        regPool->push_back(a.reg);
+    }
     
     if(!output_file.empty())
     {
@@ -877,64 +889,32 @@ cpsl::Expression cpsl::Expressions::UMinusExpression(cpsl::Expression a)
     return expr;
 }
 
-cpsl::Expression cpsl::Expressions::IntConstant(int a)
+cpsl::Expression cpsl::Expressions::IntConstant(std::string a)
 {
+    std::cout << "Found an int constant " << a << std::endl;
     cpsl::Expression expr;
     expr.isConstant = true;
     expr.type = "integer";
-    expr.value  = a;
+    expr.value  = stoi(a);
     return expr;
 }
 
-cpsl::Expression cpsl::Expressions::CharConstant(char a)
+cpsl::Expression cpsl::Expressions::CharConstant(std::string a)
 {
-    cpsl::Expression expr;
+    std::cout << "Found an char constant " << a << std::endl;
+    cpsl::CharConst expr;
     expr.isConstant = true;
     expr.type = "char";
-    expr.value  = a;
+    expr.value  = a[0];
     return expr;
 }
 
-cpsl::Expression cpsl::Expressions::StringConstant(char* a)
+cpsl::Expression cpsl::Expressions::StringConstant(std::string a)
 {
-    StringConst expr;
+    std::cout << "Found an string constant " << a << std::endl;
+    cpsl::StringConst expr;
     expr.isConstant = true;
     expr.type = "string";
     expr.value  = a;
-    return expr;
-}
-
-cpsl::Expression cpsl::Expressions::LoadValue(cpsl::VariableInfo a)
-{
-    // Grab a Register
-    // and emit correct MIPS.
-    Register reg = regPool->back();
-    regPool->pop_back();
-
-    cpsl::Expression expr;
-    expr.type = a.TYPE.id;
-    expr.reg = reg;
-    expr.isConstant = false;
-
-    // Redirect cout to file if
-    // there is a file.
-    std::streambuf* psbuf, *backup;
-    std::ofstream output;
-    if(!output_file.empty())
-    {            
-        output.open(output_file);
-        backup = std::cout.rdbuf();
-        psbuf = output.rdbuf();
-        std::cout.rdbuf(psbuf);
-    }
-    std::cout << "# Loading value from " << a.LOCATION << "($gp)" << " with type " << a.TYPE.id << std::endl;
-    std::cout << "\tlw " << reg.name << " " << a.LOCATION << "($gp)" << std::endl;
-
-    if(!output_file.empty())
-    {
-        std::cout.rdbuf(backup);
-        output.close();
-    }
-
     return expr;
 }
