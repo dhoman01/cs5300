@@ -1,16 +1,16 @@
 #ifndef BRAIN_HPP
-#define BRAIN_HPP
+#define BRAIN_HPP 1
 
 #include <string>
 #include <cstddef>
 #include <istream>
 #include <fstream>
 
-#include "cpsl_lexer.hpp"
-#include "cpsl_parser.hpp"
+#include "scanner.hpp"
+#include "parser.tab.hh"
 
-#include "utils/LookupTable.hpp"
-#include "expressions/Expressions.hpp"
+#include "LookupTable.hpp"
+#include "Expressions.hpp"
 
 namespace cpsl
 {
@@ -18,12 +18,12 @@ namespace cpsl
 class Brain
 {
 public:
-    Brain(){};
-    Brain(std::string output_file = "");
+    Brain() = default;
+    Brain(std::string output_file);
     virtual ~Brain();
 
     // Parse a file
-    void parse(const char* filename);
+    void parse(const char* const filename);
 
     // Parse from stdin
     void parse(std::istream& iss);
@@ -36,8 +36,8 @@ public:
 private:
     void parse_helper(std::istream &stream);
 
-    cpsl::cpsl_Parser* parser = nullptr;
-    cpsl::cpsl_Lexer* lexer = nullptr;
+    cpsl::Parser* parser = nullptr;
+    cpsl::Scanner* scanner = nullptr;
 
     std::string output_file;
 

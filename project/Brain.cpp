@@ -14,13 +14,13 @@ cpsl::Brain::Brain(std::string file)
 
 cpsl::Brain::~Brain()
 {
-    delete lexer;
-    lexer = nullptr;
-    delete parser;
+    delete(scanner);
+    scanner = nullptr;
+    delete(parser);
     parser = nullptr;
 }
 
-void cpsl::Brain::parse(const char* filename)
+void cpsl::Brain::parse(const char * const filename)
 {
     assert(filename != nullptr);
     std::ifstream in(filename);
@@ -32,39 +32,42 @@ void cpsl::Brain::parse(const char* filename)
     return;
 }
 
-void cpsl::Brain::parse(std::istream &stream)
+void cpsl::Brain::parse( std::istream &stream )
 {
-    if(!stream.good() && stream.eof())
-        return;
-    
-    parse_helper(stream);
-    return;
+   if( ! stream.good()  && stream.eof() )
+   {
+       return;
+   }
+   //else
+   parse_helper( stream ); 
+   return;
 }
 
 void cpsl::Brain::parse_helper(std::istream &stream)
 {
-    delete lexer;
+    delete(scanner);
     try
     {
-        lexer = new cpsl::cpsl_Lexer(&stream);
+        scanner = new cpsl::Scanner(&stream);
     }
-    catch (const std::exception& ex)
+    catch (std::bad_alloc& ex)
     {
-        std::cerr << "Failed setting up lexer: " << ex.what() << std::endl;
+        std::cerr << "Failed setting up scanner: " << ex.what() << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    delete parser;
+    delete(parser);
     try
     {
-        parser = new cpsl::cpsl_Parser((*lexer), (*this));
+        parser = new cpsl::Parser((*scanner), (*this));
     }
-    catch(const std::exception& ex)
+    catch(std::bad_alloc& ex)
     {
         std::cerr << "Failed setting up parser: " << ex.what() << std::endl;
     }
     
-    if(parser->parse() != 0)
+    const int accept( 0 );
+    if( parser->parse() != accept )
     {
         std::cerr << "Failed to parse input!" << std::endl;
     }

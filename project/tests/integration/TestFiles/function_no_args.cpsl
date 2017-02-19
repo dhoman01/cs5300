@@ -1,8 +1,0 @@
-FUNCTION returnNumber () : integer;
-BEGIN
-  return 10;
-END;
-
-BEGIN
-  returnNumber();
-END.

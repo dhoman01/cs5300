@@ -1,13 +1,11 @@
-/* Lexer for CPSL */
 %{
-#include <stdlib.h>
+#include <string>
 
-#include "cpsl_lexer.hpp"
-#undef YY_DECL
-#define YY_DECL \
-    int cpsl::cpsl_Lexer::yylex(const cpsl::cpsl_Parser::semantic_type* lval, cpsl::cpsl_Parser::location_type* location)
+#include "scanner.hpp"
+#undef  YY_DECL
+#define YY_DECL int cpsl::Scanner::yylex(cpsl::Parser::semantic_type* const lval, cpsl::Parser::location_type* loc)
 
-typedef cpsl::cpsl_Parser::token token;
+using token = cpsl::Parser::token;
 
 #define YY_NO_UNISTD_H
 
@@ -17,7 +15,7 @@ typedef cpsl::cpsl_Parser::token token;
 
 %option debug
 %option nodefault
-%option yyclass="cpsl::cpsl_Lexer"
+%option yyclass="cpsl::Scanner"
 %option noyywrap
 %option c++
 
@@ -156,7 +154,7 @@ write|WRITE             {
 
  /* Identifiers (Section 2.3) */  
 [a-zA-Z][a-zA-Z0-9_]*   {
-                            yylval.str = strdup(yytext);
+                            yylval->build<std::string>(yytext);
                             return token::IDENTIFIER;
                         }
 
@@ -257,29 +255,29 @@ write|WRITE             {
  /* Constants (Section 2.5) */
  /* Integer Constants (Section 2.5.1) */
 0[0-7]+                 {
-                            yylval.integer = strtol(yytext, NULL, 0);
+                            yylval->build<std::string>(yytext);
                             return token::INT_CONST;
                         }
 
 0x[0-9a-fA-F]+          {
-                            yylval.integer = strtol(yytext, NULL, 0);
+                            yylval->build<std::string>(yytext);
                             return token::INT_CONST;
                         }
 
 [0-9]+                  {
-                            yylval.integer = strtol(yytext, NULL, 0);
+                            yylval->build<std::string>(yytext);
                             return token::INT_CONST;
                         }
 
  /* Character Constants (Section 2.5.2) */
 '([^']|\\.)'            {
-                            yylval.chr = yytext[1];
+                            yylval->build<std::string>(yytext);
                             return token::CHR_CONST;
                         }
 
  /* String Constants (Section 2.5.3) */
 \"(\\.|[^"\n])*\"       {
-                            yylval.str = yytext;
+                            yylval->build<std::string>(yytext);
                             return token::STRING_CONST;
                         }
 
@@ -295,7 +293,7 @@ $.*\n                   {
 
  /* All other lexeme are invalid (Section 2.1) */
 .                       {
-                            fprintf( stderr, "Lexical Error (%s): Invalid token %s\n", loc, yytext );
+                            std::cerr << "Lexical Error (" << loc << "): Invalid token " << yytext << std::endl;
                         }
 
 %%

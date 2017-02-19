@@ -1,19 +1,40 @@
-#include <cstdlib>
-#include <cstdio>
 #include <iostream>
+#include <cstdlib>
+#include <cstring>
 
 #include "Brain.hpp"
 
-int main( int argc, char **argv )
+int 
+main( const int argc, const char **argv )
 {
-    cpsl::Brain brain;
-    ++argv, --argc;  /* skip over program name */
-    if ( argc > 0 ){
-        brain.parse(argv[0]);
-        return EXIT_SUCCESS;
-    }
-    
-    brain.parse(std::cin);
-
-    return EXIT_SUCCESS;
+   /** check for the right # of arguments **/
+   if( argc == 2 )
+   {
+      cpsl::Brain driver;
+      /** example for piping input from terminal, i.e., using cat **/ 
+      if( std::strncmp( argv[ 1 ], "-o", 2 ) == 0 )
+      {
+         driver.parse( std::cin );
+      }
+      /** simple help menu **/
+      else if( std::strncmp( argv[ 1 ], "-h", 2 ) == 0 )
+      {
+         std::cout << "use -o for pipe to std::cin\n";
+         std::cout << "just give a filename to count from a file\n";
+         std::cout << "use -h to get this menu\n";
+         return( EXIT_SUCCESS );
+      }
+      /** example reading input from a file **/
+      else
+      {
+         /** assume file, prod code, use stat to check **/
+         driver.parse( argv[1] );
+      }
+   }
+   else
+   {
+      /** exit with failure condition **/
+      return ( EXIT_FAILURE );
+   }
+   return( EXIT_SUCCESS );
 }

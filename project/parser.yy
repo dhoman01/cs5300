@@ -1,35 +1,43 @@
 %skeleton "lalr1.cc"
-%require "3.0.2"
-%debug
-%defines
+%require  "3.0"
+%debug 
+%defines 
 %define api.namespace {cpsl}
-%define parser_class_name {cpsl_Parser}
+%define parser_class_name {Parser}
 
-%define api.token.constructor
-%define api.value.type variant
-%define parse.assert
-
-%code requires {
+%code requires{
     namespace cpsl {
         class Brain;
-        struct Expression;
-        class cpsl_Lexer;
+        class Scanner;
     }
+
+// The following definitions is missing when %locations isn't used
+# ifndef YY_NULLPTR
+#  if defined __cplusplus && 201103L <= __cplusplus
+#   define YY_NULLPTR nullptr
+#  else
+#   define YY_NULLPTR 0
+#  endif
+# endif
+
 }
 
-%lex-param { cpsl::cpsl_Lexer& lexer }
-%lex-param { cpsl::Brain& brain }
-%parse-param { cpsl::cpsl_Lexer& lexer }
-%parse-param { cpsl::Brain& brain}
+%parse-param { Scanner& scanner }
+%parse-param { Brain& brain}
 
 %code{
-#include <iostream>
-#include "Brain.hpp"
+    #include <iostream>
+    #include <cstdlib>
+    #include <fstream>
+
+    #include "Brain.hpp"
 
 #undef yylex
-#define yylex lexer.yylex
-%}
+#define yylex scanner.yylex
+}
 
+%define api.value.type variant
+%define parse.assert
 
 %error-verbose
 %token ARRAY_KEY
@@ -99,21 +107,14 @@
 %left DIV_OP MOD_OP MULT_OP
 %right UMINUS_OP
 
-%type<char*> STRING_CONST
-%type<char> CHR_CONST
-%type<int> INT_CONST
-%type<Expression*> IDENTIFIER expression identifier lvalue
-
 %locations
-
-%start program
 
 %%
 
 program: progHead block DOT
     ;
 
-progHead: optConstDecl optTypeDecl optVarDecl optProcFuncs  {  }
+progHead: optConstDecl optTypeDecl optVarDecl optProcFuncs
     ;
 
 optConstDecl: CONST_KEY constDecls
@@ -302,7 +303,7 @@ expressionList: expressionList COMMA expression
     ;
 
 expression: expression OR_OP expression                 
-    | expression AND_OP expression                      { $$ = brain.expressions.AndExpression($1, $3); }                 
+    | expression AND_OP expression                                   
     | expression EQ_OP expression                       
     | expression NOT_EQ_OP expression                   
     | expression LT_EQ_OP expression                    
@@ -314,18 +315,18 @@ expression: expression OR_OP expression
     | expression MULT_OP expression                     
     | expression DIV_OP expression                      
     | expression MOD_OP expression                      
-    | NOT_OP expression                                 { $$ = $2; }             
-    | MINUS_OP expression %prec UMINUS_OP               { $$ = $2; }   
-    | OPEN_PAR expression CLOSE_PAR                     { $$ = $2; }
-    | identifier OPEN_PAR optExpressionList CLOSE_PAR   { $$ = $1; } 
-    | CHR_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
-    | ORD_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
-    | PRED_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
-    | SUCC_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
-    | INT_CONST                                         { $$ = brain.expressions.IntConstant($1); }
-    | CHR_CONST                                         { $$ = brain.expressions.CharConstant($1); }
-    | STRING_CONST                                      { $$ = brain.expressions.StringConstant($1); }
-    | lvalue                                            { $$ = $1; }
+    | NOT_OP expression                                           
+    | MINUS_OP expression %prec UMINUS_OP               
+    | OPEN_PAR expression CLOSE_PAR                     
+    | identifier OPEN_PAR optExpressionList CLOSE_PAR  
+    | CHR_KEY OPEN_PAR expression CLOSE_PAR            
+    | ORD_KEY OPEN_PAR expression CLOSE_PAR             
+    | PRED_KEY OPEN_PAR expression CLOSE_PAR           
+    | SUCC_KEY OPEN_PAR expression CLOSE_PAR           
+    | INT_CONST                                         
+    | CHR_CONST                                        
+    | STRING_CONST                                      
+    | lvalue                                           
     ;
 
 lvalueList: lvalueList COMMA
@@ -339,7 +340,7 @@ lvalue: lvalue DOT identifier
 
 %%
 
-void cpsl::cpsl_Parser::error(const location_type& l, const std::string& err_message)
+void cpsl::Parser::error(const location_type& l, const std::string& err_message)
 {
     std::cerr << "Syntax Error: " << err_message << " at " << l << "\n";
 }
