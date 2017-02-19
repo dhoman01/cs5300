@@ -6,6 +6,7 @@
 %define parser_class_name {Parser}
 
 %code requires{
+    #include "structures.hpp"
     namespace cpsl {
         class Brain;
         struct Expression;
@@ -32,7 +33,6 @@
     #include <fstream>
 
     #include "Brain.hpp"
-    #include "structures.hpp"
 
 #undef yylex
 #define yylex scanner.yylex
@@ -109,7 +109,7 @@
 %left DIV_OP MOD_OP MULT_OP
 %right UMINUS_OP
 
-%type<cpsl::Expression*> expression IDENTIFIER identifier
+%type<cpsl::Expression> expression IDENTIFIER identifier
 
 %locations
 
