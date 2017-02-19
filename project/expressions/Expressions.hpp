@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "brains/structures.hpp"
+#include "structures.hpp"
 
 namespace cpsl
 {

@@ -10,7 +10,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/brains)
+# file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/brains)
 
 
 enable_testing()
@@ -25,36 +25,30 @@ include_directories(
 set(EXTRA_COMPILE_FLAGS "-Wall -g -std=c++11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}")
 
-set(parser_srcs
-    brains/cpsl_lexer.hpp
-    ${BISON_cpsl_parser_OUTPUTS}
-    ${FLEX_cpsl_lexer_OUTPUTS}
-    )
-source_group("Parser" FILES ${parser_srcs})
-set(compiler_srcs ${parser_srcs})
-
-BISON_TARGET(cpsl_parser brains/parser.ypp ${CMAKE_CURRENT_BINARY_DIR}/brains/cpsl_parser.cpp)
-FLEX_TARGET(cpsl_lexer brains/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/brains/cpsl_lexer.cpp)
+BISON_TARGET(cpsl_parser parser.ypp ${CMAKE_CURRENT_BINARY_DIR}/cpsl_parser.cpp)
+FLEX_TARGET(cpsl_lexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/cpsl_lexer.cpp)
 ADD_FLEX_BISON_DEPENDENCY(cpsl_lexer cpsl_parser)
 
 set(brains_srcs
-    brains/cpsl_lexer.hpp
-    brains/Brain.hpp
-    brains/Brain.cpp
-    brains/structures.hpp
+    Brain.hpp
+    Brain.cpp
+    structures.hpp    
+    cpsl_lexer.hpp
+    ${BISON_cpsl_parser_OUTPUTS}
+    ${FLEX_cpsl_lexer_OUTPUTS}
     )
 source_group("Brains" FILES ${brains_srcs})
-list(APPEND compiler_srcs ${brains_srcs})
+set(compiler_srcs ${brains_srcs})
 
 set(utils_srcs
-    brains/utils/LookupTable.hpp
+    utils/LookupTable.hpp
     )
 source_group("Brains/Utils" FILES ${utils_srcs})
 list(APPEND compiler_srcs ${expression_srcs})
 
 set(expression_srcs
-    brains/expressions/Expressions.hpp
-    brains/expressions/Expressions.cpp
+    expressions/Expressions.hpp
+    expressions/Expressions.cpp
     )
 source_group("Brains/Expressions" FILES ${expression_srcs})
 list(APPEND compiler_srcs ${expression_srcs})

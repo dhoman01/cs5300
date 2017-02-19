@@ -3,7 +3,6 @@
 #include <cassert>
 
 #include "Brain.hpp"
-#include "expressions/Expressions.hpp"
 
 cpsl::Brain::Brain(std::string file)
 {
@@ -15,9 +14,9 @@ cpsl::Brain::Brain(std::string file)
 
 cpsl::Brain::~Brain()
 {
-    delete(lexer);
+    delete lexer;
     lexer = nullptr;
-    delete(parser);
+    delete parser;
     parser = nullptr;
 }
 
@@ -44,7 +43,7 @@ void cpsl::Brain::parse(std::istream &stream)
 
 void cpsl::Brain::parse_helper(std::istream &stream)
 {
-    delete(lexer);
+    delete lexer;
     try
     {
         lexer = new cpsl::cpsl_Lexer(&stream);
@@ -55,7 +54,7 @@ void cpsl::Brain::parse_helper(std::istream &stream)
         exit(EXIT_FAILURE);
     }
 
-    delete(parser);
+    delete parser;
     try
     {
         parser = new cpsl::cpsl_Parser((*lexer), (*this));
@@ -70,17 +69,6 @@ void cpsl::Brain::parse_helper(std::istream &stream)
         std::cerr << "Failed to parse input!" << std::endl;
     }
     return;
-}
-
-void cpsl::Brain::add_line()
-{
-    lines++;
-    chars = 0;
-}
-
-void cpsl::Brain::add_chars(int chars)
-{
-    this->chars += chars;
 }
 
 void cpsl::Brain::InitRegPool()

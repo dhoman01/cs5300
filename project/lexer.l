@@ -4,19 +4,22 @@
 
 #include "cpsl_lexer.hpp"
 #undef YY_DECL
-#define YY_DECL int cpsl::cpsl_Lexer::yylex(const cpsl::cpsl_Parser::semantic_type* lval, cpsl::cpsl_Parser::location_type* location);
+#define YY_DECL \
+    int cpsl::cpsl_Lexer::yylex(const cpsl::cpsl_Parser::semantic_type* lval, cpsl::cpsl_Parser::location_type* location)
 
-using token = cpsl::cpsl_Parser::token;
+typedef cpsl::cpsl_Parser::token token;
+
+#define YY_NO_UNISTD_H
 
 #define YY_USER_ACTION loc->step(); loc->columns(yyleng);
 
 %}
 
-%option c++
 %option debug
 %option nodefault
 %option yyclass="cpsl::cpsl_Lexer"
 %option noyywrap
+%option c++
 
 %%
 %{

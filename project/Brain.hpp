@@ -6,31 +6,27 @@
 #include <istream>
 #include <fstream>
 
-#include "brains/cpsl_parser.hpp"
-#include "brains/cpsl_lexer.hpp"
+#include "cpsl_lexer.hpp"
+#include "cpsl_parser.hpp"
 
-#include "brains/utils/LookupTable.hpp"
-#include "brains/expressions/Expressions.hpp"
-#include "brains/structures.hpp"
+#include "utils/LookupTable.hpp"
+#include "expressions/Expressions.hpp"
 
 namespace cpsl
 {
 
-class Brain{
+class Brain
+{
 public:
-    Brain() = default;
+    Brain(){};
     Brain(std::string output_file = "");
     virtual ~Brain();
 
     // Parse a file
-    void parse( const char* filename);
+    void parse(const char* filename);
 
     // Parse from stdin
-    void parse( std::istream& iss);
-
-    // Track position
-    void add_line();
-    void add_chars(int);
+    void parse(std::istream& iss);
 
     Expressions expressions;
     LookUpTable<Info> symbolTable;
@@ -38,9 +34,7 @@ public:
     std::vector<Register> regPool;
 
 private:
-    void parse_helper( std::istream &stream);
-    std::size_t lines = 0;
-    std::size_t chars = 0;
+    void parse_helper(std::istream &stream);
 
     cpsl::cpsl_Parser* parser = nullptr;
     cpsl::cpsl_Lexer* lexer = nullptr;
@@ -51,9 +45,8 @@ private:
     void InitMIPS();
     void InitPredefinedSymbols();
     void Init();
-
 };
 
-};
+}
 
 #endif

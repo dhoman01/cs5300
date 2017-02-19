@@ -1,13 +1,12 @@
 #ifdef CPSL_LEXER_HPP
-#define CPSL_LEXER_HPP
+#define CPSL_LEXER_HPP 1
 
 #if ! defined(yyFlexLexerOnce)
 #include <FlexLexer.h>
 #endif
 
-#include "brains/structures.hpp"
-#include "brains/cpsl_parser.hpp"
-#include "brains/location.hh"
+#include "cpsl_parser.hpp"
+#include "location.hh"
 
 namespace cpsl
 {
@@ -22,10 +21,8 @@ public:
 
     virtual ~cpsl_Lexer()
     {
-        delete(loc);
+        delete loc;
     };
-
-    using FlexLexer::yylex;
 
     virtual int yylex(const cpsl::cpsl_Parser::semantic_type* lval,
               cpsl::cpsl_Parser::location_type* location);

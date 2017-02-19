@@ -1,32 +1,35 @@
 %skeleton "lalr1.cc"
-%require "3.0"
+%require "3.0.2"
 %debug
 %defines
 %define api.namespace {cpsl}
 %define parser_class_name {cpsl_Parser}
 
+%define api.token.constructor
+%define api.value.type variant
+%define parse.assert
+
 %code requires {
     namespace cpsl {
-        struct Expression;
         class Brain;
+        struct Expression;
         class cpsl_Lexer;
     }
 }
 
-%parse-param { cpsl_Lexer& lexer }
-%parse-param { Brain& brain}
+%lex-param { cpsl::cpsl_Lexer& lexer }
+%lex-param { cpsl::Brain& brain }
+%parse-param { cpsl::cpsl_Lexer& lexer }
+%parse-param { cpsl::Brain& brain}
 
 %code{
 #include <iostream>
-#include "brains/Brain.hpp"
-#include "brains/structures.hpp"
+#include "Brain.hpp"
 
 #undef yylex
 #define yylex lexer.yylex
 %}
 
-%define api.value.type variant
-%define parse.assert
 
 %error-verbose
 %token ARRAY_KEY
@@ -338,5 +341,5 @@ lvalue: lvalue DOT identifier
 
 void cpsl::cpsl_Parser::error(const location_type& l, const std::string& err_message)
 {
-    std::cerr << "Error: " << err_message << " at " << l << "\n";
+    std::cerr << "Syntax Error: " << err_message << " at " << l << "\n";
 }
