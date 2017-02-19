@@ -7,6 +7,7 @@ namespace cpsl
 {
 
 struct Info {
+    Info(){};
     virtual ~Info() {};
     std::string id;
 };

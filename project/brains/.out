@@ -1,0 +1,94 @@
+.globl main
+.text
+
+main:   la $gp, GA
+	ori $fp, $sp, 0
+	# Store the true and false const values
+	li $a3 1
+	sw $a3, 0($gp)
+	sw $zero, 4($gp)
+	# Loading value from 0($gp) with type boolean
+	lw $25 0($gp)
+	# Loading constant -498683040 into c
+	sw $25 8($gp)
+	# Loading value from 4($gp) with type boolean
+	lw $24 4($gp)
+	# Loading constant -498683040 into d
+	sw $24 12($gp)
+	# Storing the value 1 in a
+	li $23 1
+	sw $23 16($gp)
+	# Storing the value 2 in b
+	li $23 2
+	sw $23 20($gp)
+	# Loading value from 16($gp) with type integer
+	lw $23 16($gp)
+	# Loading value from 20($gp) with type integer
+	lw $22 20($gp)
+	# Expression: -498683040 + -498683040
+	add $21 $23 $22
+	# Storing the expr at $21 in a
+	sw $21 16($gp)
+	# Loading value from 16($gp) with type integer
+	lw $21 16($gp)
+	# Loading value from 20($gp) with type integer
+	lw $22 20($gp)
+	# Expression: -498683040 + -498683040
+	add $23 $21 $22
+	# Storing the expr at $23 in b
+	sw $23 20($gp)
+	# Loading value from 16($gp) with type integer
+	lw $23 16($gp)
+	# Loading value from 20($gp) with type integer
+	lw $22 20($gp)
+	# -498683040 * -498683040
+	mult $23 $22
+	mflo $21
+	# Storing the expr at $21 in a
+	sw $21 16($gp)
+	# Loading value from 16($gp) with type integer
+	lw $21 16($gp)
+	# Loading value from 20($gp) with type integer
+	lw $20 20($gp)
+	# -498683040 * -498683040
+	mult $21 $20
+	mflo $19
+	# Storing the expr at $19 in b
+	sw $19 20($gp)
+	# Loading value from 8($gp) with type boolean
+	lw $19 8($gp)
+	# Loading value from 12($gp) with type boolean
+	lw $18 12($gp)
+	# Oring -498683040 and -498683040
+	or $17 $19 $18	# Storing the expr at $17 in e
+	sw $17 24($gp)
+	# Loading value from 16($gp) with type integer
+	lw $17 16($gp)
+	# Loading value from 20($gp) with type integer
+	lw $16 20($gp)
+	# -498683040 > -498683040
+	sgt $15 $17 $16	# Storing the expr at $15 in e
+	sw $15 24($gp)
+	# Loading value from 16($gp) with type integer
+	lw $15 16($gp)
+	# Loading value from 20($gp) with type integer
+	lw $14 20($gp)
+	# -498683040 < -498683040
+	slt $13 $15 $14	# Storing the expr at $13 in e
+	sw $13 24($gp)
+	# Loading value from 16($gp) with type integer
+	lw $13 16($gp)
+	# Loading value from 20($gp) with type integer
+	lw $12 20($gp)
+	# Equality check -498683040 and -498683040
+	seq $11 $13 $12	# Storing the expr at $11 in e
+	sw $11 24($gp)
+	# Loading value from 16($gp) with type integer
+	lw $11 16($gp)
+	# Loading value from 20($gp) with type integer
+	lw $10 20($gp)
+	# Not Equal -498683040 and -498683040
+	sne $9 $11 $10	# Storing the expr at $9 in e
+	sw $9 24($gp)
+	.data
+GA:

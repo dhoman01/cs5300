@@ -7,15 +7,15 @@
 
 cpsl::Expression cpsl::Expressions::AndExpression(cpsl::Expression a, cpsl::Expression b)
 {
-    if(a.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(a.value) + " is not boolean.");
+    if(a.type != b.type)
+        throw std::runtime_error("The value of " + std::to_string(a.value) + " is not the same as " + b.type);
     if(b.type != "boolean")
         throw std::runtime_error("The value of " + std::to_string(b.value) + " is not boolean.");
     
     cpsl::Expression expr;
     expr.type = "boolean";
     expr.value = a.value && b.value;
-    std::cout << "\t# Anding " << a.value << " and " << b.value;
+    std::cout << "\t# Anding " << a.value << " and " << b.value << std::endl;
 
     // If a && b are constants this is a
     // constant expression. No MIPS emitted.
@@ -45,11 +45,21 @@ cpsl::Expression cpsl::Expressions::AndExpression(cpsl::Expression a, cpsl::Expr
     }
 
     if(!a.isConstant && !b.isConstant)
+    {
         std::cout << "\tand " << reg.name << " " << a.reg.name << " " << b.reg.name;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
+    }
     else if(a.isConstant)
+    {
         std::cout << "\tandi " << reg.name << " " << b.reg.name << " " << a.value;
+        regPool->push_back(b.reg);
+    }
     else if(b.isConstant)
+    {
         std::cout << "\tandi " << reg.name << " " << a.reg.name << " " << b.value;
+        regPool->push_back(a.reg);
+    }
 
     if(!output_file.empty())
     {
@@ -70,7 +80,7 @@ cpsl::Expression cpsl::Expressions::OrExpression(cpsl::Expression a, cpsl::Expre
     cpsl::Expression expr;
     expr.type = "boolean";
     expr.value = a.value || b.value;
-    std::cout << "\t# Oring " << a.value << " and " << b.value;
+    std::cout << "\t# Oring " << a.value << " and " << b.value << std::endl;
 
     // If a && b are constants this is a
     // constant expression. No MIPS emitted.
@@ -118,15 +128,13 @@ cpsl::Expression cpsl::Expressions::OrExpression(cpsl::Expression a, cpsl::Expre
 
 cpsl::Expression cpsl::Expressions::EqExpression(cpsl::Expression a, cpsl::Expression b)
 {
-    if(a.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(a.value) + " is not boolean.");
-    if(b.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(b.value) + " is not boolean.");
+    if(a.type != b.type)
+        throw std::runtime_error("The value of " + a.type + " is not the same as " + b.type);
     
     cpsl::Expression expr;
     expr.type = "boolean";
     expr.value = a.value == b.value;
-    std::cout << "\t# Equality check " << a.value << " and " << b.value;
+    std::cout << "\t# Equality check " << a.value << " and " << b.value << std::endl;
 
     // If a && b are constants this is a
     // constant expression. No MIPS emitted.
@@ -174,15 +182,13 @@ cpsl::Expression cpsl::Expressions::EqExpression(cpsl::Expression a, cpsl::Expre
 
 cpsl::Expression cpsl::Expressions::NotEqExpression(cpsl::Expression a, cpsl::Expression b)
 {
-    if(a.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(a.value) + " is not boolean.");
-    if(b.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(b.value) + " is not boolean.");
+    if(a.type != b.type)
+        throw std::runtime_error("The value of " + a.type + " is not the same as " + b.type);
     
     cpsl::Expression expr;
     expr.type = "boolean";
     expr.value = a.value != b.value;
-    std::cout << "\t# Not Equal " << a.value << " and " << b.value;
+    std::cout << "\t# Not Equal " << a.value << " and " << b.value << std::endl;
 
     // If a && b are constants this is a
     // constant expression. No MIPS emitted.
@@ -230,15 +236,13 @@ cpsl::Expression cpsl::Expressions::NotEqExpression(cpsl::Expression a, cpsl::Ex
 
 cpsl::Expression cpsl::Expressions::LtEqExpression(cpsl::Expression a, cpsl::Expression b)
 {
-    if(a.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(a.value) + " is not boolean.");
-    if(b.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(b.value) + " is not boolean.");
+    if(a.type != b.type)
+        throw std::runtime_error("The value of " + a.type + " is not the same as " + b.type);
     
     cpsl::Expression expr;
     expr.type = "boolean";
     expr.value = a.value <= b.value;
-    std::cout << "\t# <= " << a.value << " and " << b.value;
+    std::cout << "\t# <= " << a.value << " and " << b.value << std::endl;
 
     // If a && b are constants this is a
     // constant expression. No MIPS emitted.
@@ -286,15 +290,13 @@ cpsl::Expression cpsl::Expressions::LtEqExpression(cpsl::Expression a, cpsl::Exp
 
 cpsl::Expression cpsl::Expressions::GtEqExpression(cpsl::Expression a, cpsl::Expression b)
 {
-    if(a.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(a.value) + " is not boolean.");
-    if(b.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(b.value) + " is not boolean.");
+    if(a.type != b.type)
+        throw std::runtime_error("The value of " + a.type + " is not the same as " + b.type);
     
     cpsl::Expression expr;
     expr.type = "boolean";
     expr.value = a.value >= b.value;
-    std::cout << "\t# >= " << a.value << " and " << b.value;
+    std::cout << "\t# >= " << a.value << " and " << b.value << std::endl;
 
     // If a && b are constants this is a
     // constant expression. No MIPS emitted.
@@ -342,15 +344,13 @@ cpsl::Expression cpsl::Expressions::GtEqExpression(cpsl::Expression a, cpsl::Exp
 
 cpsl::Expression cpsl::Expressions::LtExpression(cpsl::Expression a, cpsl::Expression b)
 {
-    if(a.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(a.value) + " is not boolean.");
-    if(b.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(b.value) + " is not boolean.");
+    if(a.type != b.type)
+        throw std::runtime_error("The value of " + a.type + " is not the same as " + b.type);
     
     cpsl::Expression expr;
     expr.type = "boolean";
     expr.value = a.value < b.value;
-    std::cout << "\t# " << a.value << " < " << b.value;
+    std::cout << "\t# " << a.value << " < " << b.value << std::endl;
 
     // If a && b are constants this is a
     // constant expression. No MIPS emitted.
@@ -398,15 +398,13 @@ cpsl::Expression cpsl::Expressions::LtExpression(cpsl::Expression a, cpsl::Expre
 
 cpsl::Expression cpsl::Expressions::GtExpression(cpsl::Expression a, cpsl::Expression b)
 {
-    if(a.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(a.value) + " is not boolean.");
-    if(b.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(b.value) + " is not boolean.");
+    if(a.type != b.type)
+        throw std::runtime_error("The value of " + a.type + " is not the same as " + b.type);
     
     cpsl::Expression expr;
     expr.type = "boolean";
     expr.value = a.value > b.value;
-    std::cout << "\t# " << a.value << " > " << b.value;
+    std::cout << "\t# " << a.value << " > " << b.value << std::endl;
 
     // If a && b are constants this is a
     // constant expression. No MIPS emitted.
@@ -491,8 +489,6 @@ cpsl::Expression cpsl::Expressions::PlusExpression(cpsl::Expression a, cpsl::Exp
         psbuf = output.rdbuf();
         std::cout.rdbuf(psbuf);
     }
-
-    std::cout << "Got register " << reg.name << std::endl;
 
     if(!a.isConstant && !b.isConstant)
     {
@@ -891,7 +887,6 @@ cpsl::Expression cpsl::Expressions::UMinusExpression(cpsl::Expression a)
 
 cpsl::Expression cpsl::Expressions::IntConstant(std::string a)
 {
-    std::cout << "Found an int constant " << a << std::endl;
     cpsl::Expression expr;
     expr.isConstant = true;
     expr.type = "integer";
@@ -901,7 +896,6 @@ cpsl::Expression cpsl::Expressions::IntConstant(std::string a)
 
 cpsl::Expression cpsl::Expressions::CharConstant(std::string a)
 {
-    std::cout << "Found an char constant " << a << std::endl;
     cpsl::CharConst expr;
     expr.isConstant = true;
     expr.type = "char";
@@ -911,7 +905,6 @@ cpsl::Expression cpsl::Expressions::CharConstant(std::string a)
 
 cpsl::Expression cpsl::Expressions::StringConstant(std::string a)
 {
-    std::cout << "Found an string constant " << a << std::endl;
     cpsl::StringConst expr;
     expr.isConstant = true;
     expr.type = "string";

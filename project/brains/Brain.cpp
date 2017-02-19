@@ -101,6 +101,10 @@ void cpsl::Brain::InitMIPS()
 
     std::cout << "main:   la $gp, GA" << std::endl;
     std::cout << "\tori $fp, $sp, 0" << std::endl;
+    std::cout << "\t# Store the true and false const values" << std::endl;
+    std::cout << "\tli $a3 1" << std::endl;
+    std::cout << "\tsw $a3, 0($gp)" << std::endl;
+    std::cout << "\tsw $zero, 4($gp)" << std::endl;
 
     if(!output_file.empty())
     {
@@ -122,6 +126,25 @@ void cpsl::Brain::InitPredefinedSymbols()
     characterType->size = 4;
     characterType->id = "char";
     symbolTable.store(characterType->id, characterType);
+
+    cpsl::cpslType* booleanType = new cpsl::cpslType();
+    booleanType->size = 4;
+    booleanType->id = "boolean";
+    symbolTable.store(booleanType->id, booleanType);
+
+    // In the MIPS Init function 0($gp) is set to the value 1
+    cpsl::VariableInfo* trueConst = new cpsl::VariableInfo();
+    trueConst->id = "true";
+    trueConst->location = "0";
+    trueConst->type = booleanType;
+    symbolTable.store(trueConst->id, trueConst);
+
+    // In the MIPS Init function 4($gp) is set to the value 0
+    cpsl::VariableInfo* falseConst = new cpsl::VariableInfo();
+    falseConst->id = "false";
+    falseConst->location = "4";
+    falseConst->type = booleanType;
+    symbolTable.store(falseConst->id, falseConst);
 
     symbolTable.enterScope();
 }

@@ -1,4 +1,8 @@
-VAR a,b:integer;
+CONST c = true;
+      d = false;
+
+VAR a,b :integer;
+    e   : boolean;
 
 BEGIN
 
@@ -13,5 +17,11 @@ $write(a,b);
 a := a * b; $a=15
 b := a * b; $b=75
 $write(a,b);
+
+e := c | d;
+e := a > b;
+e := a < b;
+e := a = b;
+e := a <> b;
 
 END.
