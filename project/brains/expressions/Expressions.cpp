@@ -111,11 +111,21 @@ cpsl::Expression cpsl::Expressions::OrExpression(cpsl::Expression a, cpsl::Expre
     }
 
     if(!a.isConstant && !b.isConstant)
+    {
         std::cout << "\tor " << reg.name << " " << a.reg.name << " " << b.reg.name;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
+    }
     else if(a.isConstant)
+    {
         std::cout << "\tori " << reg.name << " " << b.reg.name << " " << a.value;
+        regPool->push_back(b.reg);
+    }
     else if(b.isConstant)
+    {
         std::cout << "\tori " << reg.name << " " << a.reg.name << " " << b.value;
+        regPool->push_back(a.reg);
+    }
     
     if(!output_file.empty())
     {
@@ -165,11 +175,21 @@ cpsl::Expression cpsl::Expressions::EqExpression(cpsl::Expression a, cpsl::Expre
     }
 
     if(!a.isConstant && !b.isConstant)
+    {
         std::cout << "\tseq " << reg.name << " " << a.reg.name << " " << b.reg.name;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
+    }
     else if(a.isConstant)
+    {
         std::cout << "\tseqi " << reg.name << " " << b.reg.name << " " << a.value;
+        regPool->push_back(b.reg);
+    }
     else if(b.isConstant)
+    {
         std::cout << "\tseqi " << reg.name << " " << a.reg.name << " " << b.value;
+        regPool->push_back(a.reg);
+    }
 
     if(!output_file.empty())
     {
@@ -219,11 +239,21 @@ cpsl::Expression cpsl::Expressions::NotEqExpression(cpsl::Expression a, cpsl::Ex
     }
 
     if(!a.isConstant && !b.isConstant)
+    {
         std::cout << "\tsne " << reg.name << " " << a.reg.name << " " << b.reg.name;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
+    }
     else if(a.isConstant)
+    {
         std::cout << "\tsnei " << reg.name << " " << b.reg.name << " " << a.value;
+        regPool->push_back(b.reg);
+    }
     else if(b.isConstant)
+    {
         std::cout << "\tsnei " << reg.name << " " << a.reg.name << " " << b.value;
+        regPool->push_back(a.reg);
+    }
     
     if(!output_file.empty())
     {
@@ -273,11 +303,21 @@ cpsl::Expression cpsl::Expressions::LtEqExpression(cpsl::Expression a, cpsl::Exp
     }
 
     if(!a.isConstant && !b.isConstant)
+    {
         std::cout << "\tsle " << reg.name << " " << a.reg.name << " " << b.reg.name;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
+    }
     else if(a.isConstant)
+    {
         std::cout << "\tslei " << reg.name << " " << b.reg.name << " " << a.value;
+        regPool->push_back(b.reg);
+    }
     else if(b.isConstant)
+    {
         std::cout << "\tslei " << reg.name << " " << a.reg.name << " " << b.value;
+        regPool->push_back(a.reg);
+    }
 
     if(!output_file.empty())
     {
@@ -327,11 +367,21 @@ cpsl::Expression cpsl::Expressions::GtEqExpression(cpsl::Expression a, cpsl::Exp
     }
 
     if(!a.isConstant && !b.isConstant)
+    {
         std::cout << "\tsge " << reg.name << " " << a.reg.name << " " << b.reg.name;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
+    }
     else if(a.isConstant)
+    {
         std::cout << "\tsgei " << reg.name << " " << b.reg.name << " " << a.value;
+        regPool->push_back(b.reg);
+    }
     else if(b.isConstant)
+    {
         std::cout << "\tsgei " << reg.name << " " << a.reg.name << " " << b.value;
+        regPool->push_back(a.reg);
+    }
     
     if(!output_file.empty())
     {
@@ -381,11 +431,21 @@ cpsl::Expression cpsl::Expressions::LtExpression(cpsl::Expression a, cpsl::Expre
     }
 
     if(!a.isConstant && !b.isConstant)
+    {
         std::cout << "\tslt " << reg.name << " " << a.reg.name << " " << b.reg.name;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
+    }
     else if(a.isConstant)
+    {
         std::cout << "\tslti " << reg.name << " " << b.reg.name << " " << a.value;
+        regPool->push_back(b.reg);
+    }
     else if(b.isConstant)
+    {
         std::cout << "\tslti " << reg.name << " " << a.reg.name << " " << b.value;
+        regPool->push_back(a.reg);
+    }
 
     if(!output_file.empty())
     {
@@ -435,11 +495,21 @@ cpsl::Expression cpsl::Expressions::GtExpression(cpsl::Expression a, cpsl::Expre
     }
 
     if(!a.isConstant && !b.isConstant)
+    {
         std::cout << "\tsgt " << reg.name << " " << a.reg.name << " " << b.reg.name;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
+    }
     else if(a.isConstant)
+    {
         std::cout << "\tsgti " << reg.name << " " << b.reg.name << " " << a.value;
+        regPool->push_back(b.reg);
+    }
     else if(b.isConstant)
+    {
         std::cout << "\tsgti " << reg.name << " " << a.reg.name << " " << b.value;
+        regPool->push_back(a.reg);
+    }
     
     if(!output_file.empty())
     {
@@ -559,16 +629,21 @@ cpsl::Expression cpsl::Expressions::MinusExpression(cpsl::Expression a, cpsl::Ex
     if(!a.isConstant && !b.isConstant)
     {
         std::cout << "\tsub " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
     }
     else if(a.isConstant)
     {
         Register reg2 = regPool->back();
         std::cout << "\tli " << reg2.name << " " << a.value << std::endl;
         std::cout << "\tsub " << reg.name << " " << reg2.name << " " << b.reg.name << std::endl;
+        regPool->push_back(reg2);
+        regPool->push_back(b.reg);
     }
     else if(b.isConstant)
     {
         std::cout << "\tsubi " << reg.name << " " << a.reg.name << " " << b.value << std::endl;
+        regPool->push_back(a.reg);
     }
 
     if(!output_file.empty())
@@ -624,20 +699,26 @@ cpsl::Expression cpsl::Expressions::MultExpression(cpsl::Expression a, cpsl::Exp
     {
         std::cout << "\tmult " << a.reg.name << " " << b.reg.name << std::endl;
         std::cout << "\tmflo " << reg.name << std::endl;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
     } 
     else if(a.isConstant)
     {
         Register reg2 = regPool->back();
-        std::cout << "li " << reg2.name << " " << a.value << std::endl;
+        std::cout << "\tli " << reg2.name << " " << a.value << std::endl;
         std::cout << "\tmult " << reg2.name << " " << b.reg.name << std::endl;
         std::cout << "\tmflo " << reg.name << std::endl;
+        regPool->push_back(reg2);
+        regPool->push_back(b.reg);
     } 
     else if(b.isConstant)
     {
         Register reg2 = regPool->back();
-        std::cout << "li " << reg2.name << " " << b.value << std::endl;
+        std::cout << "\tli " << reg2.name << " " << b.value << std::endl;
         std::cout << "\tmult " << a.reg.name << " " << reg2.name << std::endl;
         std::cout << "\tmflo " << reg.name << std::endl;
+        regPool->push_back(a.reg);
+        regPool->push_back(reg2);
     }
 
     if(!output_file.empty())
@@ -693,20 +774,26 @@ cpsl::Expression cpsl::Expressions::DivExpression(cpsl::Expression a, cpsl::Expr
     {
         std::cout << "\tdiv " << a.reg.name << " " << b.reg.name << std::endl;
         std::cout << "\tmflo " << reg.name << std::endl;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
     } 
     else if(a.isConstant)
     {
         Register reg2 = regPool->back();
-        std::cout << "li " << reg2.name << " " << a.value << std::endl;
+        std::cout << "\tli " << reg2.name << " " << a.value << std::endl;
         std::cout << "\tdiv " << reg2.name << " " << b.reg.name << std::endl;
         std::cout << "\tmflo " << reg.name << std::endl;
+        regPool->push_back(reg2);
+        regPool->push_back(b.reg);
     } 
     else if(b.isConstant)
     {
         Register reg2 = regPool->back();
-        std::cout << "li " << reg2.name << " " << b.value << std::endl;
+        std::cout << "\tli " << reg2.name << " " << b.value << std::endl;
         std::cout << "\tdiv " << a.reg.name << " " << reg2.name << std::endl;
         std::cout << "\tmflo " << reg.name << std::endl;
+        regPool->push_back(a.reg);
+        regPool->push_back(reg2);
     }
 
     if(!output_file.empty())
@@ -762,20 +849,26 @@ cpsl::Expression cpsl::Expressions::ModExpression(cpsl::Expression a, cpsl::Expr
     {
         std::cout << "\tdiv " << a.reg.name << " " << b.reg.name << std::endl;
         std::cout << "\tmfhi " << reg.name << std::endl;
+        regPool->push_back(a.reg);
+        regPool->push_back(b.reg);
     } 
     else if(a.isConstant)
     {
         Register reg2 = regPool->back();
-        std::cout << "li " << reg2.name << " " << a.value << std::endl;
+        std::cout << "\tli " << reg2.name << " " << a.value << std::endl;
         std::cout << "\tdiv " << reg2.name << " " << b.reg.name << std::endl;
         std::cout << "\tmfhi " << reg.name << std::endl;
+        regPool->push_back(reg2);
+        regPool->push_back(b.reg);
     } 
     else if(b.isConstant)
     {
         Register reg2 = regPool->back();
-        std::cout << "li " << reg2.name << " " << b.value << std::endl;
+        std::cout << "\tli " << reg2.name << " " << b.value << std::endl;
         std::cout << "\tdiv " << a.reg.name << " " << reg2.name << std::endl;
         std::cout << "\tmfhi " << reg.name << std::endl;
+        regPool->push_back(a.reg);
+        regPool->push_back(reg2);
     }
 
     if(!output_file.empty())
@@ -795,12 +888,12 @@ cpsl::Expression cpsl::Expressions::NotExpression(cpsl::Expression a)
     cpsl::Expression expr;
     expr.type = "boolean";
     expr.value = !a.value;
-    std::cout << "\t# !" << a.value << std::endl;
 
     // If a && b are constants this is a
     // constant expression. No MIPS emitted.
     if(a.isConstant)
     {
+        std::cout << "\t# !" << a.value << std::endl;
         expr.isConstant = true;
         return expr;
     }
@@ -825,7 +918,9 @@ cpsl::Expression cpsl::Expressions::NotExpression(cpsl::Expression a)
         std::cout.rdbuf(psbuf);
     }
 
-    std::cout << "\tnot " << reg.name << " " << a.reg.name << std::endl;
+    std::cout << "\t# ! " << a.reg.name << std::endl;
+    std::cout << "\txori " << reg.name << " " << a.reg.name << " 1" << std::endl;
+    regPool->push_back(a.reg);
 
     if(!output_file.empty())
     {
@@ -875,6 +970,7 @@ cpsl::Expression cpsl::Expressions::UMinusExpression(cpsl::Expression a)
     }
 
     std::cout << "\taddi " << reg.name << " " << a.reg.name << " -1" << std::endl;
+    regPool->push_back(a.reg);
 
     if(!output_file.empty())
     {
