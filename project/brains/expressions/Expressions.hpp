@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "structures.hpp"
+#include "brains/utils/structures.hpp"
 
 namespace cpsl
 {
@@ -32,6 +32,7 @@ public:
     cpsl::Expression IntConstant(int);
     cpsl::Expression CharConstant(char);
     cpsl::Expression StringConstant(char*);
+    cpsl::Expression LoadValue(cpsl::VariableInfo);
 private:
     std::vector<Register>* regPool;
     std::string output_file = "";

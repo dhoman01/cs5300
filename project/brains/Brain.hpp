@@ -6,11 +6,11 @@
 #include <istream>
 #include <fstream>
 
-#include "scanner.hpp"
-#include "parser.tab.hh"
+#include "brains/parser/scanner.hpp"
+#include "brains/parser/parser.tab.hh"
 
-#include "LookupTable.hpp"
-#include "Expressions.hpp"
+#include "brains/utils/LookupTable.hpp"
+#include "brains/expressions/Expressions.hpp"
 
 namespace cpsl
 {

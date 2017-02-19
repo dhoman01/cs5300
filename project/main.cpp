@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "Brain.hpp"
+#include "brains/Brain.hpp"
 
 int 
 main( const int argc, const char **argv )

@@ -5,8 +5,8 @@
 #include <FlexLexer.h>
 #endif
 
-#include "parser.tab.hh"
-#include "location.hh"
+#include "brains/parser/parser.tab.hh"
+#include "brains/parser/location.hh"
 
 namespace cpsl
 {

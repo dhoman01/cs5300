@@ -6,6 +6,20 @@
 namespace cpsl
 {
 
+struct Info {
+    std::string INFO;
+};
+
+struct cpslType : Info {
+    int size;
+    std::string id;
+};
+
+struct VariableInfo : Info {
+    cpslType TYPE;
+    std::string LOCATION;
+};
+
 struct Register {
     std::string name;
 };

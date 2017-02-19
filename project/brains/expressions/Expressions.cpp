@@ -903,3 +903,38 @@ cpsl::Expression cpsl::Expressions::StringConstant(char* a)
     expr.value  = a;
     return expr;
 }
+
+cpsl::Expression cpsl::Expressions::LoadValue(cpsl::VariableInfo a)
+{
+    // Grab a Register
+    // and emit correct MIPS.
+    Register reg = regPool->back();
+    regPool->pop_back();
+
+    cpsl::Expression expr;
+    expr.type = a.TYPE.id;
+    expr.reg = reg;
+    expr.isConstant = false;
+
+    // Redirect cout to file if
+    // there is a file.
+    std::streambuf* psbuf, *backup;
+    std::ofstream output;
+    if(!output_file.empty())
+    {            
+        output.open(output_file);
+        backup = std::cout.rdbuf();
+        psbuf = output.rdbuf();
+        std::cout.rdbuf(psbuf);
+    }
+    std::cout << "# Loading value from " << a.LOCATION << "($gp)" << " with type " << a.TYPE.id << std::endl;
+    std::cout << "\tlw " << reg.name << " " << a.LOCATION << "($gp)" << std::endl;
+
+    if(!output_file.empty())
+    {
+        std::cout.rdbuf(backup);
+        output.close();
+    }
+
+    return expr;
+}

@@ -6,7 +6,7 @@
 %define parser_class_name {Parser}
 
 %code requires{
-    #include "structures.hpp"
+    #include "brains/utils/structures.hpp"
     namespace cpsl {
         class Brain;
         struct Expression;
@@ -32,7 +32,7 @@
     #include <cstdlib>
     #include <fstream>
 
-    #include "Brain.hpp"
+    #include "brains/Brain.hpp"
 
 #undef yylex
 #define yylex scanner.yylex
@@ -109,7 +109,8 @@
 %left DIV_OP MOD_OP MULT_OP
 %right UMINUS_OP
 
-%type<cpsl::Expression> expression IDENTIFIER identifier
+%type<cpsl::Expression> expression
+%type<cpsl::VariableInfo> lvalue IDENTIFIER identifier
 
 %locations
 
@@ -322,7 +323,7 @@ expression: expression OR_OP expression                 { $$ = brain.expressions
     | NOT_OP expression                                 { $$ = brain.expressions.NotExpression($2); }           
     | MINUS_OP expression %prec UMINUS_OP               { $$ = brain.expressions.UMinusExpression($2); } 
     | OPEN_PAR expression CLOSE_PAR                     { $$ = $2; } 
-    | identifier OPEN_PAR optExpressionList CLOSE_PAR   { $$ = $1; }
+    | identifier OPEN_PAR optExpressionList CLOSE_PAR   {  }
     | CHR_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
     | ORD_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
     | PRED_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
@@ -330,7 +331,7 @@ expression: expression OR_OP expression                 { $$ = brain.expressions
     | INT_CONST                                         { $$ = brain.expressions.IntConstant($1); }
     | CHR_CONST                                         { $$ = brain.expressions.CharConstant($1); }
     | STRING_CONST                                      { $$ = brain.expressions.StringConstant($1); } 
-    | lvalue                                            {  }
+    | lvalue                                            { $$ = brain.expressions.LoadValue($1); }
     ;
 
 lvalueList: lvalueList COMMA

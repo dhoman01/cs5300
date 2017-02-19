@@ -1,7 +1,7 @@
 %{
 #include <string>
 
-#include "scanner.hpp"
+#include "brains/parser/scanner.hpp"
 #undef  YY_DECL
 #define YY_DECL int cpsl::Scanner::yylex(cpsl::Parser::semantic_type* const lval, cpsl::Parser::location_type* loc)
 
