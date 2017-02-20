@@ -1,8 +1,7 @@
-$CONST c = true;
-$      d = false;
-
-VAR a,b :integer;
-$    e   : boolean;
+$ Perform several arithmetic operations
+$ and write out the results. See comments
+$ for the expected values
+VAR a,b : INTEGER;
 
 BEGIN
 
@@ -39,20 +38,10 @@ a := b - a;   $a=-1
 b := a - b;   $b=-2
 write(a,b);
 
+stop;
+$ The following should not execute
+$ However the MIPS should be emitted
+write("\n--------------");
 write("Ending Program");
-
-$e := c & d;   $false  (0)
-$e := c | d;   $true   (1)
-$e := a > b;   $true   (1)
-$e := a >= b;  $true   (1)
-$e := a < b;   $false  (0)
-$e := a <= b;  $false  (0)
-$e := a = b;   $false  (0)
-$e := a <> b;  $true   (1)
-$e := ~c;      $false  (0)
-
-$a := a / 2;   $a=30
-$b := a % 7;   $b=2
-$b := -b;      $b=1
 
 END.

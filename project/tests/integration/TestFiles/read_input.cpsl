@@ -1,0 +1,26 @@
+$ Read in integers for a and b,
+$ then print. Read in characters
+$ for c and d, then print.
+VAR a,b : integer;
+    c,d : char;
+
+BEGIN
+
+write("Beginning Program");
+write("-----------------\n");
+write("Enter value for a:");
+read(a);
+write("\nEnter value for b:");
+read(b);
+write("\nFor a you said ", a, "For b you said ", b);
+
+write("\nEnter value for c:");
+read(c);
+write("\nEnter value for d:");
+read(d);
+write("\nFor c you said ", c, "For d you said ", d);
+
+write("\n--------------");
+write("Ending Program");
+
+END.

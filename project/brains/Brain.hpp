@@ -17,38 +17,36 @@
 namespace cpsl
 {
 
-class Brain : public std::enable_shared_from_this<Brain>
+class Brain
 {
 public:
     Brain(std::string output_file = "");
     virtual ~Brain();
 
-    // Parse a file
     void parse(const char* const filename);
-
-    // Parse from stdin
     void parse(std::istream& iss);
 
     Expression addString(std::string);
 
     Expressions expressions;
     Statements statements;
-    LookUpTable<Info> symbolTable;
-    std::vector<Register> regPool;
 
 private:
     void parse_helper(std::istream &stream);
-    std::vector<std::string> stringConst;
-
-    std::shared_ptr<cpsl::Parser> parser = nullptr;
-    std::shared_ptr<cpsl::Scanner> scanner = nullptr;
-
-    std::string output_file;
-
     void InitRegPool();
     void InitMIPS();
     void InitPredefinedSymbols();
     void Init();
+
+    std::vector<std::string> stringConst;
+
+    std::shared_ptr<LookUpTable<Info>> symbolTable;
+    std::shared_ptr<std::vector<Register>> regPool;
+    std::shared_ptr<Parser> parser = nullptr;
+    std::shared_ptr<Scanner> scanner = nullptr;
+
+    std::string output_file;
+
 };
 
 }

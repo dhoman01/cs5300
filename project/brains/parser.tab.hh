@@ -49,17 +49,8 @@
         class Scanner;
     }
 
-// The following definitions is missing when %locations isn't used
-# ifndef YY_NULLPTR
-#  if defined __cplusplus && 201103L <= __cplusplus
-#   define YY_NULLPTR nullptr
-#  else
-#   define YY_NULLPTR 0
-#  endif
-# endif
 
-
-#line 63 "parser.tab.hh" // lalr1.cc:377
+#line 54 "parser.tab.hh" // lalr1.cc:377
 
 # include <cassert>
 # include <cstdlib> // std::abort
@@ -136,7 +127,7 @@
 
 #line 5 "parser.yy" // lalr1.cc:377
 namespace cpsl {
-#line 140 "parser.tab.hh" // lalr1.cc:377
+#line 131 "parser.tab.hh" // lalr1.cc:377
 
 
 
@@ -980,7 +971,7 @@ namespace cpsl {
 
 #line 5 "parser.yy" // lalr1.cc:377
 } // cpsl
-#line 984 "parser.tab.hh" // lalr1.cc:377
+#line 975 "parser.tab.hh" // lalr1.cc:377
 
 
 

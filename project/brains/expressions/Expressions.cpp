@@ -1032,7 +1032,7 @@ cpsl::Expression cpsl::Expressions::PredExpression(cpsl::Expression expr)
     if(expr.type == "boolean")
         std::cout << "\txori " << expr.reg.name << " " << expr.reg.name << " 1" << std::endl;
     else
-        std::cout << "\t# addi " << expr.reg.name << " " << expr.reg.name << " -1" << std::endl;
+        std::cout << "\taddi " << expr.reg.name << " " << expr.reg.name << " -1" << std::endl;
     return expr;
 }
 
@@ -1051,6 +1051,6 @@ cpsl::Expression cpsl::Expressions::SuccExpression(cpsl::Expression expr)
     if(expr.type == "boolean")
         std::cout << "\txori " << expr.reg.name << " " << expr.reg.name << " 1" << std::endl;
     else
-        std::cout << "\t# addi " << expr.reg.name << " " << expr.reg.name << " 1" << std::endl;
+        std::cout << "\taddi " << expr.reg.name << " " << expr.reg.name << " 1" << std::endl;
     return expr;
 }

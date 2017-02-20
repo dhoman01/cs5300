@@ -13,15 +13,6 @@
         class Scanner;
     }
 
-// The following definitions is missing when %locations isn't used
-# ifndef YY_NULLPTR
-#  if defined __cplusplus && 201103L <= __cplusplus
-#   define YY_NULLPTR nullptr
-#  else
-#   define YY_NULLPTR 0
-#  endif
-# endif
-
 }
 
 %parse-param { Scanner& scanner }
@@ -109,11 +100,11 @@
 %left DIV_OP MOD_OP MULT_OP
 %right UMINUS_OP
 
-%type<cpsl::Expression> expression
-%type<std::vector<std::string>> identifierList lvalueList
-%type<std::vector<cpsl::Expression>> expressionList optExpressionList
-%type<int> constDecl assignment
-%type<std::string> lvalue type identifier simpleType
+%type<cpsl::Expression>                 expression
+%type<std::vector<std::string>>         identifierList lvalueList
+%type<std::vector<cpsl::Expression>>    expressionList optExpressionList
+%type<int>                              constDecl assignment
+%type<std::string>                      lvalue type identifier simpleType
 
 %locations
 
@@ -209,7 +200,7 @@ arrayType: ARRAY_KEY OPEN_SQ expression COL expression CLOSE_SQ OF_KEY type { }
     ;
 
 identifierList: identifierList COMMA identifier { $1.push_back($3); $$ = $1; }
-    | identifier { std::vector<std::string> list; list.push_back($1); $$ = list; }
+    | identifier                                { std::vector<std::string> list; list.push_back($1); $$ = list; }
     ;
 
 identifier: IDENTIFIER { $$ = $1; }
@@ -243,7 +234,7 @@ statement: assignment
     | nullStatement     
     ;
 
-assignment: lvalue ASSIGN_OP expression { brain.statements.Assignment($1, $3); }
+assignment: lvalue ASSIGN_OP expression         { brain.statements.Assignment($1, $3); }
     ;
 
 ifStatement: IF_KEY expression thenStatement optElseIfStatements elseStatement END_KEY
@@ -283,17 +274,17 @@ optTo: TO_KEY
     | DOWN_TO_KEY   
     ;
 
-stopStatement: STOP_KEY
+stopStatement: STOP_KEY                                         { brain.statements.StopStatement(); }
     ;
 
 returnStatement: RETURN_KEY expression
     | RETURN_KEY
     ;
 
-readStatement: READ_KEY OPEN_PAR lvalueList CLOSE_PAR
+readStatement: READ_KEY OPEN_PAR lvalueList CLOSE_PAR           { brain.statements.ReadStatement($3); }
     ;
 
-writeStatement: WRITE_KEY OPEN_PAR expressionList CLOSE_PAR    { brain.statements.WriteStatement($3); }
+writeStatement: WRITE_KEY OPEN_PAR expressionList CLOSE_PAR     { brain.statements.WriteStatement($3); }
     ;
 
 procedureCall: identifier OPEN_PAR optExpressionList CLOSE_PAR

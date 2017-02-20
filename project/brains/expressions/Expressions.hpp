@@ -10,34 +10,39 @@
 namespace cpsl
 {
 
-class Expressions  : public std::enable_shared_from_this<Expressions>
+class Expressions
 {
 public:
     Expressions() = default;
-    Expressions(std::shared_ptr<std::vector<Register>> pool, std::string file = "") : regPool(pool), output_file(file) {};
-    cpsl::Expression AndExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression OrExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression EqExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression NotEqExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression LtEqExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression GtEqExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression LtExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression GtExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression PlusExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression MinusExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression MultExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression DivExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression ModExpression(cpsl::Expression, cpsl::Expression);
-    cpsl::Expression NotExpression(cpsl::Expression);
-    cpsl::Expression UMinusExpression(cpsl::Expression);
-    cpsl::Expression IntConstant(std::string);
-    cpsl::Expression CharConstant(std::string);
-    cpsl::Expression ChrExpression(cpsl::Expression);
-    cpsl::Expression OrdExpression(cpsl::Expression);
-    cpsl::Expression PredExpression(cpsl::Expression);
-    cpsl::Expression SuccExpression(cpsl::Expression);
+    Expressions(std::shared_ptr<std::vector<Register>> pool, std::string file = "")
+    {
+        regPool = pool;
+        output_file = file;
+    };
+    
+    Expression AndExpression(Expression, Expression);
+    Expression OrExpression(Expression, Expression);
+    Expression EqExpression(Expression, Expression);
+    Expression NotEqExpression(Expression, Expression);
+    Expression LtEqExpression(Expression, Expression);
+    Expression GtEqExpression(Expression, Expression);
+    Expression LtExpression(Expression, Expression);
+    Expression GtExpression(Expression, Expression);
+    Expression PlusExpression(Expression, Expression);
+    Expression MinusExpression(Expression, Expression);
+    Expression MultExpression(Expression, Expression);
+    Expression DivExpression(Expression, Expression);
+    Expression ModExpression(Expression, Expression);
+    Expression NotExpression(Expression);
+    Expression UMinusExpression(Expression);
+    Expression IntConstant(std::string);
+    Expression CharConstant(std::string);
+    Expression ChrExpression(Expression);
+    Expression OrdExpression(Expression);
+    Expression PredExpression(Expression);
+    Expression SuccExpression(Expression);
 private:
-    std::shared_ptr<std::vector<Register>> regPool;
+    std::shared_ptr<std::vector<Register>> regPool = nullptr;
     std::string output_file = "";
 };
 
