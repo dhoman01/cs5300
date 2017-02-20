@@ -7,153 +7,154 @@ main:   la $gp, GA
 	li $a3 1
 	sw $a3, 0($gp)
 	sw $zero, 4($gp)
-	# Loading value from 0($gp) with type boolean
-	lw $25 0($gp)
-	# Loading constant 1873596992 into c
-	sw $25 8($gp)
-	# Loading value from 4($gp) with type boolean
-	lw $24 4($gp)
-	# Loading constant 1873596992 into d
-	sw $24 12($gp)
+	# Writing expression to output
+	# Loading string const
+	la $25 S1
+	li $v0 4
+	ori $a0 $25 0
+	syscall
+	addi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR.
+	addi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character.
+	syscall
 	# Storing the value 1 in a
-	li $23 1
-	sw $23 16($gp)
+	li $25 1
+	sw $25 8($gp)
 	# Storing the value 2 in b
-	li $23 2
-	sw $23 20($gp)
-	# Loading value from 16($gp) with type integer
-	lw $23 16($gp)
-	# Loading value from 20($gp) with type integer
-	lw $22 20($gp)
-	# Expression: 1873596992 + 1873596992
-	add $21 $23 $22
-	# Storing the expr at $21 in a
-	sw $21 16($gp)
-	# Loading value from 16($gp) with type integer
-	lw $21 16($gp)
-	# Loading value from 20($gp) with type integer
-	lw $22 20($gp)
-	# Expression: 1873596992 + 1873596992
-	add $23 $21 $22
-	# Storing the expr at $23 in b
-	sw $23 20($gp)
-	# Loading value from 16($gp) with type integer
-	lw $23 16($gp)
-	# Loading value from 20($gp) with type integer
-	lw $22 20($gp)
-	# 1873596992 * 1873596992
-	mult $23 $22
-	mflo $21
-	# Storing the expr at $21 in a
-	sw $21 16($gp)
-	# Loading value from 16($gp) with type integer
-	lw $21 16($gp)
-	# Loading value from 20($gp) with type integer
-	lw $22 20($gp)
-	# 1873596992 * 1873596992
-	mult $21 $22
-	mflo $23
-	# Storing the expr at $23 in b
-	sw $23 20($gp)
-	# Loading value from 20($gp) with type integer
-	lw $23 20($gp)
-	# Loading value from 16($gp) with type integer
-	lw $22 16($gp)
-	# 1873596992 - 1873596992
-	sub $21 $23 $22
-	# Storing the expr at $21 in a
-	sw $21 16($gp)
-	# Loading value from 16($gp) with type integer
-	lw $21 16($gp)
-	# Loading value from 20($gp) with type integer
-	lw $22 20($gp)
-	# 1873596992 - 1873596992
-	sub $23 $21 $22
-	# Storing the expr at $23 in b
-	sw $23 20($gp)
-	# Loading value from 8($gp) with type boolean
+	li $25 2
+	sw $25 12($gp)
+	# Loading value from 8($gp) with type integer
+	lw $25 8($gp)
+	# Loading value from 12($gp) with type integer
+	lw $24 12($gp)
+	# Writing expression to output
+	li $v0 1
+	ori $a0 $25 0
+	syscall
+	addi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR.
+	addi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character.
+	syscall
+	# Writing expression to output
+	li $v0 1
+	ori $a0 $24 0
+	syscall
+	addi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR.
+	addi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character.
+	syscall
+	# Loading value from 8($gp) with type integer
+	lw $24 8($gp)
+	# Loading value from 12($gp) with type integer
+	lw $25 12($gp)
+	# Expression: 642122192 + 642122192
+	add $23 $24 $25
+	# Storing the expr at $23 in a
+	sw $23 8($gp)
+	# Loading value from 8($gp) with type integer
 	lw $23 8($gp)
-	# Loading value from 12($gp) with type boolean
-	lw $22 12($gp)
-	# Anding 1873596992 and 1873596992
-	and $21 $23 $22	# Storing the expr at $21 in e
-	sw $21 24($gp)
-	# Loading value from 8($gp) with type boolean
-	lw $21 8($gp)
-	# Loading value from 12($gp) with type boolean
-	lw $22 12($gp)
-	# Oring 1873596992 and 1873596992
-	or $23 $21 $22	# Storing the expr at $23 in e
-	sw $23 24($gp)
-	# Loading value from 16($gp) with type integer
-	lw $23 16($gp)
-	# Loading value from 20($gp) with type integer
-	lw $22 20($gp)
-	# 1873596992 > 1873596992
-	sgt $21 $23 $22	# Storing the expr at $21 in e
-	sw $21 24($gp)
-	# Loading value from 16($gp) with type integer
-	lw $21 16($gp)
-	# Loading value from 20($gp) with type integer
-	lw $22 20($gp)
-	# >= 1873596992 and 1873596992
-	sge $23 $21 $22	# Storing the expr at $23 in e
-	sw $23 24($gp)
-	# Loading value from 16($gp) with type integer
-	lw $23 16($gp)
-	# Loading value from 20($gp) with type integer
-	lw $22 20($gp)
-	# 1873596992 < 1873596992
-	slt $21 $23 $22	# Storing the expr at $21 in e
-	sw $21 24($gp)
-	# Loading value from 16($gp) with type integer
-	lw $21 16($gp)
-	# Loading value from 20($gp) with type integer
-	lw $22 20($gp)
-	# <= 1873596992 and 1873596992
-	sle $23 $21 $22	# Storing the expr at $23 in e
-	sw $23 24($gp)
-	# Loading value from 16($gp) with type integer
-	lw $23 16($gp)
-	# Loading value from 20($gp) with type integer
-	lw $22 20($gp)
-	# Equality check 1873596992 and 1873596992
-	seq $21 $23 $22	# Storing the expr at $21 in e
-	sw $21 24($gp)
-	# Loading value from 16($gp) with type integer
-	lw $21 16($gp)
-	# Loading value from 20($gp) with type integer
-	lw $22 20($gp)
-	# Not Equal 1873596992 and 1873596992
-	sne $23 $21 $22	# Storing the expr at $23 in e
-	sw $23 24($gp)
-	# Loading value from 8($gp) with type boolean
-	lw $23 8($gp)
-	# !1873596992
-	xori $22 $23 -1
-	# Storing the expr at $22 in e
-	sw $22 24($gp)
-	# Loading value from 16($gp) with type integer
-	lw $22 16($gp)
-	# 1873596992 / 2
-	li $21 2
-	div $22 $21
+	# Loading value from 12($gp) with type integer
+	lw $25 12($gp)
+	# Expression: 642122192 + 642122192
+	add $24 $23 $25
+	# Storing the expr at $24 in b
+	sw $24 12($gp)
+	# Loading value from 8($gp) with type integer
+	lw $24 8($gp)
+	# Loading value from 12($gp) with type integer
+	lw $25 12($gp)
+	# Writing expression to output
+	li $v0 1
+	ori $a0 $24 0
+	syscall
+	addi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR.
+	addi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character.
+	syscall
+	# Writing expression to output
+	li $v0 1
+	ori $a0 $25 0
+	syscall
+	addi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR.
+	addi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character.
+	syscall
+	# Loading value from 8($gp) with type integer
+	lw $25 8($gp)
+	# Loading value from 12($gp) with type integer
+	lw $24 12($gp)
+	# 642122192 * 642122192
+	mult $25 $24
 	mflo $23
 	# Storing the expr at $23 in a
-	sw $23 16($gp)
-	# Loading value from 16($gp) with type integer
-	lw $23 16($gp)
-	# 1873596992 % 7
-	li $22 7
-	div $23 $22
-	mfhi $21
-	# Storing the expr at $21 in b
-	sw $21 20($gp)
-	# Loading value from 20($gp) with type integer
-	lw $21 20($gp)
-	# -1873596991
-	addi $22 $21 -1
-	# Storing the expr at $22 in b
-	sw $22 20($gp)
+	sw $23 8($gp)
+	# Loading value from 8($gp) with type integer
+	lw $23 8($gp)
+	# Loading value from 12($gp) with type integer
+	lw $24 12($gp)
+	# 642122192 * 642122192
+	mult $23 $24
+	mflo $25
+	# Storing the expr at $25 in b
+	sw $25 12($gp)
+	# Loading value from 8($gp) with type integer
+	lw $25 8($gp)
+	# Loading value from 12($gp) with type integer
+	lw $24 12($gp)
+	# Writing expression to output
+	li $v0 1
+	ori $a0 $25 0
+	syscall
+	addi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR.
+	addi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character.
+	syscall
+	# Writing expression to output
+	li $v0 1
+	ori $a0 $24 0
+	syscall
+	addi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR.
+	addi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character.
+	syscall
+	# Loading value from 12($gp) with type integer
+	lw $24 12($gp)
+	# Loading value from 8($gp) with type integer
+	lw $25 8($gp)
+	# 642122192 - 642122192
+	sub $23 $24 $25
+	# Storing the expr at $23 in a
+	sw $23 8($gp)
+	# Loading value from 8($gp) with type integer
+	lw $23 8($gp)
+	# Loading value from 12($gp) with type integer
+	lw $25 12($gp)
+	# 642122192 - 642122192
+	sub $24 $23 $25
+	# Storing the expr at $24 in b
+	sw $24 12($gp)
+	# Loading value from 8($gp) with type integer
+	lw $24 8($gp)
+	# Loading value from 12($gp) with type integer
+	lw $25 12($gp)
+	# Writing expression to output
+	li $v0 1
+	ori $a0 $24 0
+	syscall
+	addi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR.
+	addi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character.
+	syscall
+	# Writing expression to output
+	li $v0 1
+	ori $a0 $25 0
+	syscall
+	addi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR.
+	addi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character.
+	syscall
+	# Writing expression to output
+	# Loading string const
+	la $25 S2
+	li $v0 4
+	ori $a0 $25 0
+	syscall
+	addi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR.
+	addi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character.
+	syscall
 	.data
+S1: .asciiz "Beginning Program"
+S2: .asciiz "Ending Program"
+.align 2
 GA:

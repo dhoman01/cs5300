@@ -28,6 +28,8 @@ public:
     // Parse from stdin
     void parse(std::istream& iss);
 
+    Expression addString(std::string);
+
     Expressions expressions;
     Statements statements;
     LookUpTable<Info> symbolTable;
@@ -35,6 +37,7 @@ public:
 
 private:
     void parse_helper(std::istream &stream);
+    std::vector<std::string> stringConst;
 
     cpsl::Parser* parser = nullptr;
     cpsl::Scanner* scanner = nullptr;

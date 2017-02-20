@@ -31,7 +31,10 @@ public:
     cpsl::Expression UMinusExpression(cpsl::Expression);
     cpsl::Expression IntConstant(std::string);
     cpsl::Expression CharConstant(std::string);
-    cpsl::Expression StringConstant(std::string);
+    cpsl::Expression ChrExpression(cpsl::Expression);
+    cpsl::Expression OrdExpression(cpsl::Expression);
+    cpsl::Expression PredExpression(cpsl::Expression);
+    cpsl::Expression SuccExpression(cpsl::Expression);
 private:
     std::vector<Register>* regPool;
     std::string output_file = "";

@@ -18,7 +18,27 @@ cpsl::Brain::~Brain()
     scanner = nullptr;
     delete(parser);
     parser = nullptr;
-    std::cout << "\t.data" << std::endl << "GA:" << std::endl;
+    std::cout << "\t.data" << std::endl;
+    if(stringConst.size() > 0)
+    {
+        for(int i = 1; i <= stringConst.size(); ++i)
+            std::cout << "S" << i << ": .asciiz " << stringConst[ i - 1 ] << std::endl;
+    }
+    std::cout << ".align 2" << std::endl << "GA:" << std::endl;
+}
+
+cpsl::Expression cpsl::Brain::addString(std::string s)
+{
+    int id = stringConst.size() + 1;
+    
+    cpsl::Expression expr;
+    expr.reg.name = "S" + std::to_string(id);
+    expr.isConstant = false;
+    expr.type = "string";
+
+    stringConst.push_back(s);
+    
+    return expr;
 }
 
 void cpsl::Brain::parse(const char * const filename)

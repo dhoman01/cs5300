@@ -8,6 +8,42 @@
 // Start globalLocation at 8 because true is at 0($gp) and false is at 4($gp)
 cpsl::Statements::Statements(std::vector<Register>* pool, LookUpTable<Info>* table) : regPool(pool), symbolTable(table), globalLocation(8){};
 
+void cpsl::Statements::Write(cpsl::Expression expr)
+{
+        std::cout << "\t# Writing expression to output" << std::endl;
+        if(expr.isConstant)
+        {
+            expr.reg = regPool->back();
+            regPool->pop_back();
+            std::cout << "\tli " << expr.reg.name << " " << expr.value << std::endl;
+        }
+
+        if(expr.type == "string")
+        {
+            Register reg = regPool->back();
+            regPool->pop_back();
+            std::cout << "\t# Loading string const" << std::endl;
+            std::cout << "\tla " << reg.name << " " << expr.reg.name << std::endl;
+            expr.reg = reg;
+        }
+        
+        std::cout << "\tli $v0 " << (expr.type == "string" ? "4" : "1") << std::endl;
+        std::cout << "\tori $a0 " << expr.reg.name << " 0" << std::endl;
+        std::cout << "\tsyscall" << std::endl;
+        std::cout << "\taddi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR." << std::endl;
+        std::cout << "\taddi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character." << std::endl;
+        std::cout << "\tsyscall" << std::endl;
+        regPool->push_back(expr.reg);
+        return;
+}
+
+int cpsl::Statements::WriteStatement(std::vector<cpsl::Expression> expressionList)
+{
+    for(auto e : expressionList)
+        Write(e);
+    return 0;
+}
+
 void cpsl::Statements::StoreSymbol(std::string id, cpsl::cpslType* type)
 {
     cpsl::VariableInfo* var = new cpsl::VariableInfo();

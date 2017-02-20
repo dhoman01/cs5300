@@ -1,38 +1,43 @@
-CONST c = true;
-      d = false;
+$CONST c = true;
+$      d = false;
 
 VAR a,b :integer;
-    e   : boolean;
+$    e   : boolean;
 
 BEGIN
 
+write("Beginning Program");
+
 a := 1;
 b := 2;
-$write(a,b);
+write(a,b);
 
 a := a + b;   $a=3
 b := a + b;   $b=5
-$write(a,b);
+write(a,b);
 
 a := a * b;   $a=15
 b := a * b;   $b=75
-$write(a,b);
+write(a,b);
 
 a := b - a;   $a=60
 b := a - b;   $b=-15
+write(a,b);
 
-e := c & d;   $false  (0)
-e := c | d;   $true   (1)
-e := a > b;   $true   (1)
-e := a >= b;  $true   (1)
-e := a < b;   $false  (0)
-e := a <= b;  $false  (0)
-e := a = b;   $false  (0)
-e := a <> b;  $true   (1)
-e := ~c;      $false  (0)
+write("Ending Program");
 
-a := a / 2;   $a=30
-b := a % 7;   $b=2
-b := -b;      $b=1
+$e := c & d;   $false  (0)
+$e := c | d;   $true   (1)
+$e := a > b;   $true   (1)
+$e := a >= b;  $true   (1)
+$e := a < b;   $false  (0)
+$e := a <= b;  $false  (0)
+$e := a = b;   $false  (0)
+$e := a <> b;  $true   (1)
+$e := ~c;      $false  (0)
+
+$a := a / 2;   $a=30
+$b := a % 7;   $b=2
+$b := -b;      $b=1
 
 END.

@@ -999,11 +999,58 @@ cpsl::Expression cpsl::Expressions::CharConstant(std::string a)
     return expr;
 }
 
-cpsl::Expression cpsl::Expressions::StringConstant(std::string a)
+cpsl::Expression cpsl::Expressions::ChrExpression(cpsl::Expression expr)
 {
-    cpsl::StringConst expr;
-    expr.isConstant = true;
-    expr.type = "string";
-    expr.value  = a;
+    if(expr.type != "integer")
+        throw std::runtime_error("chr() requires an integer argument. Not a " + expr.type);
+
+    expr.type = "char";
+    return expr;
+}
+
+cpsl::Expression cpsl::Expressions::OrdExpression(cpsl::Expression expr)
+{
+    if(expr.type != "char")
+        throw std::runtime_error("ord() requires a character argument. Not a " + expr.type);
+
+    expr.type = "integer";
+    return expr;
+}
+
+cpsl::Expression cpsl::Expressions::PredExpression(cpsl::Expression expr)
+{
+    if(expr.isConstant)
+    {
+        if(expr.type == "boolean")
+            expr.value = !expr.value;
+        else
+            expr.value--;
+        return expr;
+    }
+
+    std::cout << "\t# pred(" << expr.reg.name << ")" << std::endl;
+    if(expr.type == "boolean")
+        std::cout << "\txori " << expr.reg.name << " " << expr.reg.name << " 1" << std::endl;
+    else
+        std::cout << "\t# addi " << expr.reg.name << " " << expr.reg.name << " -1" << std::endl;
+    return expr;
+}
+
+cpsl::Expression cpsl::Expressions::SuccExpression(cpsl::Expression expr)
+{
+    if(expr.isConstant)
+    {
+        if(expr.type == "boolean")
+            expr.value = !expr.value;
+        else
+            expr.value--;
+        return expr;
+    }
+
+    std::cout << "\t# pred(" << expr.reg.name << ")" << std::endl;
+    if(expr.type == "boolean")
+        std::cout << "\txori " << expr.reg.name << " " << expr.reg.name << " 1" << std::endl;
+    else
+        std::cout << "\t# addi " << expr.reg.name << " " << expr.reg.name << " 1" << std::endl;
     return expr;
 }

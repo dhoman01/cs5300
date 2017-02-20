@@ -14,6 +14,7 @@ public:
     Statements() = default;
     Statements(std::vector<Register>*, LookUpTable<Info>*);
     
+    int WriteStatement(std::vector<Expression>);
     int VariableDeclaration(std::vector<std::string>, std::string id);
     int ConstDeclaration(std::string, Expression);
     int Assignment(std::string, Expression);
@@ -24,6 +25,7 @@ private:
     int globalLocation;
 
     void StoreSymbol(std::string, cpslType*);
+    void Write(Expression);
 };
 
 } 

@@ -293,7 +293,7 @@ returnStatement: RETURN_KEY expression
 readStatement: READ_KEY OPEN_PAR lvalueList CLOSE_PAR
     ;
 
-writeStatement: WRITE_KEY OPEN_PAR expressionList CLOSE_PAR
+writeStatement: WRITE_KEY OPEN_PAR expressionList CLOSE_PAR    { brain.statements.WriteStatement($3); }
     ;
 
 procedureCall: identifier OPEN_PAR optExpressionList CLOSE_PAR
@@ -327,13 +327,13 @@ expression: expression OR_OP expression                 { $$ = brain.expressions
     | MINUS_OP expression %prec UMINUS_OP               { $$ = brain.expressions.UMinusExpression($2); } 
     | OPEN_PAR expression CLOSE_PAR                     { $$ = $2; } 
     | identifier OPEN_PAR optExpressionList CLOSE_PAR   {  }
-    | CHR_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
-    | ORD_KEY OPEN_PAR expression CLOSE_PAR             { $$ = $3; }
-    | PRED_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
-    | SUCC_KEY OPEN_PAR expression CLOSE_PAR            { $$ = $3; }
+    | CHR_KEY OPEN_PAR expression CLOSE_PAR             { $$ = brain.expressions.ChrExpression($3); }
+    | ORD_KEY OPEN_PAR expression CLOSE_PAR             { $$ = brain.expressions.OrdExpression($3); }
+    | PRED_KEY OPEN_PAR expression CLOSE_PAR            { $$ = brain.expressions.PredExpression($3); }
+    | SUCC_KEY OPEN_PAR expression CLOSE_PAR            { $$ = brain.expressions.SuccExpression($3); }
     | INT_CONST                                         { $$ = brain.expressions.IntConstant($1); }
     | CHR_CONST                                         { $$ = brain.expressions.CharConstant($1); }
-    | STRING_CONST                                      { $$ = brain.expressions.StringConstant($1); } 
+    | STRING_CONST                                      { $$ = brain.addString($1); } 
     | lvalue                                            { $$ = brain.statements.LoadVariable($1); }
     ;
 
