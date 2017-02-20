@@ -1,6 +1,7 @@
 #ifndef STRUCTURES_HPP
 #define STRUCTURES_HPP
 
+#include <memory>
 #include <string>
 
 namespace cpsl
@@ -17,7 +18,7 @@ struct cpslType : Info {
 };
 
 struct VariableInfo : Info {
-    cpslType* type;
+    std::shared_ptr<cpslType> type;
     std::string location;
 };
 

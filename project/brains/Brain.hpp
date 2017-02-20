@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <istream>
 #include <fstream>
+#include <memory>
 
 #include "scanner.hpp"
 #include "parser.tab.hh"
@@ -16,7 +17,7 @@
 namespace cpsl
 {
 
-class Brain
+class Brain : public std::enable_shared_from_this<Brain>
 {
 public:
     Brain(std::string output_file = "");
@@ -39,8 +40,8 @@ private:
     void parse_helper(std::istream &stream);
     std::vector<std::string> stringConst;
 
-    cpsl::Parser* parser = nullptr;
-    cpsl::Scanner* scanner = nullptr;
+    std::shared_ptr<cpsl::Parser> parser = nullptr;
+    std::shared_ptr<cpsl::Scanner> scanner = nullptr;
 
     std::string output_file;
 

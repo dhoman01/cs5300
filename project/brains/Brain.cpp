@@ -8,16 +8,12 @@ cpsl::Brain::Brain(std::string file)
 {
     output_file = file;
     Init();
-    expressions = Expressions(&regPool, output_file);
-    statements = Statements(&regPool, &symbolTable);
+    expressions = Expressions(std::shared_ptr<std::vector<Register>>(&regPool), output_file);
+    statements = Statements(std::shared_ptr<std::vector<Register>>(&regPool), std::shared_ptr<LookUpTable<Info>>(&symbolTable));
 };
 
 cpsl::Brain::~Brain()
 {
-    delete(scanner);
-    scanner = nullptr;
-    delete(parser);
-    parser = nullptr;
     std::cout << "\t.data" << std::endl;
     if(stringConst.size() > 0)
     {
@@ -66,10 +62,9 @@ void cpsl::Brain::parse( std::istream &stream )
 
 void cpsl::Brain::parse_helper(std::istream &stream)
 {
-    delete(scanner);
     try
     {
-        scanner = new cpsl::Scanner(&stream);
+        scanner = std::make_shared<cpsl::Scanner>(&stream);
     }
     catch (std::bad_alloc& ex)
     {
@@ -77,10 +72,9 @@ void cpsl::Brain::parse_helper(std::istream &stream)
         exit(EXIT_FAILURE);
     }
 
-    delete(parser);
     try
     {
-        parser = new cpsl::Parser((*scanner), (*this));
+        parser = std::make_shared<cpsl::Parser>((*scanner.get()), (*this));
     }
     catch(std::bad_alloc& ex)
     {
@@ -137,30 +131,35 @@ void cpsl::Brain::InitPredefinedSymbols()
 {
     symbolTable.enterScope();
 
-    cpsl::cpslType* integerType = new cpsl::cpslType();
+    std::shared_ptr<cpsl::cpslType> integerType = std::make_shared<cpsl::cpslType>();
     integerType->size = 4;
     integerType->id = "integer";
     symbolTable.store(integerType->id, integerType);
 
-    cpsl::cpslType* characterType = new cpsl::cpslType();
+    std::shared_ptr<cpsl::cpslType> characterType = std::make_shared<cpsl::cpslType>();
     characterType->size = 4;
     characterType->id = "char";
     symbolTable.store(characterType->id, characterType);
 
-    cpsl::cpslType* booleanType = new cpsl::cpslType();
+    std::shared_ptr<cpsl::cpslType> booleanType = std::make_shared<cpsl::cpslType>();
     booleanType->size = 4;
     booleanType->id = "boolean";
     symbolTable.store(booleanType->id, booleanType);
 
+    std::shared_ptr<cpsl::cpslType> stringType = std::make_shared<cpsl::cpslType>();
+    stringType->size = 4;
+    stringType->id = "string";
+    symbolTable.store(stringType->id, stringType);
+
     // In the MIPS Init function 0($gp) is set to the value 1
-    cpsl::VariableInfo* trueConst = new cpsl::VariableInfo();
+    std::shared_ptr<cpsl::VariableInfo> trueConst = std::make_shared<cpsl::VariableInfo>();
     trueConst->id = "true";
     trueConst->location = "0";
     trueConst->type = booleanType;
     symbolTable.store(trueConst->id, trueConst);
 
     // In the MIPS Init function 4($gp) is set to the value 0
-    cpsl::VariableInfo* falseConst = new cpsl::VariableInfo();
+    std::shared_ptr<cpsl::VariableInfo> falseConst = std::make_shared<cpsl::VariableInfo>();
     falseConst->id = "false";
     falseConst->location = "4";
     falseConst->type = booleanType;

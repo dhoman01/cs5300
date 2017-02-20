@@ -44,7 +44,7 @@ main:   la $gp, GA
 	lw $24 8($gp)
 	# Loading value from 12($gp) with type integer
 	lw $25 12($gp)
-	# Expression: 642122192 + 642122192
+	# Expression: 20388648 + 20388648
 	add $23 $24 $25
 	# Storing the expr at $23 in a
 	sw $23 8($gp)
@@ -52,7 +52,7 @@ main:   la $gp, GA
 	lw $23 8($gp)
 	# Loading value from 12($gp) with type integer
 	lw $25 12($gp)
-	# Expression: 642122192 + 642122192
+	# Expression: 20388648 + 20388648
 	add $24 $23 $25
 	# Storing the expr at $24 in b
 	sw $24 12($gp)
@@ -78,7 +78,7 @@ main:   la $gp, GA
 	lw $25 8($gp)
 	# Loading value from 12($gp) with type integer
 	lw $24 12($gp)
-	# 642122192 * 642122192
+	# 20388648 * 20388648
 	mult $25 $24
 	mflo $23
 	# Storing the expr at $23 in a
@@ -87,7 +87,7 @@ main:   la $gp, GA
 	lw $23 8($gp)
 	# Loading value from 12($gp) with type integer
 	lw $24 12($gp)
-	# 642122192 * 642122192
+	# 20388648 * 20388648
 	mult $23 $24
 	mflo $25
 	# Storing the expr at $25 in b
@@ -114,7 +114,7 @@ main:   la $gp, GA
 	lw $24 12($gp)
 	# Loading value from 8($gp) with type integer
 	lw $25 8($gp)
-	# 642122192 - 642122192
+	# 20388648 - 20388648
 	sub $23 $24 $25
 	# Storing the expr at $23 in a
 	sw $23 8($gp)
@@ -122,7 +122,7 @@ main:   la $gp, GA
 	lw $23 8($gp)
 	# Loading value from 12($gp) with type integer
 	lw $25 12($gp)
-	# 642122192 - 642122192
+	# 20388648 - 20388648
 	sub $24 $23 $25
 	# Storing the expr at $24 in b
 	sw $24 12($gp)

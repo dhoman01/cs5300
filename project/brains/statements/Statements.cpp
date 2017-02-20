@@ -6,7 +6,7 @@
 #include <vector>
 
 // Start globalLocation at 8 because true is at 0($gp) and false is at 4($gp)
-cpsl::Statements::Statements(std::vector<Register>* pool, LookUpTable<Info>* table) : regPool(pool), symbolTable(table), globalLocation(8){};
+cpsl::Statements::Statements(std::shared_ptr<std::vector<Register>> pool, std::shared_ptr<LookUpTable<Info>> table) : regPool(pool), symbolTable(table), globalLocation(8){};
 
 void cpsl::Statements::Write(cpsl::Expression expr)
 {
@@ -44,9 +44,9 @@ int cpsl::Statements::WriteStatement(std::vector<cpsl::Expression> expressionLis
     return 0;
 }
 
-void cpsl::Statements::StoreSymbol(std::string id, cpsl::cpslType* type)
+void cpsl::Statements::StoreSymbol(std::string id, std::shared_ptr<cpsl::cpslType> type)
 {
-    cpsl::VariableInfo* var = new cpsl::VariableInfo();
+    std::shared_ptr<cpsl::VariableInfo> var = std::make_shared<cpsl::VariableInfo>();
     var->id = id;
     var->type = type;
     var->location = std::to_string(globalLocation);
@@ -57,7 +57,7 @@ void cpsl::Statements::StoreSymbol(std::string id, cpsl::cpslType* type)
 
 int cpsl::Statements::VariableDeclaration(std::vector<std::string> vars, std::string type)
 {
-    cpslType* typeInfo = dynamic_cast<cpslType*>(symbolTable->lookup(type));
+    std::shared_ptr<cpslType> typeInfo = std::dynamic_pointer_cast<cpslType>(symbolTable->lookup(type));
     for(auto var : vars)
         StoreSymbol(var, typeInfo);
 
@@ -66,9 +66,9 @@ int cpsl::Statements::VariableDeclaration(std::vector<std::string> vars, std::st
 
 int cpsl::Statements::ConstDeclaration(std::string id, cpsl::Expression expr)
 {
-    cpslType* typeInfo = dynamic_cast<cpslType*>(symbolTable->lookup(expr.type));
+    std::shared_ptr<cpslType> typeInfo = std::dynamic_pointer_cast<cpslType>(symbolTable->lookup(expr.type));
     StoreSymbol(id, typeInfo);
-    cpsl::VariableInfo* var = dynamic_cast<VariableInfo*>(symbolTable->lookup(id));
+    std::shared_ptr<VariableInfo> var = std::dynamic_pointer_cast<VariableInfo>(symbolTable->lookup(id));
 
     std::cout << "\t# Loading constant " << expr.value << " into " << id << std::endl;
     if(expr.isConstant){
@@ -88,7 +88,7 @@ int cpsl::Statements::ConstDeclaration(std::string id, cpsl::Expression expr)
 
 int cpsl::Statements::Assignment(std::string id, cpsl::Expression expr)
 {
-    cpsl::VariableInfo* var = dynamic_cast<VariableInfo*>(symbolTable->lookup(id));
+    std::shared_ptr<VariableInfo> var = std::dynamic_pointer_cast<VariableInfo>(symbolTable->lookup(id));
     if(var->type->id != expr.type)
         throw std::runtime_error("Type mismatch: " + var->type->id + " != " + expr.type);
     if(expr.isConstant)
@@ -112,7 +112,7 @@ int cpsl::Statements::Assignment(std::string id, cpsl::Expression expr)
 
 cpsl::Expression cpsl::Statements::LoadVariable(std::string id)
 {
-    cpsl::VariableInfo* var = dynamic_cast<VariableInfo*>(symbolTable->lookup(id));
+    std::shared_ptr<VariableInfo> var = std::dynamic_pointer_cast<VariableInfo>(symbolTable->lookup(id));
     // Grab a Register
     // and emit correct MIPS.
     Register reg = regPool->back();

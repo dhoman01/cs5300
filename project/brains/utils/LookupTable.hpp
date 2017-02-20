@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <memory>
 
 #include "structures.hpp"
 
@@ -15,14 +16,14 @@ class LookUpTable
 {
 public:
     LookUpTable(){};
-    void store(std::string id, cpsl::Info* info)
+    void store(std::string id, std::shared_ptr<cpsl::Info> info)
     {
         auto f = lookupTable.back().find(id);
         if(f != lookupTable.back().end())
             throw std::runtime_error(id + " is already defined");
         lookupTable.back()[id] = info;
     }
-    cpsl::Info* lookup(std::string id)
+    std::shared_ptr<cpsl::Info> lookup(std::string id)
     {
         for(int i = lookupTable.size() - 1; i >= 0; --i)
         {
@@ -48,7 +49,7 @@ public:
         return lookupTable.size() == 3u;
     }
 private:
-    std::vector< std::map<std::string, cpsl::Info*> > lookupTable;
+    std::vector< std::map<std::string, std::shared_ptr<cpsl::Info>> > lookupTable;
     std::vector<int> localLocations;
 };
 

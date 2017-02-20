@@ -3,17 +3,18 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "../utils/structures.hpp"
 
 namespace cpsl
 {
 
-class Expressions
+class Expressions  : public std::enable_shared_from_this<Expressions>
 {
 public:
     Expressions() = default;
-    Expressions(std::vector<Register>* pool, std::string file = "") : regPool(pool), output_file(file) {};
+    Expressions(std::shared_ptr<std::vector<Register>> pool, std::string file = "") : regPool(pool), output_file(file) {};
     cpsl::Expression AndExpression(cpsl::Expression, cpsl::Expression);
     cpsl::Expression OrExpression(cpsl::Expression, cpsl::Expression);
     cpsl::Expression EqExpression(cpsl::Expression, cpsl::Expression);
@@ -36,7 +37,7 @@ public:
     cpsl::Expression PredExpression(cpsl::Expression);
     cpsl::Expression SuccExpression(cpsl::Expression);
 private:
-    std::vector<Register>* regPool;
+    std::shared_ptr<std::vector<Register>> regPool;
     std::string output_file = "";
 };
 
