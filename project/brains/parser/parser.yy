@@ -6,7 +6,7 @@
 %define parser_class_name {Parser}
 
 %code requires{
-    #include "utils/structures.hpp"
+    #include "../utils/structures.hpp"
     namespace cpsl {
         class Brain;
         struct Expression;
@@ -23,7 +23,7 @@
     #include <cstdlib>
     #include <fstream>
 
-    #include "Brain.hpp"
+    #include "../Brain.hpp"
 
 #undef yylex
 #define yylex scanner.yylex

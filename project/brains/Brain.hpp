@@ -7,8 +7,8 @@
 #include <fstream>
 #include <memory>
 
-#include "scanner.hpp"
-#include "parser.tab.hh"
+#include "parser/scanner.hpp"
+#include "parser/parser.tab.hh"
 
 #include "utils/LookupTable.hpp"
 #include "expressions/Expressions.hpp"
