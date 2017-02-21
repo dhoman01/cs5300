@@ -1,0 +1,22 @@
+Beginning Program
+-----------------
+
+
+Assign a = 1 and b = 2
+12
+
+a = a+b then b = a+b
+35
+
+a = a*b then b = a*b
+1575
+
+a = b/a then b = b/a
+515
+
+a = a%3 then b = b%a
+21
+
+a = b-a then b = a-b
+-1-2
+

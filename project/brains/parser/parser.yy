@@ -89,7 +89,7 @@
 %token SEMI_COL
 %token <std::string> IDENTIFIER
 %token <std::string> INT_CONST
-%token <std::string> CHR_CONST
+%token <char> CHR_CONST
 %token <std::string> STRING_CONST
 
 

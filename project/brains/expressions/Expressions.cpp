@@ -925,16 +925,15 @@ cpsl::Expression cpsl::Expressions::IntConstant(std::string a)
     cpsl::Expression expr;
     expr.isConstant = true;
     expr.type = "integer";
-    expr.value  = stoi(a);
+    expr.value = stoi(a);
     return expr;
 }
 
-cpsl::Expression cpsl::Expressions::CharConstant(std::string a)
+cpsl::Expression cpsl::Expressions::CharConstant(char a)
 {
-    std::cerr << "CharConst expression: " << a << std::endl;
-    cpsl::CharConst expr;
+    cpsl::Expression expr;
     expr.isConstant = true;
     expr.type = "char";
-    expr.value  = a[0];
+    expr.value = static_cast<int>(a);
     return expr;
 }

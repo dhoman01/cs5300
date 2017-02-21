@@ -12,13 +12,13 @@ write("Enter integer value for a:");
 read(a);
 write("\nEnter integer value for b:");
 read(b);
-write("\nFor a you said ", a, "For b you said ", b);
+write("\nFor a you said ", a, '\n', "For b you said ", b);
 
 write("\nEnter character value for c:");
 read(c);
 write("\nEnter character value for d:");
 read(d);
-write("\nFor c you said ", c, "For d you said ", d);
+write("\nFor c you said ", c, '\n', "For d you said ", d);
 
 write("\n--------------");
 write("Ending Program");

@@ -39,7 +39,7 @@ public:
     Expression PredExpression(Expression);
     Expression SuccExpression(Expression);
     Expression IntConstant(std::string);
-    Expression CharConstant(std::string);
+    Expression CharConstant(char);
 private:
     std::shared_ptr<std::vector<Register>> regPool = nullptr;
 };

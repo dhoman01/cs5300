@@ -272,8 +272,23 @@ write|WRITE             {
                         }
 
  /* Character Constants (Section 2.5.2) */
-'([^']|\\.)'            {
-                            yylval->build<std::string>(yytext);
+'\\n'                   {   
+                            yylval->build<char>('\n');
+                            return token::CHR_CONST;
+                        }
+
+'\\t'                   {
+                            yylval->build<char>('\n');
+                            return token::CHR_CONST;
+                        }
+
+'\\r'                   {
+                            yylval->build<char>('\r');
+                            return token::CHR_CONST;
+                        }
+
+'\\?.'                 {
+                            yylval->build<char>(yytext[1]);
                             return token::CHR_CONST;
                         }
 

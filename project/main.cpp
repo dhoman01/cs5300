@@ -69,7 +69,6 @@ int main(const int argc, const char **argv)
    }
    else
    {
-        std::cerr << "Improper Usage!" << std::endl;
         std::cerr << "usage: cpslc [/path/to/file/target | --stdio | --help] [options]" << std::endl;
         std::cerr << "Options: " << std::endl;
         std::cerr << "\t\u2022 use --help to get this menu" << std::endl;

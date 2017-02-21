@@ -227,6 +227,10 @@ namespace cpsl {
   {
       switch (other.type_get ())
     {
+      case 59: // CHR_CONST
+        value.copy< char > (other.value);
+        break;
+
       case 115: // expression
         value.copy< cpsl::Expression > (other.value);
         break;
@@ -238,7 +242,6 @@ namespace cpsl {
 
       case 57: // IDENTIFIER
       case 58: // INT_CONST
-      case 59: // CHR_CONST
       case 60: // STRING_CONST
       case 82: // type
       case 83: // simpleType
@@ -274,6 +277,10 @@ namespace cpsl {
     (void) v;
       switch (this->type_get ())
     {
+      case 59: // CHR_CONST
+        value.copy< char > (v);
+        break;
+
       case 115: // expression
         value.copy< cpsl::Expression > (v);
         break;
@@ -285,7 +292,6 @@ namespace cpsl {
 
       case 57: // IDENTIFIER
       case 58: // INT_CONST
-      case 59: // CHR_CONST
       case 60: // STRING_CONST
       case 82: // type
       case 83: // simpleType
@@ -316,6 +322,13 @@ namespace cpsl {
   Parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const location_type& l)
     : Base (t)
     , value ()
+    , location (l)
+  {}
+
+  template <typename Base>
+  Parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const char v, const location_type& l)
+    : Base (t)
+    , value (v)
     , location (l)
   {}
 
@@ -380,6 +393,10 @@ namespace cpsl {
     // Type destructor.
     switch (yytype)
     {
+      case 59: // CHR_CONST
+        value.template destroy< char > ();
+        break;
+
       case 115: // expression
         value.template destroy< cpsl::Expression > ();
         break;
@@ -391,7 +408,6 @@ namespace cpsl {
 
       case 57: // IDENTIFIER
       case 58: // INT_CONST
-      case 59: // CHR_CONST
       case 60: // STRING_CONST
       case 82: // type
       case 83: // simpleType
@@ -433,6 +449,10 @@ namespace cpsl {
     super_type::move(s);
       switch (this->type_get ())
     {
+      case 59: // CHR_CONST
+        value.move< char > (s.value);
+        break;
+
       case 115: // expression
         value.move< cpsl::Expression > (s.value);
         break;
@@ -444,7 +464,6 @@ namespace cpsl {
 
       case 57: // IDENTIFIER
       case 58: // INT_CONST
-      case 59: // CHR_CONST
       case 60: // STRING_CONST
       case 82: // type
       case 83: // simpleType
@@ -845,7 +864,7 @@ namespace cpsl {
   }
 
   Parser::symbol_type
-  Parser::make_CHR_CONST (const std::string& v, const location_type& l)
+  Parser::make_CHR_CONST (const char& v, const location_type& l)
   {
     return symbol_type (token::CHR_CONST, v, l);
   }
@@ -916,6 +935,10 @@ namespace cpsl {
   {
       switch (that.type_get ())
     {
+      case 59: // CHR_CONST
+        value.move< char > (that.value);
+        break;
+
       case 115: // expression
         value.move< cpsl::Expression > (that.value);
         break;
@@ -927,7 +950,6 @@ namespace cpsl {
 
       case 57: // IDENTIFIER
       case 58: // INT_CONST
-      case 59: // CHR_CONST
       case 60: // STRING_CONST
       case 82: // type
       case 83: // simpleType
@@ -961,6 +983,10 @@ namespace cpsl {
     state = that.state;
       switch (that.type_get ())
     {
+      case 59: // CHR_CONST
+        value.copy< char > (that.value);
+        break;
+
       case 115: // expression
         value.copy< cpsl::Expression > (that.value);
         break;
@@ -972,7 +998,6 @@ namespace cpsl {
 
       case 57: // IDENTIFIER
       case 58: // INT_CONST
-      case 59: // CHR_CONST
       case 60: // STRING_CONST
       case 82: // type
       case 83: // simpleType
@@ -1218,6 +1243,10 @@ namespace cpsl {
          when using variants.  */
         switch (yyr1_[yyn])
     {
+      case 59: // CHR_CONST
+        yylhs.value.build< char > ();
+        break;
+
       case 115: // expression
         yylhs.value.build< cpsl::Expression > ();
         break;
@@ -1229,7 +1258,6 @@ namespace cpsl {
 
       case 57: // IDENTIFIER
       case 58: // INT_CONST
-      case 59: // CHR_CONST
       case 60: // STRING_CONST
       case 82: // type
       case 83: // simpleType
@@ -1268,329 +1296,329 @@ namespace cpsl {
   case 8:
 #line 127 "parser.yy" // lalr1.cc:859
     { brain.statements.ConstDeclaration(yystack_[3].value.as< std::string > (), yystack_[1].value.as< cpsl::Expression > ()); }
-#line 1272 "parser.tab.cc" // lalr1.cc:859
+#line 1300 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 18:
 #line 149 "parser.yy" // lalr1.cc:859
     {  }
-#line 1278 "parser.tab.cc" // lalr1.cc:859
+#line 1306 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 19:
 #line 150 "parser.yy" // lalr1.cc:859
     { }
-#line 1284 "parser.tab.cc" // lalr1.cc:859
+#line 1312 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 20:
 #line 153 "parser.yy" // lalr1.cc:859
     { }
-#line 1290 "parser.tab.cc" // lalr1.cc:859
+#line 1318 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 21:
 #line 154 "parser.yy" // lalr1.cc:859
     { }
-#line 1296 "parser.tab.cc" // lalr1.cc:859
+#line 1324 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 22:
 #line 157 "parser.yy" // lalr1.cc:859
     {  }
-#line 1302 "parser.tab.cc" // lalr1.cc:859
+#line 1330 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 33:
 #line 182 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > (); }
-#line 1308 "parser.tab.cc" // lalr1.cc:859
+#line 1336 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 34:
 #line 183 "parser.yy" // lalr1.cc:859
     { }
-#line 1314 "parser.tab.cc" // lalr1.cc:859
+#line 1342 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 35:
 #line 184 "parser.yy" // lalr1.cc:859
     { }
-#line 1320 "parser.tab.cc" // lalr1.cc:859
+#line 1348 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 36:
 #line 187 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > (); }
-#line 1326 "parser.tab.cc" // lalr1.cc:859
+#line 1354 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 37:
 #line 190 "parser.yy" // lalr1.cc:859
     { }
-#line 1332 "parser.tab.cc" // lalr1.cc:859
+#line 1360 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 41:
 #line 199 "parser.yy" // lalr1.cc:859
     { }
-#line 1338 "parser.tab.cc" // lalr1.cc:859
+#line 1366 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 42:
 #line 202 "parser.yy" // lalr1.cc:859
     { yystack_[2].value.as< std::vector<std::string> > ().push_back(yystack_[0].value.as< std::string > ()); yylhs.value.as< std::vector<std::string> > () = yystack_[2].value.as< std::vector<std::string> > (); }
-#line 1344 "parser.tab.cc" // lalr1.cc:859
+#line 1372 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 43:
 #line 203 "parser.yy" // lalr1.cc:859
     { std::vector<std::string> list; list.push_back(yystack_[0].value.as< std::string > ()); yylhs.value.as< std::vector<std::string> > () = list; }
-#line 1350 "parser.tab.cc" // lalr1.cc:859
+#line 1378 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 44:
 #line 206 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > (); }
-#line 1356 "parser.tab.cc" // lalr1.cc:859
+#line 1384 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 49:
 #line 217 "parser.yy" // lalr1.cc:859
     { brain.statements.VariableDeclaration(yystack_[3].value.as< std::vector<std::string> > (), yystack_[1].value.as< std::string > ()); }
-#line 1362 "parser.tab.cc" // lalr1.cc:859
+#line 1390 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 63:
 #line 237 "parser.yy" // lalr1.cc:859
     { brain.statements.Assignment(yystack_[2].value.as< std::string > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1368 "parser.tab.cc" // lalr1.cc:859
+#line 1396 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 79:
 #line 277 "parser.yy" // lalr1.cc:859
     { brain.statements.StopStatement(); }
-#line 1374 "parser.tab.cc" // lalr1.cc:859
+#line 1402 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 82:
 #line 284 "parser.yy" // lalr1.cc:859
     { brain.statements.ReadStatement(yystack_[1].value.as< std::vector<std::string> > ()); }
-#line 1380 "parser.tab.cc" // lalr1.cc:859
+#line 1408 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 83:
 #line 287 "parser.yy" // lalr1.cc:859
     { brain.statements.WriteStatement(yystack_[1].value.as< std::vector<cpsl::Expression> > ()); }
-#line 1386 "parser.tab.cc" // lalr1.cc:859
+#line 1414 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 86:
 #line 296 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< std::vector<cpsl::Expression> > () = yystack_[0].value.as< std::vector<cpsl::Expression> > ();}
-#line 1392 "parser.tab.cc" // lalr1.cc:859
+#line 1420 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 87:
 #line 297 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< std::vector<cpsl::Expression> > () = std::vector<cpsl::Expression>(); }
-#line 1398 "parser.tab.cc" // lalr1.cc:859
+#line 1426 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 88:
 #line 300 "parser.yy" // lalr1.cc:859
     { yystack_[2].value.as< std::vector<cpsl::Expression> > ().push_back(yystack_[0].value.as< cpsl::Expression > ()); yylhs.value.as< std::vector<cpsl::Expression> > () = yystack_[2].value.as< std::vector<cpsl::Expression> > ();}
-#line 1404 "parser.tab.cc" // lalr1.cc:859
+#line 1432 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 89:
 #line 301 "parser.yy" // lalr1.cc:859
     { std::vector<cpsl::Expression> list; list.push_back(yystack_[0].value.as< cpsl::Expression > ()); yylhs.value.as< std::vector<cpsl::Expression> > () = list;}
-#line 1410 "parser.tab.cc" // lalr1.cc:859
+#line 1438 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 90:
 #line 304 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.OrExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1416 "parser.tab.cc" // lalr1.cc:859
+#line 1444 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 91:
 #line 305 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.AndExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1422 "parser.tab.cc" // lalr1.cc:859
+#line 1450 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 92:
 #line 306 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.EqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1428 "parser.tab.cc" // lalr1.cc:859
+#line 1456 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 93:
 #line 307 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.NotEqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1434 "parser.tab.cc" // lalr1.cc:859
+#line 1462 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 94:
 #line 308 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.LtEqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1440 "parser.tab.cc" // lalr1.cc:859
+#line 1468 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 95:
 #line 309 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.GtEqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1446 "parser.tab.cc" // lalr1.cc:859
+#line 1474 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 96:
 #line 310 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.LtExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1452 "parser.tab.cc" // lalr1.cc:859
+#line 1480 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 97:
 #line 311 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.GtExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1458 "parser.tab.cc" // lalr1.cc:859
+#line 1486 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 98:
 #line 312 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.PlusExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1464 "parser.tab.cc" // lalr1.cc:859
+#line 1492 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 99:
 #line 313 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.MinusExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1470 "parser.tab.cc" // lalr1.cc:859
+#line 1498 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 100:
 #line 314 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.MultExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1476 "parser.tab.cc" // lalr1.cc:859
+#line 1504 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 101:
 #line 315 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.DivExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1482 "parser.tab.cc" // lalr1.cc:859
+#line 1510 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 102:
 #line 316 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.ModExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1488 "parser.tab.cc" // lalr1.cc:859
+#line 1516 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 103:
 #line 317 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.NotExpression(yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1494 "parser.tab.cc" // lalr1.cc:859
+#line 1522 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 104:
 #line 318 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.UMinusExpression(yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1500 "parser.tab.cc" // lalr1.cc:859
+#line 1528 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 105:
 #line 319 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = yystack_[1].value.as< cpsl::Expression > (); }
-#line 1506 "parser.tab.cc" // lalr1.cc:859
+#line 1534 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 106:
 #line 320 "parser.yy" // lalr1.cc:859
     {  }
-#line 1512 "parser.tab.cc" // lalr1.cc:859
+#line 1540 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 107:
 #line 321 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.ChrExpression(yystack_[1].value.as< cpsl::Expression > ()); }
-#line 1518 "parser.tab.cc" // lalr1.cc:859
+#line 1546 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 108:
 #line 322 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.OrdExpression(yystack_[1].value.as< cpsl::Expression > ()); }
-#line 1524 "parser.tab.cc" // lalr1.cc:859
+#line 1552 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 109:
 #line 323 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.PredExpression(yystack_[1].value.as< cpsl::Expression > ()); }
-#line 1530 "parser.tab.cc" // lalr1.cc:859
+#line 1558 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 110:
 #line 324 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.SuccExpression(yystack_[1].value.as< cpsl::Expression > ()); }
-#line 1536 "parser.tab.cc" // lalr1.cc:859
+#line 1564 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 111:
 #line 325 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.expressions.IntConstant(yystack_[0].value.as< std::string > ()); }
-#line 1542 "parser.tab.cc" // lalr1.cc:859
+#line 1570 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 112:
 #line 326 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.CharConstant(yystack_[0].value.as< std::string > ()); }
-#line 1548 "parser.tab.cc" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.CharConstant(yystack_[0].value.as< char > ()); }
+#line 1576 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 113:
 #line 327 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.addString(yystack_[0].value.as< std::string > ()); }
-#line 1554 "parser.tab.cc" // lalr1.cc:859
+#line 1582 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 114:
 #line 328 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< cpsl::Expression > () = brain.statements.LoadVariable(yystack_[0].value.as< std::string > ()); }
-#line 1560 "parser.tab.cc" // lalr1.cc:859
+#line 1588 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 115:
 #line 331 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< std::vector<std::string> > () = yystack_[2].value.as< std::vector<std::string> > (); }
-#line 1566 "parser.tab.cc" // lalr1.cc:859
+#line 1594 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 116:
 #line 332 "parser.yy" // lalr1.cc:859
     { std::vector<std::string> list; list.push_back(yystack_[0].value.as< std::string > ()); yylhs.value.as< std::vector<std::string> > () = list;}
-#line 1572 "parser.tab.cc" // lalr1.cc:859
+#line 1600 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 117:
 #line 335 "parser.yy" // lalr1.cc:859
     { }
-#line 1578 "parser.tab.cc" // lalr1.cc:859
+#line 1606 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 118:
 #line 336 "parser.yy" // lalr1.cc:859
     { }
-#line 1584 "parser.tab.cc" // lalr1.cc:859
+#line 1612 "parser.tab.cc" // lalr1.cc:859
     break;
 
   case 119:
 #line 337 "parser.yy" // lalr1.cc:859
     { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > ();}
-#line 1590 "parser.tab.cc" // lalr1.cc:859
+#line 1618 "parser.tab.cc" // lalr1.cc:859
     break;
 
 
-#line 1594 "parser.tab.cc" // lalr1.cc:859
+#line 1622 "parser.tab.cc" // lalr1.cc:859
             default:
               break;
             }
@@ -2225,7 +2253,7 @@ namespace cpsl {
 
 #line 5 "parser.yy" // lalr1.cc:1167
 } // cpsl
-#line 2229 "parser.tab.cc" // lalr1.cc:1167
+#line 2257 "parser.tab.cc" // lalr1.cc:1167
 #line 340 "parser.yy" // lalr1.cc:1168
 
 

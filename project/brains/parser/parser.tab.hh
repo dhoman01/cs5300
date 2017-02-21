@@ -294,30 +294,32 @@ namespace cpsl {
     /// An auxiliary type to compute the largest semantic type.
     union union_type
     {
+      // CHR_CONST
+      char dummy1[sizeof(char)];
+
       // expression
-      char dummy1[sizeof(cpsl::Expression)];
+      char dummy2[sizeof(cpsl::Expression)];
 
       // constDecl
       // assignment
-      char dummy2[sizeof(int)];
+      char dummy3[sizeof(int)];
 
       // IDENTIFIER
       // INT_CONST
-      // CHR_CONST
       // STRING_CONST
       // type
       // simpleType
       // identifier
       // lvalue
-      char dummy3[sizeof(std::string)];
+      char dummy4[sizeof(std::string)];
 
       // optExpressionList
       // expressionList
-      char dummy4[sizeof(std::vector<cpsl::Expression>)];
+      char dummy5[sizeof(std::vector<cpsl::Expression>)];
 
       // identifierList
       // lvalueList
-      char dummy5[sizeof(std::vector<std::string>)];
+      char dummy6[sizeof(std::vector<std::string>)];
 };
 
     /// Symbol semantic values.
@@ -435,6 +437,8 @@ namespace cpsl {
       /// Constructor for valueless symbols, and symbols from each type.
 
   basic_symbol (typename Base::kind_type t, const location_type& l);
+
+  basic_symbol (typename Base::kind_type t, const char v, const location_type& l);
 
   basic_symbol (typename Base::kind_type t, const cpsl::Expression v, const location_type& l);
 
@@ -739,7 +743,7 @@ namespace cpsl {
 
     static inline
     symbol_type
-    make_CHR_CONST (const std::string& v, const location_type& l);
+    make_CHR_CONST (const char& v, const location_type& l);
 
     static inline
     symbol_type
@@ -971,7 +975,7 @@ namespace cpsl {
 
 #line 5 "parser.yy" // lalr1.cc:377
 } // cpsl
-#line 975 "parser.tab.hh" // lalr1.cc:377
+#line 979 "parser.tab.hh" // lalr1.cc:377
 
 
 
