@@ -1,7 +1,7 @@
-## Instructions for Assignment 2
+## Instructions for Assignment 3
+I am having trouble getting my CMake to work correctly. Please use my shell script to build. Even has option to run a test script as well.
+The test script is located in project/tests/integration/
 ```shell
-mkdir build && cd build
-cmake /path/to/cs5300 && make
-./project/cpslcc /path/to/some_program.cpsl
-(or /path/to/cs5300/test.sh /file/path/to/testDir/*.cpsl ./project/cpslcc to run multiple files)
+chmod +x build.sh
+./build.sh
 ```
