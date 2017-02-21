@@ -1,18 +1,18 @@
 #ifndef BRAIN_HPP
 #define BRAIN_HPP 1
 
-#include <string>
 #include <cstddef>
-#include <istream>
 #include <fstream>
+#include <istream>
 #include <memory>
+#include <string>
 
-#include "parser/scanner.hpp"
 #include "parser/parser.tab.hh"
+#include "parser/scanner.hpp"
 
-#include "utils/LookupTable.hpp"
 #include "expressions/Expressions.hpp"
 #include "statements/Statements.hpp"
+#include "utils/LookupTable.hpp"
 
 namespace cpsl
 {
@@ -20,8 +20,10 @@ namespace cpsl
 class Brain
 {
 public:
-    Brain(std::string output_file = "");
-    virtual ~Brain();
+    Brain();
+    virtual ~Brain() = default;
+
+    void Finalize();
 
     void parse(const char* const filename);
     void parse(std::istream& iss);
@@ -33,19 +35,18 @@ public:
 
 private:
     void parse_helper(std::istream &stream);
-    void InitRegPool();
+    void Init();
     void InitMIPS();
     void InitPredefinedSymbols();
-    void Init();
+    void InitRegPool();
 
     std::vector<std::string> stringConst;
 
     std::shared_ptr<LookUpTable<Info>> symbolTable;
     std::shared_ptr<std::vector<Register>> regPool;
+
     std::shared_ptr<Parser> parser = nullptr;
     std::shared_ptr<Scanner> scanner = nullptr;
-
-    std::string output_file;
 
 };
 

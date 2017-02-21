@@ -3,8 +3,9 @@
 
 #include <memory>
 #include <vector>
-#include "../utils/structures.hpp"
+
 #include "../utils/LookupTable.hpp"
+#include "../utils/structures.hpp"
 
 namespace cpsl
 {
@@ -15,21 +16,21 @@ public:
     Statements() = default;
     Statements(std::shared_ptr<std::vector<Register>>, std::shared_ptr<LookUpTable<Info>>);
     
-    int StopStatement();
-    int ReadStatement(std::vector<std::string>);
-    int WriteStatement(std::vector<Expression>);
-    int VariableDeclaration(std::vector<std::string>, std::string id);
-    int ConstDeclaration(std::string, Expression);
-    int Assignment(std::string, Expression);
+    void Assignment(std::string, Expression);
+    void ConstDeclaration(std::string, Expression);
     Expression LoadVariable(std::string);
+    void ReadStatement(std::vector<std::string>);
+    void StopStatement();
+    void VariableDeclaration(std::vector<std::string>, std::string id);
+    void WriteStatement(std::vector<Expression>);
 private:
-    void StoreSymbol(std::string, std::shared_ptr<cpslType>);
-    void Write(Expression);
     void Read(std::string);
+    void StoreSymbol(std::string, std::shared_ptr<Type>);
+    void Write(Expression);
 
+    int globalLocation;
     std::shared_ptr<LookUpTable<Info>> symbolTable = nullptr;
     std::shared_ptr<std::vector<Register>> regPool = nullptr;
-    int globalLocation;
 };
 
 } 

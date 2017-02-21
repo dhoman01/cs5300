@@ -13,12 +13,12 @@ struct Info {
     std::string id;
 };
 
-struct cpslType : Info {
+struct Type : Info {
     std::size_t size;
 };
 
 struct VariableInfo : Info {
-    std::shared_ptr<cpslType> type;
+    std::shared_ptr<Type> type;
     std::string location;
 };
 

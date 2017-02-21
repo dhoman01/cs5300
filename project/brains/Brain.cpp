@@ -1,29 +1,28 @@
+#include <cassert>
 #include <cctype>
 #include <fstream>
-#include <cassert>
 
 #include "Brain.hpp"
 
-cpsl::Brain::Brain(std::string file)
+cpsl::Brain::Brain()
 {
     regPool = std::make_shared<std::vector<cpsl::Register>>();
     symbolTable = std::make_shared<cpsl::LookUpTable<cpsl::Info>>();
-    output_file = file;
     Init();
-    expressions = Expressions(regPool, output_file);
+    expressions = Expressions(regPool);
     statements = Statements(regPool, symbolTable);
 };
 
-cpsl::Brain::~Brain()
+void cpsl::Brain::Finalize()
 {
     std::cout << "\t.data" << std::endl;
     if(stringConst.size() > 0)
     {
-        std::cout << "\t# Write out string constants" << std::endl;
+        std::cout << "\n# Write out string constants" << std::endl;
         for(int i = 1; i <= stringConst.size(); ++i)
             std::cout << "S" << i << ": .asciiz " << stringConst[ i - 1 ] << std::endl;
     }
-    std::cout << "\t# Reset alignment to the nearest word and declare global area" << std::endl;
+    std::cout << "\n# Reset alignment to the nearest word and declare global area" << std::endl;
     std::cout << ".align 2" << std::endl << "GA:" << std::endl;
 }
 
@@ -70,9 +69,8 @@ void cpsl::Brain::parse_helper(std::istream &stream)
     parser = std::make_shared<cpsl::Parser>((*scanner.get()), (*this));
     
     if( parser->parse() != 0 )
-    {
         std::cerr << "Failed to parse input!" << std::endl;
-    }
+
     return;
 }
 
@@ -109,28 +107,28 @@ void cpsl::Brain::InitPredefinedSymbols()
     symbolTable->enterScope();
 
     // Create integer type
-    std::shared_ptr<cpsl::cpslType> integerType = std::make_shared<cpsl::cpslType>();
+    std::shared_ptr<cpsl::Type> integerType = std::make_shared<cpsl::Type>();
     integerType->size = 4;
     integerType->id = "integer";
     symbolTable->store("integer", integerType);
     symbolTable->store("INTEGER", integerType);
 
     // Create char type
-    std::shared_ptr<cpsl::cpslType> characterType = std::make_shared<cpsl::cpslType>();
+    std::shared_ptr<cpsl::Type> characterType = std::make_shared<cpsl::Type>();
     characterType->size = 4;
     characterType->id = "char";
     symbolTable->store("char", characterType);
     symbolTable->store("CHAR", characterType);
 
     // Create boolean type
-    std::shared_ptr<cpsl::cpslType> booleanType = std::make_shared<cpsl::cpslType>();
+    std::shared_ptr<cpsl::Type> booleanType = std::make_shared<cpsl::Type>();
     booleanType->size = 4;
     booleanType->id = "boolean";
     symbolTable->store("boolean", booleanType);
     symbolTable->store("BOOLEAN", booleanType);
 
     // Create string type
-    std::shared_ptr<cpsl::cpslType> stringType = std::make_shared<cpsl::cpslType>();
+    std::shared_ptr<cpsl::Type> stringType = std::make_shared<cpsl::Type>();
     stringType->size = 4;
     stringType->id = "string";
     symbolTable->store("string", stringType);

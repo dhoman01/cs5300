@@ -1,9 +1,9 @@
 #ifndef EXPRESSIONS_HPP
 #define EXPRESSIONS_HPP
 
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "../utils/structures.hpp"
 
@@ -14,10 +14,9 @@ class Expressions
 {
 public:
     Expressions() = default;
-    Expressions(std::shared_ptr<std::vector<Register>> pool, std::string file = "")
+    Expressions(std::shared_ptr<std::vector<Register>> pool)
     {
         regPool = pool;
-        output_file = file;
     };
     
     Expression AndExpression(Expression, Expression);
@@ -35,15 +34,14 @@ public:
     Expression ModExpression(Expression, Expression);
     Expression NotExpression(Expression);
     Expression UMinusExpression(Expression);
-    Expression IntConstant(std::string);
-    Expression CharConstant(std::string);
     Expression ChrExpression(Expression);
     Expression OrdExpression(Expression);
     Expression PredExpression(Expression);
     Expression SuccExpression(Expression);
+    Expression IntConstant(std::string);
+    Expression CharConstant(std::string);
 private:
     std::shared_ptr<std::vector<Register>> regPool = nullptr;
-    std::string output_file = "";
 };
 
 }

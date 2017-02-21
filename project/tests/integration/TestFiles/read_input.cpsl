@@ -8,15 +8,15 @@ BEGIN
 
 write("Beginning Program");
 write("-----------------\n");
-write("Enter value for a:");
+write("Enter integer value for a:");
 read(a);
-write("\nEnter value for b:");
+write("\nEnter integer value for b:");
 read(b);
 write("\nFor a you said ", a, "For b you said ", b);
 
-write("\nEnter value for c:");
+write("\nEnter character value for c:");
 read(c);
-write("\nEnter value for d:");
+write("\nEnter character value for d:");
 read(d);
 write("\nFor c you said ", c, "For d you said ", d);
 

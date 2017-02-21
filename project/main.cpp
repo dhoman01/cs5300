@@ -1,40 +1,81 @@
-#include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 #include "brains/Brain.hpp"
 
-int 
-main( const int argc, const char **argv )
+bool matchArgs(const char* arg, std::string opt)
 {
-   /** check for the right # of arguments **/
-   if( argc == 2 )
+    return std::strncmp(arg, opt.c_str(), opt.size()) == 0;
+}
+
+int main(const int argc, const char **argv)
+{
+   if(argc >= 2)
    {
-      cpsl::Brain driver;
-      /** example for piping input from terminal, i.e., using cat **/ 
-      if( std::strncmp( argv[ 1 ], "-o", 2 ) == 0 )
+      if(matchArgs(argv[1], std::string("--help")) || matchArgs(argv[1], std::string("-h")))
       {
-         driver.parse( std::cin );
+         std::cout << "usage: cpslc [/path/to/file/target | --stdio | --help] [options]" << std::endl;
+         std::cout << "Options: " << std::endl;
+         std::cout << "\t\u2022 use --help to get this menu" << std::endl;
+         std::cout << "\t\u2022 use --stdio for pipe to std::cin" << std::endl;
+         std::cout << "\t\u2022 use --output[=filename] for output of MIPS to filename" << std::endl;
+         return EXIT_SUCCESS;
       }
-      /** simple help menu **/
-      else if( std::strncmp( argv[ 1 ], "-h", 2 ) == 0 )
+
+      // Redirect std::cout to file if --output has a filename
+      std::streambuf* buffer = std::cout.rdbuf();
+      bool coutRestore = false;
+      std::ofstream asmOut;
+      if(argc >= 4 && (matchArgs(argv[2], std::string("--output")) || matchArgs(argv[2], std::string("-o"))))
       {
-         std::cout << "use -o for pipe to std::cin\n";
-         std::cout << "just give a filename to count from a file\n";
-         std::cout << "use -h to get this menu\n";
-         return( EXIT_SUCCESS );
+         asmOut.open(argv[3], std::ofstream::trunc);
+         std::cout.rdbuf(asmOut.rdbuf());
+         coutRestore = true;
       }
-      /** example reading input from a file **/
+
+      cpsl::Brain brain;
+      if(std::strncmp(argv[ 1 ], "--stdio", 7) == 0)
+      {
+          try
+          {
+            brain.parse(std::cin);              
+          }
+          catch (const std::exception& ex)
+          {
+              std::cerr << "Runtime Error: " << ex.what() << std::endl;
+              return EXIT_FAILURE;
+          }
+      }
       else
       {
-         /** assume file, prod code, use stat to check **/
-         driver.parse( argv[1] );
+          try
+          {
+            brain.parse(argv[1]);              
+          }
+          catch (const std::exception& ex)
+          {
+              std::cerr << "Runtime Error: " << ex.what() << std::endl;
+              return EXIT_FAILURE;
+          }
       }
+
+      brain.Finalize();
+
+      if(coutRestore)
+        std::cout.rdbuf(buffer);
    }
    else
    {
-      /** exit with failure condition **/
-      return ( EXIT_FAILURE );
+        std::cerr << "Improper Usage!" << std::endl;
+        std::cerr << "usage: cpslc [/path/to/file/target | --stdio | --help] [options]" << std::endl;
+        std::cerr << "Options: " << std::endl;
+        std::cerr << "\t\u2022 use --help to get this menu" << std::endl;
+        std::cerr << "\t\u2022 use --stdio for pipe to std::cin" << std::endl;
+        std::cerr << "\t\u2022 use --output[=filename] for output of MIPS to filename" << std::endl;
+        return EXIT_FAILURE;
    }
-   return( EXIT_SUCCESS );
+   return EXIT_SUCCESS;
 }

@@ -4,27 +4,32 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+MARSDIR=./
+MARSJAR=mars.jar
+
 if [ -z $1 ]; then
-    echo "usage: test.sh pattern_for_test_files /path/to/compiler"
+    echo "usage: test.sh /path/to/compiler /path/to/store/ASM"
     exit 1;
 fi
 
-filelist=($@)
-echo -e "${DARK_GREY} ${#filelist[@]} file(s) being parsed${NC}"
-mkdir parser_logs
-PASSED=0
-for ((i=0; i < ${#filelist[@]}-1; i++)); do
-    filepatharr=(${filelist[$i]//\// })
-    filename=${filepatharr[${#filepatharr[@]}-1]}
-    echo -e "${DARK_GREY}Parsing ${filelist[$i]}${NC}"
-    result="$(${@: -1} ${filelist[$i]})"
-    echo "${result}" > parser_logs/${filename}_output.txt
-    if [[ $result != *"SYNTAX ERROR"* ]]; then
-      echo -e "${GREEN}Successfully parsed ${filename}${NC}"
-    else
-      echo -e "${RED}Parse errors in ${filename}${RED}"
-      PASSED=1
-    fi
-done
+echo -e "${DARK_GREY} using ${1} to compile test programs${NC}"
+mkdir -p ${2}
 
-exit ${PASSED}
+echo -e "${GREEN} Testing arithmetic expressions (and stop statement) using TestFiles/arithmetic.cpsl${NC}"
+${1} TestFiles/arithmetic.cpsl -o ${2}/arithmetic.asm
+echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
+java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/arithmetic.asm > ${2}/arithmetic.out
+
+echo -e "${GREEN} Testing boolean expressions using TestFiles/boolean.cpsl${NC}"
+${1} TestFiles/boolean.cpsl -o ${2}/boolean.asm
+echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
+java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/boolean.asm > ${2}/boolean.out
+
+echo -e "${GREEN} Testing read statement using TestFiles/read_input.cpsl${NC}"
+${1} TestFiles/read_input.cpsl -o ${2}/read_input.asm
+echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
+java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/read_input.asm
+
+echo -e "${GREEN} Finished Tests!!!!${NC}"
+
+exit

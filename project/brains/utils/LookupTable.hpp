@@ -2,15 +2,16 @@
 #define LOOKUP_TABLE_HPP
 
 #include <iostream>
-#include <vector>
-#include <string>
 #include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "structures.hpp"
 
 namespace cpsl
 {
+
 template<typename Info>
 class LookUpTable
 {

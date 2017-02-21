@@ -25,7 +25,8 @@
         "*hpp*hpp*hpp*hppctime": "cpp",
         "*hpp*hpp*hpp*hpp*hppcstdarg": "cpp",
         "*hpp*hpp*hppcmath": "cpp",
-        "system_error": "cpp"
+        "system_error": "cpp",
+        "iostream": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceRoot}/project"
 }
