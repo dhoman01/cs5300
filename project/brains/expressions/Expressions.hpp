@@ -1,5 +1,5 @@
 #ifndef EXPRESSIONS_HPP
-#define EXPRESSIONS_HPP
+#define EXPRESSIONS_HPP 1
 
 #include <memory>
 #include <string>
