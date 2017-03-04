@@ -16,6 +16,9 @@ public:
     Statements() = default;
     Statements(std::shared_ptr<std::vector<Register>>, std::shared_ptr<LookUpTable<Info>>);
     
+    int WhileBegin();
+    void WhileHeader(int uid, Expression expr);
+    void WhileEnd(int uid);
     void Assignment(std::string, Expression);
     void ConstDeclaration(std::string, Expression);
     Expression LoadVariable(std::string);
@@ -27,6 +30,7 @@ private:
     void Read(std::string);
     void StoreSymbol(std::string, std::shared_ptr<Type>);
     void Write(Expression);
+    int getLabel();
 
     int globalLocation;
     std::shared_ptr<LookUpTable<Info>> symbolTable = nullptr;

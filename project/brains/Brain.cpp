@@ -15,7 +15,9 @@ cpsl::Brain::Brain()
 
 void cpsl::Brain::Finalize()
 {
-    std::cout << "\t.data" << std::endl;
+    std::cout << "\n\t# End of CPSL Program" << std::endl;
+    cpsl::Brain::statements.StopStatement();
+    std::cout << "\n\t.data" << std::endl;
     if(stringConst.size() > 0)
     {
         std::cout << "\n# Write out string constants" << std::endl;
@@ -92,7 +94,8 @@ void cpsl::Brain::InitMIPS()
     std::cout << ".globl main" << std::endl;
     std::cout << ".text\n" << std::endl;
 
-    std::cout << "main:   la $gp, GA" << std::endl;
+    std::cout << "main:" << std::endl;
+    std::cout << "\tla $gp, GA" << std::endl;
     std::cout << "\tori $fp, $sp, 0" << std::endl;
     std::cout << "\t# Store the true and false const values" << std::endl;
     std::cout << "\tli $a3 1" << std::endl;

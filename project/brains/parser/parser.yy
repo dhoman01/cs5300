@@ -100,10 +100,10 @@
 %left DIV_OP MOD_OP MULT_OP
 %right UMINUS_OP
 
-%type<cpsl::Expression>                 expression
+%type<cpsl::Expression>                 expression whileExpr
 %type<std::vector<std::string>>         identifierList lvalueList
 %type<std::vector<cpsl::Expression>>    expressionList optExpressionList
-%type<int>                              constDecl assignment
+%type<int>                              constDecl assignment whileHdr whileKey
 %type<std::string>                      lvalue type identifier simpleType
 
 %locations
@@ -258,7 +258,16 @@ elseStatement: ELSE_KEY statementList
     |
     ;
 
-whileStatement: WHILE_KEY expression DO_KEY statementList END_KEY
+whileStatement: whileHdr statementList END_KEY  { brain.statements.WhileEnd($1); }
+    ;
+
+whileHdr: whileKey whileExpr DO_KEY             { $$ = $1; brain.statements.WhileHeader($1, $2); }
+    ;
+
+whileKey: WHILE_KEY                             { $$ = brain.statements.WhileBegin(); }
+    ;
+
+whileExpr: expression                           { $$ = $1; }
     ;
 
 repeatStatement: REPEAT_KEY statementList UNTIL_KEY expression

@@ -19,6 +19,32 @@ cpsl::Statements::Statements(std::shared_ptr<std::vector<cpsl::Register>> pool, 
     symbolTable = table;
 };
 
+int cpsl::Statements::WhileBegin()
+{
+    int uid = cpsl::Statements::getLabel();
+    std::string label = "WB" + std::to_string(uid);
+    std::cout << "\n\t# Beginning While Loop (label " << label << ")" << std::endl;
+    std::cout << label << ":" << std::endl;
+    return uid;
+};
+
+void cpsl::Statements::WhileHeader(int uid, cpsl::Expression expr)
+{
+    std::string label = "WE" + std::to_string(uid);
+    std::cout << "\n\t# While Header (label " << label << ")" << std::endl;
+    std::cout << "\tbeq " << expr.reg.name << " $zero " << label;
+    regPool->push_back(expr.reg);
+};
+
+void cpsl::Statements::WhileEnd(int uid)
+{
+    std::string bLabel = "WB" + std::to_string(uid);
+    std::string eLabel = "WE" + std::to_string(uid);
+    std::cout << "\n\t# End of While Loop (label " << bLabel << " - " << eLabel << ")" << std::endl;
+    std::cout << "\tj " << bLabel << std::endl;
+    std::cout << eLabel << ":" << std::endl;
+};
+
 void cpsl::Statements::Assignment(std::string id, cpsl::Expression expr)
 {
     std::shared_ptr<cpsl::VariableInfo> var = std::dynamic_pointer_cast<cpsl::VariableInfo>(symbolTable->lookup(id));
@@ -184,4 +210,10 @@ void cpsl::Statements::Write(cpsl::Expression expr)
         std::cout << "\t# Finished writing expression to output" << std::endl;
         regPool->push_back(expr.reg);
         return;
+}
+
+int cpsl::Statements::getLabel()
+{
+    static std::size_t label = 0;
+    return ++label;
 }

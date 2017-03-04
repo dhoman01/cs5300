@@ -15,20 +15,10 @@ fi
 echo -e "${DARK_GREY} using ${1} to compile test programs${NC}"
 mkdir -p ${2}
 
-echo -e "${GREEN} Testing arithmetic expressions (and stop statement) using TestFiles/arithmetic.cpsl${NC}"
-${1} TestFiles/arithmetic.cpsl -o ${2}/arithmetic.asm
+echo -e "${GREEN} Testing While statement using TestFiles/while.cpsl${NC}"
+${1} TestFiles/while.cpsl -o ${2}/while.asm
 echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
-java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/arithmetic.asm > ${2}/arithmetic.out
-
-echo -e "${GREEN} Testing boolean expressions using TestFiles/boolean.cpsl${NC}"
-${1} TestFiles/boolean.cpsl -o ${2}/boolean.asm
-echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
-java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/boolean.asm > ${2}/boolean.out
-
-echo -e "${GREEN} Testing read statement using TestFiles/read_input.cpsl${NC}"
-${1} TestFiles/read_input.cpsl -o ${2}/read_input.asm
-echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
-java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/read_input.asm
+java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/while.asm > ${2}/while.out
 
 echo -e "${GREEN} Finished Tests!!!!${NC}"
 

@@ -297,11 +297,14 @@ namespace cpsl {
       // CHR_CONST
       char dummy1[sizeof(char)];
 
+      // whileExpr
       // expression
       char dummy2[sizeof(cpsl::Expression)];
 
       // constDecl
       // assignment
+      // whileHdr
+      // whileKey
       char dummy3[sizeof(int)];
 
       // IDENTIFIER
@@ -958,8 +961,8 @@ namespace cpsl {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 434,     ///< Last index in yytable_.
-      yynnts_ = 56,  ///< Number of nonterminal symbols.
+      yylast_ = 414,     ///< Last index in yytable_.
+      yynnts_ = 59,  ///< Number of nonterminal symbols.
       yyfinal_ = 9, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
@@ -975,7 +978,7 @@ namespace cpsl {
 
 #line 5 "parser.yy" // lalr1.cc:377
 } // cpsl
-#line 979 "parser.tab.hh" // lalr1.cc:377
+#line 982 "parser.tab.hh" // lalr1.cc:377
 
 
 

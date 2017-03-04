@@ -1,13 +1,15 @@
 VAR 
-  i, j : integer;
+  i : integer;
+  a : boolean;
 
 BEGIN
 
-i:= 12;
-
-while(i >= 0) do
-  write(i,"i ");
-  i := i-1;
+i := 0;
+a := i < 13;
+while(a = true) do
+  write("i ", i);
+  i := succ(i);
+  a := i < 13;
 end;
 
 END.

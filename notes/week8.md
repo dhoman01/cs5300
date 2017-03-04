@@ -28,9 +28,9 @@ WB0:
         # EXPR
         lw $t0, 0($gp)
         li $t1, 10
-        slt $t2, $0, $t1
+        slt $t2, $t0, $t1
         # WHILE_HDR
-        beq $2, $zero, WE0
+        beq $t2, $zero, WE0
         # STMT LIST
         # Write (i)
         # i := succ(i)
