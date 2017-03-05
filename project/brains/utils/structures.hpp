@@ -41,6 +41,14 @@ struct StringConst : Expression {
     std::string value;
 };
 
+struct ForHeaderInfo {
+    cpsl::Expression varExpr;
+    cpsl::Expression cond;
+    int uid;
+    std::shared_ptr<cpsl::VariableInfo> var;
+    std::string optTo;
+};
+
 };
 
 #endif

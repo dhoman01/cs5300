@@ -301,11 +301,20 @@ namespace cpsl {
       // expression
       char dummy2[sizeof(cpsl::Expression)];
 
+      // forHdr
+      // forBegin
+      char dummy3[sizeof(cpsl::ForHeaderInfo)];
+
       // constDecl
       // assignment
+      // ifHdr
+      // ifKey
+      // elseIfStatement
+      // elseIfHdr
       // whileHdr
       // whileKey
-      char dummy3[sizeof(int)];
+      // repeatHdr
+      char dummy4[sizeof(int)];
 
       // IDENTIFIER
       // INT_CONST
@@ -313,16 +322,21 @@ namespace cpsl {
       // type
       // simpleType
       // identifier
+      // optTo
       // lvalue
-      char dummy4[sizeof(std::string)];
+      char dummy5[sizeof(std::string)];
 
       // optExpressionList
       // expressionList
-      char dummy5[sizeof(std::vector<cpsl::Expression>)];
+      char dummy6[sizeof(std::vector<cpsl::Expression>)];
+
+      // optElseIfStatements
+      // elseIfStatements
+      char dummy7[sizeof(std::vector<int>)];
 
       // identifierList
       // lvalueList
-      char dummy6[sizeof(std::vector<std::string>)];
+      char dummy8[sizeof(std::vector<std::string>)];
 };
 
     /// Symbol semantic values.
@@ -445,11 +459,15 @@ namespace cpsl {
 
   basic_symbol (typename Base::kind_type t, const cpsl::Expression v, const location_type& l);
 
+  basic_symbol (typename Base::kind_type t, const cpsl::ForHeaderInfo v, const location_type& l);
+
   basic_symbol (typename Base::kind_type t, const int v, const location_type& l);
 
   basic_symbol (typename Base::kind_type t, const std::string v, const location_type& l);
 
   basic_symbol (typename Base::kind_type t, const std::vector<cpsl::Expression> v, const location_type& l);
+
+  basic_symbol (typename Base::kind_type t, const std::vector<int> v, const location_type& l);
 
   basic_symbol (typename Base::kind_type t, const std::vector<std::string> v, const location_type& l);
 
@@ -961,8 +979,8 @@ namespace cpsl {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 414,     ///< Last index in yytable_.
-      yynnts_ = 59,  ///< Number of nonterminal symbols.
+      yylast_ = 394,     ///< Last index in yytable_.
+      yynnts_ = 64,  ///< Number of nonterminal symbols.
       yyfinal_ = 9, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
@@ -978,7 +996,7 @@ namespace cpsl {
 
 #line 5 "parser.yy" // lalr1.cc:377
 } // cpsl
-#line 982 "parser.tab.hh" // lalr1.cc:377
+#line 1000 "parser.tab.hh" // lalr1.cc:377
 
 
 

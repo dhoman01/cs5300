@@ -64,11 +64,6 @@ WB1:
 	ori $a0 $23 0
 	syscall
 	# Finished writing expression to output
-	# Newline at end of write()
-	addi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR.
-	addi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character.
-	syscall
-	# Finished newline
 
 	# Loading value from 8($gp) with type integer
 	lw $23 8($gp)

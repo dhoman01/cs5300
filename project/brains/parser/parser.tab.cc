@@ -231,15 +231,25 @@ namespace cpsl {
         value.copy< char > (other.value);
         break;
 
-      case 105: // whileExpr
-      case 118: // expression
+      case 108: // whileExpr
+      case 123: // expression
         value.copy< cpsl::Expression > (other.value);
+        break;
+
+      case 112: // forHdr
+      case 113: // forBegin
+        value.copy< cpsl::ForHeaderInfo > (other.value);
         break;
 
       case 67: // constDecl
       case 95: // assignment
-      case 103: // whileHdr
-      case 104: // whileKey
+      case 97: // ifHdr
+      case 98: // ifKey
+      case 102: // elseIfStatement
+      case 103: // elseIfHdr
+      case 106: // whileHdr
+      case 107: // whileKey
+      case 110: // repeatHdr
         value.copy< int > (other.value);
         break;
 
@@ -249,17 +259,23 @@ namespace cpsl {
       case 82: // type
       case 83: // simpleType
       case 89: // identifier
-      case 120: // lvalue
+      case 114: // optTo
+      case 125: // lvalue
         value.copy< std::string > (other.value);
         break;
 
-      case 116: // optExpressionList
-      case 117: // expressionList
+      case 121: // optExpressionList
+      case 122: // expressionList
         value.copy< std::vector<cpsl::Expression> > (other.value);
         break;
 
+      case 100: // optElseIfStatements
+      case 101: // elseIfStatements
+        value.copy< std::vector<int> > (other.value);
+        break;
+
       case 88: // identifierList
-      case 119: // lvalueList
+      case 124: // lvalueList
         value.copy< std::vector<std::string> > (other.value);
         break;
 
@@ -284,15 +300,25 @@ namespace cpsl {
         value.copy< char > (v);
         break;
 
-      case 105: // whileExpr
-      case 118: // expression
+      case 108: // whileExpr
+      case 123: // expression
         value.copy< cpsl::Expression > (v);
+        break;
+
+      case 112: // forHdr
+      case 113: // forBegin
+        value.copy< cpsl::ForHeaderInfo > (v);
         break;
 
       case 67: // constDecl
       case 95: // assignment
-      case 103: // whileHdr
-      case 104: // whileKey
+      case 97: // ifHdr
+      case 98: // ifKey
+      case 102: // elseIfStatement
+      case 103: // elseIfHdr
+      case 106: // whileHdr
+      case 107: // whileKey
+      case 110: // repeatHdr
         value.copy< int > (v);
         break;
 
@@ -302,17 +328,23 @@ namespace cpsl {
       case 82: // type
       case 83: // simpleType
       case 89: // identifier
-      case 120: // lvalue
+      case 114: // optTo
+      case 125: // lvalue
         value.copy< std::string > (v);
         break;
 
-      case 116: // optExpressionList
-      case 117: // expressionList
+      case 121: // optExpressionList
+      case 122: // expressionList
         value.copy< std::vector<cpsl::Expression> > (v);
         break;
 
+      case 100: // optElseIfStatements
+      case 101: // elseIfStatements
+        value.copy< std::vector<int> > (v);
+        break;
+
       case 88: // identifierList
-      case 119: // lvalueList
+      case 124: // lvalueList
         value.copy< std::vector<std::string> > (v);
         break;
 
@@ -346,6 +378,13 @@ namespace cpsl {
   {}
 
   template <typename Base>
+  Parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const cpsl::ForHeaderInfo v, const location_type& l)
+    : Base (t)
+    , value (v)
+    , location (l)
+  {}
+
+  template <typename Base>
   Parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const int v, const location_type& l)
     : Base (t)
     , value (v)
@@ -361,6 +400,13 @@ namespace cpsl {
 
   template <typename Base>
   Parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::vector<cpsl::Expression> v, const location_type& l)
+    : Base (t)
+    , value (v)
+    , location (l)
+  {}
+
+  template <typename Base>
+  Parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::vector<int> v, const location_type& l)
     : Base (t)
     , value (v)
     , location (l)
@@ -403,15 +449,25 @@ namespace cpsl {
         value.template destroy< char > ();
         break;
 
-      case 105: // whileExpr
-      case 118: // expression
+      case 108: // whileExpr
+      case 123: // expression
         value.template destroy< cpsl::Expression > ();
+        break;
+
+      case 112: // forHdr
+      case 113: // forBegin
+        value.template destroy< cpsl::ForHeaderInfo > ();
         break;
 
       case 67: // constDecl
       case 95: // assignment
-      case 103: // whileHdr
-      case 104: // whileKey
+      case 97: // ifHdr
+      case 98: // ifKey
+      case 102: // elseIfStatement
+      case 103: // elseIfHdr
+      case 106: // whileHdr
+      case 107: // whileKey
+      case 110: // repeatHdr
         value.template destroy< int > ();
         break;
 
@@ -421,17 +477,23 @@ namespace cpsl {
       case 82: // type
       case 83: // simpleType
       case 89: // identifier
-      case 120: // lvalue
+      case 114: // optTo
+      case 125: // lvalue
         value.template destroy< std::string > ();
         break;
 
-      case 116: // optExpressionList
-      case 117: // expressionList
+      case 121: // optExpressionList
+      case 122: // expressionList
         value.template destroy< std::vector<cpsl::Expression> > ();
         break;
 
+      case 100: // optElseIfStatements
+      case 101: // elseIfStatements
+        value.template destroy< std::vector<int> > ();
+        break;
+
       case 88: // identifierList
-      case 119: // lvalueList
+      case 124: // lvalueList
         value.template destroy< std::vector<std::string> > ();
         break;
 
@@ -462,15 +524,25 @@ namespace cpsl {
         value.move< char > (s.value);
         break;
 
-      case 105: // whileExpr
-      case 118: // expression
+      case 108: // whileExpr
+      case 123: // expression
         value.move< cpsl::Expression > (s.value);
+        break;
+
+      case 112: // forHdr
+      case 113: // forBegin
+        value.move< cpsl::ForHeaderInfo > (s.value);
         break;
 
       case 67: // constDecl
       case 95: // assignment
-      case 103: // whileHdr
-      case 104: // whileKey
+      case 97: // ifHdr
+      case 98: // ifKey
+      case 102: // elseIfStatement
+      case 103: // elseIfHdr
+      case 106: // whileHdr
+      case 107: // whileKey
+      case 110: // repeatHdr
         value.move< int > (s.value);
         break;
 
@@ -480,17 +552,23 @@ namespace cpsl {
       case 82: // type
       case 83: // simpleType
       case 89: // identifier
-      case 120: // lvalue
+      case 114: // optTo
+      case 125: // lvalue
         value.move< std::string > (s.value);
         break;
 
-      case 116: // optExpressionList
-      case 117: // expressionList
+      case 121: // optExpressionList
+      case 122: // expressionList
         value.move< std::vector<cpsl::Expression> > (s.value);
         break;
 
+      case 100: // optElseIfStatements
+      case 101: // elseIfStatements
+        value.move< std::vector<int> > (s.value);
+        break;
+
       case 88: // identifierList
-      case 119: // lvalueList
+      case 124: // lvalueList
         value.move< std::vector<std::string> > (s.value);
         break;
 
@@ -951,15 +1029,25 @@ namespace cpsl {
         value.move< char > (that.value);
         break;
 
-      case 105: // whileExpr
-      case 118: // expression
+      case 108: // whileExpr
+      case 123: // expression
         value.move< cpsl::Expression > (that.value);
+        break;
+
+      case 112: // forHdr
+      case 113: // forBegin
+        value.move< cpsl::ForHeaderInfo > (that.value);
         break;
 
       case 67: // constDecl
       case 95: // assignment
-      case 103: // whileHdr
-      case 104: // whileKey
+      case 97: // ifHdr
+      case 98: // ifKey
+      case 102: // elseIfStatement
+      case 103: // elseIfHdr
+      case 106: // whileHdr
+      case 107: // whileKey
+      case 110: // repeatHdr
         value.move< int > (that.value);
         break;
 
@@ -969,17 +1057,23 @@ namespace cpsl {
       case 82: // type
       case 83: // simpleType
       case 89: // identifier
-      case 120: // lvalue
+      case 114: // optTo
+      case 125: // lvalue
         value.move< std::string > (that.value);
         break;
 
-      case 116: // optExpressionList
-      case 117: // expressionList
+      case 121: // optExpressionList
+      case 122: // expressionList
         value.move< std::vector<cpsl::Expression> > (that.value);
         break;
 
+      case 100: // optElseIfStatements
+      case 101: // elseIfStatements
+        value.move< std::vector<int> > (that.value);
+        break;
+
       case 88: // identifierList
-      case 119: // lvalueList
+      case 124: // lvalueList
         value.move< std::vector<std::string> > (that.value);
         break;
 
@@ -1002,15 +1096,25 @@ namespace cpsl {
         value.copy< char > (that.value);
         break;
 
-      case 105: // whileExpr
-      case 118: // expression
+      case 108: // whileExpr
+      case 123: // expression
         value.copy< cpsl::Expression > (that.value);
+        break;
+
+      case 112: // forHdr
+      case 113: // forBegin
+        value.copy< cpsl::ForHeaderInfo > (that.value);
         break;
 
       case 67: // constDecl
       case 95: // assignment
-      case 103: // whileHdr
-      case 104: // whileKey
+      case 97: // ifHdr
+      case 98: // ifKey
+      case 102: // elseIfStatement
+      case 103: // elseIfHdr
+      case 106: // whileHdr
+      case 107: // whileKey
+      case 110: // repeatHdr
         value.copy< int > (that.value);
         break;
 
@@ -1020,17 +1124,23 @@ namespace cpsl {
       case 82: // type
       case 83: // simpleType
       case 89: // identifier
-      case 120: // lvalue
+      case 114: // optTo
+      case 125: // lvalue
         value.copy< std::string > (that.value);
         break;
 
-      case 116: // optExpressionList
-      case 117: // expressionList
+      case 121: // optExpressionList
+      case 122: // expressionList
         value.copy< std::vector<cpsl::Expression> > (that.value);
         break;
 
+      case 100: // optElseIfStatements
+      case 101: // elseIfStatements
+        value.copy< std::vector<int> > (that.value);
+        break;
+
       case 88: // identifierList
-      case 119: // lvalueList
+      case 124: // lvalueList
         value.copy< std::vector<std::string> > (that.value);
         break;
 
@@ -1265,15 +1375,25 @@ namespace cpsl {
         yylhs.value.build< char > ();
         break;
 
-      case 105: // whileExpr
-      case 118: // expression
+      case 108: // whileExpr
+      case 123: // expression
         yylhs.value.build< cpsl::Expression > ();
+        break;
+
+      case 112: // forHdr
+      case 113: // forBegin
+        yylhs.value.build< cpsl::ForHeaderInfo > ();
         break;
 
       case 67: // constDecl
       case 95: // assignment
-      case 103: // whileHdr
-      case 104: // whileKey
+      case 97: // ifHdr
+      case 98: // ifKey
+      case 102: // elseIfStatement
+      case 103: // elseIfHdr
+      case 106: // whileHdr
+      case 107: // whileKey
+      case 110: // repeatHdr
         yylhs.value.build< int > ();
         break;
 
@@ -1283,17 +1403,23 @@ namespace cpsl {
       case 82: // type
       case 83: // simpleType
       case 89: // identifier
-      case 120: // lvalue
+      case 114: // optTo
+      case 125: // lvalue
         yylhs.value.build< std::string > ();
         break;
 
-      case 116: // optExpressionList
-      case 117: // expressionList
+      case 121: // optExpressionList
+      case 122: // expressionList
         yylhs.value.build< std::vector<cpsl::Expression> > ();
         break;
 
+      case 100: // optElseIfStatements
+      case 101: // elseIfStatements
+        yylhs.value.build< std::vector<int> > ();
+        break;
+
       case 88: // identifierList
-      case 119: // lvalueList
+      case 124: // lvalueList
         yylhs.value.build< std::vector<std::string> > ();
         break;
 
@@ -1315,355 +1441,451 @@ namespace cpsl {
           switch (yyn)
             {
   case 8:
-#line 127 "parser.yy" // lalr1.cc:859
+#line 129 "parser.yy" // lalr1.cc:859
     { brain.statements.ConstDeclaration(yystack_[3].value.as< std::string > (), yystack_[1].value.as< cpsl::Expression > ()); }
-#line 1321 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 18:
-#line 149 "parser.yy" // lalr1.cc:859
-    {  }
-#line 1327 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 19:
-#line 150 "parser.yy" // lalr1.cc:859
-    { }
-#line 1333 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 20:
-#line 153 "parser.yy" // lalr1.cc:859
-    { }
-#line 1339 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 21:
-#line 154 "parser.yy" // lalr1.cc:859
-    { }
-#line 1345 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 22:
-#line 157 "parser.yy" // lalr1.cc:859
-    {  }
-#line 1351 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 33:
-#line 182 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > (); }
-#line 1357 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 34:
-#line 183 "parser.yy" // lalr1.cc:859
-    { }
-#line 1363 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 35:
-#line 184 "parser.yy" // lalr1.cc:859
-    { }
-#line 1369 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 36:
-#line 187 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > (); }
-#line 1375 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 37:
-#line 190 "parser.yy" // lalr1.cc:859
-    { }
-#line 1381 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 41:
-#line 199 "parser.yy" // lalr1.cc:859
-    { }
-#line 1387 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 42:
-#line 202 "parser.yy" // lalr1.cc:859
-    { yystack_[2].value.as< std::vector<std::string> > ().push_back(yystack_[0].value.as< std::string > ()); yylhs.value.as< std::vector<std::string> > () = yystack_[2].value.as< std::vector<std::string> > (); }
-#line 1393 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 43:
-#line 203 "parser.yy" // lalr1.cc:859
-    { std::vector<std::string> list; list.push_back(yystack_[0].value.as< std::string > ()); yylhs.value.as< std::vector<std::string> > () = list; }
-#line 1399 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 44:
-#line 206 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > (); }
-#line 1405 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 49:
-#line 217 "parser.yy" // lalr1.cc:859
-    { brain.statements.VariableDeclaration(yystack_[3].value.as< std::vector<std::string> > (), yystack_[1].value.as< std::string > ()); }
-#line 1411 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 63:
-#line 237 "parser.yy" // lalr1.cc:859
-    { brain.statements.Assignment(yystack_[2].value.as< std::string > (), yystack_[0].value.as< cpsl::Expression > ()); }
-#line 1417 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 73:
-#line 261 "parser.yy" // lalr1.cc:859
-    { brain.statements.WhileEnd(yystack_[2].value.as< int > ()); }
-#line 1423 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 74:
-#line 264 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< int > () = yystack_[2].value.as< int > (); brain.statements.WhileHeader(yystack_[2].value.as< int > (), yystack_[1].value.as< cpsl::Expression > ()); }
-#line 1429 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 75:
-#line 267 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< int > () = brain.statements.WhileBegin(); }
-#line 1435 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 76:
-#line 270 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = yystack_[0].value.as< cpsl::Expression > (); }
-#line 1441 "parser.tab.cc" // lalr1.cc:859
-    break;
-
-  case 82:
-#line 286 "parser.yy" // lalr1.cc:859
-    { brain.statements.StopStatement(); }
 #line 1447 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 85:
-#line 293 "parser.yy" // lalr1.cc:859
-    { brain.statements.ReadStatement(yystack_[1].value.as< std::vector<std::string> > ()); }
+  case 18:
+#line 151 "parser.yy" // lalr1.cc:859
+    {  }
 #line 1453 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 86:
-#line 296 "parser.yy" // lalr1.cc:859
-    { brain.statements.WriteStatement(yystack_[1].value.as< std::vector<cpsl::Expression> > ()); }
+  case 19:
+#line 152 "parser.yy" // lalr1.cc:859
+    { }
 #line 1459 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 89:
-#line 305 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< std::vector<cpsl::Expression> > () = yystack_[0].value.as< std::vector<cpsl::Expression> > ();}
+  case 20:
+#line 155 "parser.yy" // lalr1.cc:859
+    { }
 #line 1465 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 90:
-#line 306 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< std::vector<cpsl::Expression> > () = std::vector<cpsl::Expression>(); }
+  case 21:
+#line 156 "parser.yy" // lalr1.cc:859
+    { }
 #line 1471 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 91:
-#line 309 "parser.yy" // lalr1.cc:859
-    { yystack_[2].value.as< std::vector<cpsl::Expression> > ().push_back(yystack_[0].value.as< cpsl::Expression > ()); yylhs.value.as< std::vector<cpsl::Expression> > () = yystack_[2].value.as< std::vector<cpsl::Expression> > ();}
+  case 22:
+#line 159 "parser.yy" // lalr1.cc:859
+    {  }
 #line 1477 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 92:
-#line 310 "parser.yy" // lalr1.cc:859
-    { std::vector<cpsl::Expression> list; list.push_back(yystack_[0].value.as< cpsl::Expression > ()); yylhs.value.as< std::vector<cpsl::Expression> > () = list;}
+  case 33:
+#line 184 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > (); }
 #line 1483 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 93:
-#line 313 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.OrExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 34:
+#line 185 "parser.yy" // lalr1.cc:859
+    { }
 #line 1489 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 94:
-#line 314 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.AndExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 35:
+#line 186 "parser.yy" // lalr1.cc:859
+    { }
 #line 1495 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 95:
-#line 315 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.EqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 36:
+#line 189 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > (); }
 #line 1501 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 96:
-#line 316 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.NotEqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 37:
+#line 192 "parser.yy" // lalr1.cc:859
+    { }
 #line 1507 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 97:
-#line 317 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.LtEqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 41:
+#line 201 "parser.yy" // lalr1.cc:859
+    { }
 #line 1513 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 98:
-#line 318 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.GtEqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 42:
+#line 204 "parser.yy" // lalr1.cc:859
+    { yystack_[2].value.as< std::vector<std::string> > ().push_back(yystack_[0].value.as< std::string > ()); yylhs.value.as< std::vector<std::string> > () = yystack_[2].value.as< std::vector<std::string> > (); }
 #line 1519 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 99:
-#line 319 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.LtExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 43:
+#line 205 "parser.yy" // lalr1.cc:859
+    { std::vector<std::string> list; list.push_back(yystack_[0].value.as< std::string > ()); yylhs.value.as< std::vector<std::string> > () = list; }
 #line 1525 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 100:
-#line 320 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.GtExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 44:
+#line 208 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > (); }
 #line 1531 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 101:
-#line 321 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.PlusExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 49:
+#line 219 "parser.yy" // lalr1.cc:859
+    { brain.statements.VariableDeclaration(yystack_[3].value.as< std::vector<std::string> > (), yystack_[1].value.as< std::string > ()); }
 #line 1537 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 102:
-#line 322 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.MinusExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 63:
+#line 239 "parser.yy" // lalr1.cc:859
+    { brain.statements.Assignment(yystack_[2].value.as< std::string > (), yystack_[0].value.as< cpsl::Expression > ()); }
 #line 1543 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 103:
-#line 323 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.MultExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 64:
+#line 242 "parser.yy" // lalr1.cc:859
+    { yystack_[2].value.as< std::vector<int> > ().push_back(yystack_[3].value.as< int > ()); brain.statements.IfEnd(yystack_[2].value.as< std::vector<int> > ()); }
 #line 1549 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 104:
-#line 324 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.DivExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 65:
+#line 245 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< int > () = yystack_[1].value.as< int > (); brain.statements.IfHeader(yystack_[1].value.as< int > ()); }
 #line 1555 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 105:
-#line 325 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.ModExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+  case 66:
+#line 248 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< int > () = brain.statements.IfBegin(yystack_[0].value.as< cpsl::Expression > ()); }
 #line 1561 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 106:
-#line 326 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.NotExpression(yystack_[0].value.as< cpsl::Expression > ()); }
+  case 68:
+#line 254 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< std::vector<int> > () = yystack_[0].value.as< std::vector<int> > (); }
 #line 1567 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 107:
-#line 327 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.UMinusExpression(yystack_[0].value.as< cpsl::Expression > ()); }
+  case 69:
+#line 255 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< std::vector<int> > () = std::vector<int>(0); }
 #line 1573 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 108:
-#line 328 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = yystack_[1].value.as< cpsl::Expression > (); }
+  case 70:
+#line 258 "parser.yy" // lalr1.cc:859
+    { yystack_[1].value.as< std::vector<int> > ().push_back(yystack_[0].value.as< int > ()); yylhs.value.as< std::vector<int> > () = yystack_[1].value.as< std::vector<int> > (); }
 #line 1579 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 109:
-#line 329 "parser.yy" // lalr1.cc:859
-    {  }
+  case 71:
+#line 259 "parser.yy" // lalr1.cc:859
+    { std::vector<int> list; list.push_back(yystack_[0].value.as< int > ()); yylhs.value.as< std::vector<int> > () = list; }
 #line 1585 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 110:
-#line 330 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.ChrExpression(yystack_[1].value.as< cpsl::Expression > ()); }
+  case 72:
+#line 262 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< int > () = yystack_[1].value.as< int > (); brain.statements.IfHeader(yystack_[1].value.as< int > ()); }
 #line 1591 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 111:
-#line 331 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.OrdExpression(yystack_[1].value.as< cpsl::Expression > ()); }
+  case 73:
+#line 265 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< int > () = brain.statements.IfBegin(yystack_[0].value.as< cpsl::Expression > ()); }
 #line 1597 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 112:
-#line 332 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.PredExpression(yystack_[1].value.as< cpsl::Expression > ()); }
+  case 76:
+#line 272 "parser.yy" // lalr1.cc:859
+    { brain.statements.WhileEnd(yystack_[2].value.as< int > ()); }
 #line 1603 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 113:
-#line 333 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.SuccExpression(yystack_[1].value.as< cpsl::Expression > ()); }
+  case 77:
+#line 275 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< int > () = yystack_[2].value.as< int > (); brain.statements.WhileHeader(yystack_[2].value.as< int > (), yystack_[1].value.as< cpsl::Expression > ()); }
 #line 1609 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 114:
-#line 334 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.IntConstant(yystack_[0].value.as< std::string > ()); }
+  case 78:
+#line 278 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< int > () = brain.statements.WhileBegin(); }
 #line 1615 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 115:
-#line 335 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.expressions.CharConstant(yystack_[0].value.as< char > ()); }
+  case 79:
+#line 281 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = yystack_[0].value.as< cpsl::Expression > (); }
 #line 1621 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 116:
-#line 336 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.addString(yystack_[0].value.as< std::string > ()); }
+  case 80:
+#line 284 "parser.yy" // lalr1.cc:859
+    { brain.statements.RepeatEnd(yystack_[3].value.as< int > (), yystack_[0].value.as< cpsl::Expression > ()); }
 #line 1627 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 117:
-#line 337 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< cpsl::Expression > () = brain.statements.LoadVariable(yystack_[0].value.as< std::string > ()); }
+  case 81:
+#line 287 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< int > () = brain.statements.RepeatBegin(); }
 #line 1633 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 118:
-#line 340 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< std::vector<std::string> > () = yystack_[2].value.as< std::vector<std::string> > (); }
+  case 82:
+#line 290 "parser.yy" // lalr1.cc:859
+    { brain.statements.ForEnd(yystack_[3].value.as< cpsl::ForHeaderInfo > ()); }
 #line 1639 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 119:
-#line 341 "parser.yy" // lalr1.cc:859
-    { std::vector<std::string> list; list.push_back(yystack_[0].value.as< std::string > ()); yylhs.value.as< std::vector<std::string> > () = list;}
+  case 83:
+#line 293 "parser.yy" // lalr1.cc:859
+    { yystack_[2].value.as< cpsl::ForHeaderInfo > ().optTo = yystack_[1].value.as< std::string > (); brain.statements.ForHeader(yystack_[2].value.as< cpsl::ForHeaderInfo > (), yystack_[0].value.as< cpsl::Expression > ()); yylhs.value.as< cpsl::ForHeaderInfo > () = yystack_[2].value.as< cpsl::ForHeaderInfo > (); }
 #line 1645 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 120:
-#line 344 "parser.yy" // lalr1.cc:859
-    { }
+  case 84:
+#line 296 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::ForHeaderInfo > () = brain.statements.ForBegin(yystack_[2].value.as< std::string > (), yystack_[0].value.as< cpsl::Expression > ()); }
 #line 1651 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 121:
-#line 345 "parser.yy" // lalr1.cc:859
-    { }
+  case 85:
+#line 299 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< std::string > () = "1"; }
 #line 1657 "parser.tab.cc" // lalr1.cc:859
     break;
 
-  case 122:
-#line 346 "parser.yy" // lalr1.cc:859
-    { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > ();}
+  case 86:
+#line 300 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< std::string > () = "-1"; }
 #line 1663 "parser.tab.cc" // lalr1.cc:859
     break;
 
+  case 87:
+#line 303 "parser.yy" // lalr1.cc:859
+    { brain.statements.StopStatement(); }
+#line 1669 "parser.tab.cc" // lalr1.cc:859
+    break;
 
-#line 1667 "parser.tab.cc" // lalr1.cc:859
+  case 90:
+#line 310 "parser.yy" // lalr1.cc:859
+    { brain.statements.ReadStatement(yystack_[1].value.as< std::vector<std::string> > ()); }
+#line 1675 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 91:
+#line 313 "parser.yy" // lalr1.cc:859
+    { brain.statements.WriteStatement(yystack_[1].value.as< std::vector<cpsl::Expression> > ()); }
+#line 1681 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 94:
+#line 322 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< std::vector<cpsl::Expression> > () = yystack_[0].value.as< std::vector<cpsl::Expression> > ();}
+#line 1687 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 95:
+#line 323 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< std::vector<cpsl::Expression> > () = std::vector<cpsl::Expression>(); }
+#line 1693 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 96:
+#line 326 "parser.yy" // lalr1.cc:859
+    { yystack_[2].value.as< std::vector<cpsl::Expression> > ().push_back(yystack_[0].value.as< cpsl::Expression > ()); yylhs.value.as< std::vector<cpsl::Expression> > () = yystack_[2].value.as< std::vector<cpsl::Expression> > ();}
+#line 1699 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 97:
+#line 327 "parser.yy" // lalr1.cc:859
+    { std::vector<cpsl::Expression> list; list.push_back(yystack_[0].value.as< cpsl::Expression > ()); yylhs.value.as< std::vector<cpsl::Expression> > () = list;}
+#line 1705 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 98:
+#line 330 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.OrExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1711 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 99:
+#line 331 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.AndExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1717 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 100:
+#line 332 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.EqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1723 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 101:
+#line 333 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.NotEqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1729 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 102:
+#line 334 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.LtEqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1735 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 103:
+#line 335 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.GtEqExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1741 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 104:
+#line 336 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.LtExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1747 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 105:
+#line 337 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.GtExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1753 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 106:
+#line 338 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.PlusExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1759 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 107:
+#line 339 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.MinusExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1765 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 108:
+#line 340 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.MultExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1771 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 109:
+#line 341 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.DivExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1777 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 110:
+#line 342 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.ModExpression(yystack_[2].value.as< cpsl::Expression > (), yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1783 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 111:
+#line 343 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.NotExpression(yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1789 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 112:
+#line 344 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.UMinusExpression(yystack_[0].value.as< cpsl::Expression > ()); }
+#line 1795 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 113:
+#line 345 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = yystack_[1].value.as< cpsl::Expression > (); }
+#line 1801 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 114:
+#line 346 "parser.yy" // lalr1.cc:859
+    {  }
+#line 1807 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 115:
+#line 347 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.ChrExpression(yystack_[1].value.as< cpsl::Expression > ()); }
+#line 1813 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 116:
+#line 348 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.OrdExpression(yystack_[1].value.as< cpsl::Expression > ()); }
+#line 1819 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 117:
+#line 349 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.PredExpression(yystack_[1].value.as< cpsl::Expression > ()); }
+#line 1825 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 118:
+#line 350 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.SuccExpression(yystack_[1].value.as< cpsl::Expression > ()); }
+#line 1831 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 119:
+#line 351 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.IntConstant(yystack_[0].value.as< std::string > ()); }
+#line 1837 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 120:
+#line 352 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.expressions.CharConstant(yystack_[0].value.as< char > ()); }
+#line 1843 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 121:
+#line 353 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.addString(yystack_[0].value.as< std::string > ()); }
+#line 1849 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 122:
+#line 354 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< cpsl::Expression > () = brain.statements.LoadVariable(yystack_[0].value.as< std::string > ()); }
+#line 1855 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 123:
+#line 357 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< std::vector<std::string> > () = yystack_[2].value.as< std::vector<std::string> > (); }
+#line 1861 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 124:
+#line 358 "parser.yy" // lalr1.cc:859
+    { std::vector<std::string> list; list.push_back(yystack_[0].value.as< std::string > ()); yylhs.value.as< std::vector<std::string> > () = list;}
+#line 1867 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 125:
+#line 361 "parser.yy" // lalr1.cc:859
+    { }
+#line 1873 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 126:
+#line 362 "parser.yy" // lalr1.cc:859
+    { }
+#line 1879 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+  case 127:
+#line 363 "parser.yy" // lalr1.cc:859
+    { yylhs.value.as< std::string > () = yystack_[0].value.as< std::string > ();}
+#line 1885 "parser.tab.cc" // lalr1.cc:859
+    break;
+
+
+#line 1889 "parser.tab.cc" // lalr1.cc:859
             default:
               break;
             }
@@ -1918,184 +2140,182 @@ namespace cpsl {
   }
 
 
-  const short int Parser::yypact_ninf_ = -171;
+  const short int Parser::yypact_ninf_ = -184;
 
   const signed char Parser::yytable_ninf_ = -26;
 
   const short int
   Parser::yypact_[] =
   {
-      -4,   -49,    44,    59,    19,  -171,   -49,  -171,    30,  -171,
-      96,    17,   -49,    47,  -171,    97,   -49,    97,    34,    96,
-      97,  -171,  -171,    51,    53,     2,  -171,  -171,  -171,  -171,
-      96,    97,  -171,  -171,   105,  -171,  -171,  -171,  -171,  -171,
-    -171,   -12,  -171,   -49,  -171,    88,   -49,  -171,    73,    78,
-      81,    82,    97,    97,    97,  -171,  -171,  -171,    83,   202,
-      11,   103,   225,   -49,   -24,   366,    97,    97,  -171,    96,
-       9,   133,   366,    96,    97,   -49,    97,  -171,     0,   -14,
-    -171,   -49,  -171,    41,    97,    97,    97,    97,  -171,   165,
-     286,    97,    97,    97,    97,    97,    97,    97,    97,    97,
-      97,    97,    97,    97,    97,  -171,    97,    96,   131,  -171,
-     -42,    11,    97,     7,   366,    93,    92,  -171,  -171,  -171,
-      29,   366,  -171,   256,    90,  -171,    91,  -171,  -171,  -171,
-    -171,     0,   -49,  -171,   -49,   -49,  -171,    18,  -171,    21,
-     302,   318,   334,   350,  -171,   100,   165,  -171,   186,   186,
-     186,   186,   186,    10,  -171,  -171,   186,   165,    10,   140,
-      94,    97,   137,   131,  -171,  -171,   -49,   366,  -171,    97,
-    -171,  -171,  -171,    97,   -10,  -171,   104,  -171,    98,   107,
-     106,    19,   108,   111,   113,  -171,  -171,  -171,  -171,  -171,
-    -171,  -171,    97,   225,    96,   148,  -171,    11,   366,   240,
-    -171,  -171,    35,  -171,     4,     4,  -171,    47,  -171,  -171,
-    -171,   366,  -171,    94,  -171,    97,     0,  -171,  -171,   114,
-     115,  -171,   -49,   126,    59,   271,   130,   139,     8,    66,
-     135,  -171,   176,  -171,     0,  -171,     0,  -171,     0,   138,
-    -171,  -171,  -171
+      19,   -44,    39,    38,    25,  -184,   -44,  -184,    27,  -184,
+     136,     3,   -44,    42,  -184,   116,   -44,   116,    24,  -184,
+     116,  -184,  -184,    41,    43,    -5,  -184,  -184,  -184,    83,
+      69,  -184,   136,   116,  -184,   136,  -184,    91,    15,  -184,
+    -184,  -184,  -184,  -184,  -184,   -15,  -184,   -44,  -184,    67,
+     -44,  -184,    51,    52,    53,    70,   116,   116,   116,  -184,
+    -184,  -184,    71,   158,   -41,    92,   333,   -44,   333,   116,
+     116,  -184,   136,   116,   117,    83,  -184,    69,   136,  -184,
+       5,   123,   333,   -20,   136,  -184,  -184,   116,   116,   -44,
+     116,  -184,     0,    17,  -184,   -44,  -184,    31,   116,   116,
+     116,   116,  -184,   191,   253,   116,   116,   116,   116,   116,
+     116,   116,   116,   116,   116,   116,   116,   116,   116,  -184,
+     116,  -184,   -25,   -41,   -23,   333,    82,    80,  -184,   333,
+     136,   124,  -184,  -184,    81,  -184,  -184,   116,     7,   333,
+     333,  -184,   223,    85,  -184,    88,  -184,  -184,  -184,  -184,
+       0,   -44,  -184,   -44,   -44,  -184,    49,  -184,    68,   269,
+     285,   301,   317,  -184,    87,   191,  -184,   346,   346,   346,
+     346,   346,    36,  -184,  -184,   346,   191,    36,   333,  -184,
+     -44,  -184,   116,  -184,    81,  -184,   333,  -184,  -184,   116,
+      -9,  -184,    90,  -184,    84,    93,    98,    25,    99,   101,
+     107,  -184,  -184,  -184,  -184,  -184,   -41,   333,   207,  -184,
+    -184,    33,  -184,    10,    10,  -184,    42,  -184,  -184,  -184,
+     116,     0,  -184,  -184,   115,   109,  -184,   -44,   118,    38,
+     238,   110,   120,     6,    35,   121,  -184,   156,  -184,     0,
+    -184,     0,  -184,     0,   125,  -184,  -184,  -184
   };
 
   const unsigned char
   Parser::yydefact_[] =
   {
        5,     0,     0,     0,    29,    44,     4,     7,     0,     1,
-      88,     0,     0,    46,     6,     0,     0,     0,     0,    88,
-      84,    82,    75,     0,   122,     0,    51,    52,    53,    54,
-      88,     0,    55,    56,     0,    57,    58,    59,    60,    61,
-      62,     0,     2,    28,    31,     0,     0,    11,     0,     0,
-       0,     0,     0,     0,     0,   114,   115,   116,   122,     0,
-     117,     0,     0,     0,     0,    83,     0,    90,    27,    88,
-       0,     0,    76,    88,     0,     0,     0,    30,     0,     0,
-      43,    45,    48,     3,     0,     0,     0,     0,   107,   106,
-       0,    90,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     8,     0,    88,    67,   122,
-       0,   119,     0,     0,    92,     0,    89,    50,    73,    74,
-       0,    63,   120,     0,     0,    39,     0,    33,    34,    35,
-      36,     0,     0,    47,     0,     0,     9,     5,    10,     5,
-       0,     0,     0,     0,   108,     0,    94,   104,    95,   100,
-      98,    99,    97,   102,   105,   103,    96,    93,   101,     0,
-      65,     0,    72,    66,    69,    85,     0,    77,    86,     0,
-      87,    78,   121,     0,     0,    32,     0,    42,     0,     0,
-       0,    29,     0,     0,     0,   110,   111,   112,   113,   109,
-      81,    80,     0,     0,    88,     0,    68,   118,    91,     0,
-      37,    38,     0,    49,    19,    19,    12,    46,    13,    15,
-      16,    79,    70,    71,    64,     0,     0,    24,    23,     0,
-      18,    21,     0,     0,     0,     0,     0,     0,    25,     0,
-       0,    26,     0,    40,     0,    20,     0,    14,     0,     0,
-      22,    41,    17
+      93,     0,     0,    46,     6,     0,     0,     0,     0,    81,
+      89,    87,    78,     0,   127,     0,    51,    52,    53,    69,
+       0,    54,    93,     0,    55,    93,    56,     0,     0,    57,
+      58,    59,    60,    61,    62,     0,     2,    28,    31,     0,
+       0,    11,     0,     0,     0,     0,     0,     0,     0,   119,
+     120,   121,   127,     0,   122,     0,    66,     0,    88,     0,
+      95,    27,    93,     0,    75,    68,    71,     0,    93,    65,
+       0,     0,    79,     0,    93,    86,    85,     0,     0,     0,
+       0,    30,     0,     0,    43,    45,    48,     3,     0,     0,
+       0,     0,   112,   111,     0,    95,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     8,
+       0,   127,     0,   124,     0,    97,     0,    94,    50,    73,
+      93,     0,    70,    72,    67,    76,    77,     0,     0,    83,
+      63,   125,     0,     0,    39,     0,    33,    34,    35,    36,
+       0,     0,    47,     0,     0,     9,     5,    10,     5,     0,
+       0,     0,     0,   113,     0,    99,   109,   100,   105,   103,
+     104,   102,   107,   110,   108,   101,    98,   106,    84,    90,
+       0,    91,     0,    92,    74,    64,    80,    82,   126,     0,
+       0,    32,     0,    42,     0,     0,     0,    29,     0,     0,
+       0,   115,   116,   117,   118,   114,   123,    96,     0,    37,
+      38,     0,    49,    19,    19,    12,    46,    13,    15,    16,
+       0,     0,    24,    23,     0,    18,    21,     0,     0,     0,
+       0,     0,     0,    25,     0,     0,    26,     0,    40,     0,
+      20,     0,    14,     0,     0,    22,    41,    17
   };
 
   const short int
   Parser::yypgoto_[] =
   {
-    -171,  -171,  -171,   195,  -171,   190,  -171,  -171,  -171,  -171,
-    -171,    -7,  -171,   -29,  -171,    72,    -8,    33,  -171,   174,
-    -112,  -171,  -171,  -171,  -171,  -171,  -170,    -1,    12,  -171,
-     151,     3,   149,  -171,  -171,    27,  -171,  -171,    85,  -171,
-    -171,  -171,  -171,  -171,  -171,  -171,  -171,  -171,  -171,  -171,
-    -171,  -171,  -171,  -171,   160,   187,    -3,  -171,     6
+    -184,  -184,  -184,   180,  -184,   176,  -184,  -184,  -184,  -184,
+    -184,   -29,  -184,   -50,  -184,    28,   -42,    -7,  -184,   141,
+     -98,  -184,  -184,  -184,  -184,  -184,  -183,    -1,   -12,  -184,
+     112,   -31,   137,  -184,  -184,  -184,  -184,   131,  -184,  -184,
+     135,  -184,  -184,  -184,  -184,  -184,  -184,  -184,  -184,  -184,
+    -184,  -184,  -184,  -184,  -184,  -184,  -184,  -184,  -184,   106,
+     143,     2,  -184,    -2
   };
 
   const short int
   Parser::yydefgoto_[] =
   {
-      -1,     2,     3,   181,     6,     7,    83,   136,   137,   138,
-     139,   219,   220,   221,   222,   182,    11,    13,    43,    44,
-     126,   127,   128,   174,   201,   129,    79,    58,    47,    81,
-      82,    25,    26,    27,    28,   108,   162,   163,   164,   195,
-      29,    30,    31,    71,    32,    33,    34,   192,    35,    36,
-      37,    38,    39,    40,   115,   116,   114,   110,    60
+      -1,     2,     3,   197,     6,     7,    97,   155,   156,   157,
+     158,   224,   225,   226,   227,   198,    11,    13,    47,    48,
+     145,   146,   147,   190,   210,   148,    93,    62,    51,    95,
+      96,    25,    26,    27,    28,    29,    30,    79,    74,    75,
+      76,    77,   131,    31,    32,    33,    81,    34,    35,    36,
+      37,    38,    87,    39,    40,    41,    42,    43,    44,   126,
+     127,   125,   122,    64
   };
 
   const short int
   Parser::yytable_[] =
   {
-       8,   200,     1,   124,   202,     8,   112,   165,     5,    24,
-     166,    45,    59,    68,    62,    61,    41,    65,    24,   176,
-     118,   125,    64,    74,     1,    41,   217,     1,    72,    24,
-     217,   180,    69,    70,   183,   218,    41,   131,   132,   218,
-     171,    75,    45,    76,     9,    80,    93,     5,    12,    88,
-      89,    90,   229,   100,   101,   134,   168,     5,    69,   169,
-     135,   -25,   109,    10,    75,    69,    76,    15,    24,   111,
-      42,   121,    24,   123,   122,    41,   120,   130,    46,    41,
-      80,   140,   141,   142,   143,    69,   216,   132,    63,   146,
-     147,   148,   149,   150,   151,   152,   153,   154,   155,   156,
-     157,   158,    48,   159,   226,    66,    24,    67,    16,   167,
-     160,    17,    73,    41,    49,    50,    18,   236,   132,    19,
-      20,    21,   239,    51,   240,    78,   241,    84,    22,    23,
-     130,   177,    85,   178,   179,    86,    87,    91,   106,    52,
-     119,   161,   170,    53,   169,   173,   194,   175,   190,   189,
-      69,    54,   204,     5,     5,    55,    56,    57,   193,   214,
-     203,   205,   206,   227,   208,   109,   198,   209,   191,   210,
-     199,   228,   197,    80,    92,   230,    93,    94,    95,    96,
-      97,    98,    99,   100,   101,   102,   233,   103,   104,   211,
-     234,   237,   238,    24,   242,     4,    14,   213,   223,   235,
-      41,    93,    94,    95,    96,    97,    98,    99,   100,   101,
-     102,   184,   225,   104,   207,   130,   231,    77,   117,   224,
-     212,    80,    93,   -26,   -26,   -26,   -26,   -26,    99,   100,
-     101,   -26,   133,   130,   104,   130,    92,   130,    93,    94,
-      95,    96,    97,    98,    99,   100,   101,   102,   196,   103,
-     104,   145,   107,   113,     0,     0,     0,     0,   105,    92,
-       0,    93,    94,    95,    96,    97,    98,    99,   100,   101,
-     102,     0,   103,   104,    92,     0,    93,    94,    95,    96,
-      97,    98,    99,   100,   101,   102,     0,   103,   104,     0,
-      92,   215,    93,    94,    95,    96,    97,    98,    99,   100,
-     101,   102,     0,   103,   104,    92,   172,    93,    94,    95,
-      96,    97,    98,    99,   100,   101,   102,     0,   103,   104,
-      92,   232,    93,    94,    95,    96,    97,    98,    99,   100,
-     101,   102,     0,   103,   104,   144,    92,     0,    93,    94,
-      95,    96,    97,    98,    99,   100,   101,   102,     0,   103,
-     104,   185,    92,     0,    93,    94,    95,    96,    97,    98,
-      99,   100,   101,   102,     0,   103,   104,   186,    92,     0,
-      93,    94,    95,    96,    97,    98,    99,   100,   101,   102,
-       0,   103,   104,   187,    92,     0,    93,    94,    95,    96,
-      97,    98,    99,   100,   101,   102,     0,   103,   104,   188,
-      92,     0,    93,    94,    95,    96,    97,    98,    99,   100,
-     101,   102,     0,   103,   104
+       8,    80,   209,   143,    83,     8,    71,   211,    45,    24,
+     137,    49,    89,     5,    90,    65,   135,    63,   187,    66,
+      88,   144,    68,    85,   179,     1,   181,   180,   222,   182,
+      45,    24,   222,    45,    24,    82,    72,   223,    89,     9,
+      90,   223,    10,    86,   234,   153,    49,   134,     5,    94,
+     154,    72,   192,   138,    12,     1,    46,     5,   102,   103,
+     104,    72,   196,    72,    15,   123,   121,   -25,   150,   151,
+      45,    24,   107,    50,     1,   129,    45,    24,    67,   114,
+     115,   199,    45,    24,   221,   151,   241,   151,   141,   139,
+     140,   149,   142,    73,    94,    69,    78,    70,    84,   184,
+     159,   160,   161,   162,    92,    98,    99,   100,   165,   166,
+     167,   168,   169,   170,   171,   172,   173,   174,   175,   176,
+     177,    52,   178,   231,   101,   105,   130,   120,    45,    24,
+     136,   183,   182,    53,    54,   185,   205,    72,   213,   186,
+     189,   244,    55,   245,   191,   246,   212,   214,    16,   149,
+     193,    17,   194,   195,   215,   217,    18,   218,    56,    19,
+      20,    21,    57,   219,   232,   233,   238,   235,    22,    23,
+      58,   239,   243,     5,    59,    60,    61,   242,   206,   121,
+       4,   247,    14,   240,   207,   228,   200,   236,    91,    94,
+     216,   208,   106,     5,   107,   108,   109,   110,   111,   112,
+     113,   114,   115,   116,   229,   117,   118,   152,   133,   128,
+     132,   164,   124,     0,   119,     0,     0,     0,     0,     0,
+     149,     0,   230,     0,     0,     0,    94,   107,   108,   109,
+     110,   111,   112,   113,   114,   115,   116,     0,   149,   118,
+     149,   106,   149,   107,   108,   109,   110,   111,   112,   113,
+     114,   115,   116,     0,   117,   118,     0,   106,   220,   107,
+     108,   109,   110,   111,   112,   113,   114,   115,   116,     0,
+     117,   118,   106,   188,   107,   108,   109,   110,   111,   112,
+     113,   114,   115,   116,     0,   117,   118,   106,   237,   107,
+     108,   109,   110,   111,   112,   113,   114,   115,   116,     0,
+     117,   118,   163,   106,     0,   107,   108,   109,   110,   111,
+     112,   113,   114,   115,   116,     0,   117,   118,   201,   106,
+       0,   107,   108,   109,   110,   111,   112,   113,   114,   115,
+     116,     0,   117,   118,   202,   106,     0,   107,   108,   109,
+     110,   111,   112,   113,   114,   115,   116,     0,   117,   118,
+     203,   106,     0,   107,   108,   109,   110,   111,   112,   113,
+     114,   115,   116,     0,   117,   118,   204,   106,     0,   107,
+     108,   109,   110,   111,   112,   113,   114,   115,   116,     0,
+     117,   118,   107,   -26,   -26,   -26,   -26,   -26,   113,   114,
+     115,   -26,     0,     0,   118
   };
 
   const short int
   Parser::yycheck_[] =
   {
-       1,    11,     6,     3,   174,     6,    30,    49,    57,    10,
-      52,    12,    15,    11,    17,    16,    10,    20,    19,   131,
-      11,    21,    19,    35,     6,    19,    22,     6,    31,    30,
-      22,    13,    56,    30,    13,    31,    30,    51,    52,    31,
-      11,    53,    43,    55,     0,    46,    36,    57,    29,    52,
-      53,    54,   222,    43,    44,    14,    49,    57,    56,    52,
-      19,    57,    63,     4,    53,    56,    55,    37,    69,    63,
-      53,    74,    73,    76,    75,    69,    73,    78,    31,    73,
-      81,    84,    85,    86,    87,    56,    51,    52,    54,    92,
-      93,    94,    95,    96,    97,    98,    99,   100,   101,   102,
-     103,   104,     5,   106,   216,    54,   107,    54,    12,   112,
-     107,    15,     7,   107,    17,    18,    20,    51,    52,    23,
-      24,    25,   234,    26,   236,    37,   238,    54,    32,    33,
-     131,   132,    54,   134,   135,    54,    54,    54,    35,    42,
-       7,    10,    49,    46,    52,    55,     9,    56,     8,    49,
-      56,    54,    54,    57,    57,    58,    59,    60,   161,    11,
-      56,    54,    56,    49,    56,   166,   169,    56,    28,    56,
-     173,    56,   166,   174,    34,    49,    36,    37,    38,    39,
-      40,    41,    42,    43,    44,    45,    56,    47,    48,   192,
-      51,    56,    16,   194,    56,     0,     6,   194,   205,   228,
-     194,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,   139,   215,    48,   181,   216,   224,    43,    69,   207,
-     193,   222,    36,    37,    38,    39,    40,    41,    42,    43,
-      44,    45,    81,   234,    48,   236,    34,   238,    36,    37,
-      38,    39,    40,    41,    42,    43,    44,    45,   163,    47,
-      48,    91,    27,    66,    -1,    -1,    -1,    -1,    56,    34,
+       1,    32,    11,     3,    35,     6,    11,   190,    10,    10,
+      30,    12,    53,    57,    55,    16,    11,    15,    11,    17,
+      35,    21,    20,     8,    49,     6,    49,    52,    22,    52,
+      32,    32,    22,    35,    35,    33,    56,    31,    53,     0,
+      55,    31,     4,    28,   227,    14,    47,    78,    57,    50,
+      19,    56,   150,    84,    29,     6,    53,    57,    56,    57,
+      58,    56,    13,    56,    37,    67,    67,    57,    51,    52,
+      72,    72,    36,    31,     6,    73,    78,    78,    54,    43,
+      44,    13,    84,    84,    51,    52,    51,    52,    89,    87,
+      88,    92,    90,    10,    95,    54,    27,    54,     7,   130,
+      98,    99,   100,   101,    37,    54,    54,    54,   106,   107,
+     108,   109,   110,   111,   112,   113,   114,   115,   116,   117,
+     118,     5,   120,   221,    54,    54,     9,    35,   130,   130,
+       7,    49,    52,    17,    18,    11,    49,    56,    54,   137,
+      55,   239,    26,   241,    56,   243,    56,    54,    12,   150,
+     151,    15,   153,   154,    56,    56,    20,    56,    42,    23,
+      24,    25,    46,    56,    49,    56,    56,    49,    32,    33,
+      54,    51,    16,    57,    58,    59,    60,    56,   180,   180,
+       0,    56,     6,   233,   182,   214,   158,   229,    47,   190,
+     197,   189,    34,    57,    36,    37,    38,    39,    40,    41,
+      42,    43,    44,    45,   216,    47,    48,    95,    77,    72,
+      75,   105,    69,    -1,    56,    -1,    -1,    -1,    -1,    -1,
+     221,    -1,   220,    -1,    -1,    -1,   227,    36,    37,    38,
+      39,    40,    41,    42,    43,    44,    45,    -1,   239,    48,
+     241,    34,   243,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    -1,    47,    48,    -1,    34,    51,    36,
+      37,    38,    39,    40,    41,    42,    43,    44,    45,    -1,
+      47,    48,    34,    50,    36,    37,    38,    39,    40,    41,
+      42,    43,    44,    45,    -1,    47,    48,    34,    50,    36,
+      37,    38,    39,    40,    41,    42,    43,    44,    45,    -1,
+      47,    48,    49,    34,    -1,    36,    37,    38,    39,    40,
+      41,    42,    43,    44,    45,    -1,    47,    48,    49,    34,
       -1,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    -1,    47,    48,    34,    -1,    36,    37,    38,    39,
-      40,    41,    42,    43,    44,    45,    -1,    47,    48,    -1,
-      34,    51,    36,    37,    38,    39,    40,    41,    42,    43,
-      44,    45,    -1,    47,    48,    34,    50,    36,    37,    38,
+      45,    -1,    47,    48,    49,    34,    -1,    36,    37,    38,
       39,    40,    41,    42,    43,    44,    45,    -1,    47,    48,
-      34,    50,    36,    37,    38,    39,    40,    41,    42,    43,
-      44,    45,    -1,    47,    48,    49,    34,    -1,    36,    37,
-      38,    39,    40,    41,    42,    43,    44,    45,    -1,    47,
-      48,    49,    34,    -1,    36,    37,    38,    39,    40,    41,
-      42,    43,    44,    45,    -1,    47,    48,    49,    34,    -1,
-      36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-      -1,    47,    48,    49,    34,    -1,    36,    37,    38,    39,
-      40,    41,    42,    43,    44,    45,    -1,    47,    48,    49,
-      34,    -1,    36,    37,    38,    39,    40,    41,    42,    43,
-      44,    45,    -1,    47,    48
+      49,    34,    -1,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    -1,    47,    48,    49,    34,    -1,    36,
+      37,    38,    39,    40,    41,    42,    43,    44,    45,    -1,
+      47,    48,    36,    37,    38,    39,    40,    41,    42,    43,
+      44,    45,    -1,    -1,    48
   };
 
   const unsigned char
@@ -2103,29 +2323,29 @@ namespace cpsl {
   {
        0,     6,    63,    64,    65,    57,    66,    67,    89,     0,
        4,    78,    29,    79,    67,    37,    12,    15,    20,    23,
-      24,    25,    32,    33,    89,    93,    94,    95,    96,   102,
-     103,   104,   106,   107,   108,   110,   111,   112,   113,   114,
-     115,   120,    53,    80,    81,    89,    31,    90,     5,    17,
-      18,    26,    42,    46,    54,    58,    59,    60,    89,   118,
-     120,    89,   118,    54,    93,   118,    54,    54,    11,    56,
-      93,   105,   118,     7,    35,    53,    55,    81,    37,    88,
-      89,    91,    92,    68,    54,    54,    54,    54,   118,   118,
-     118,    54,    34,    36,    37,    38,    39,    40,    41,    42,
-      43,    44,    45,    47,    48,    56,    35,    27,    97,    89,
-     119,   120,    30,   117,   118,   116,   117,    94,    11,     7,
-      93,   118,    89,   118,     3,    21,    82,    83,    84,    87,
-      89,    51,    52,    92,    14,    19,    69,    70,    71,    72,
-     118,   118,   118,   118,    49,   116,   118,   118,   118,   118,
-     118,   118,   118,   118,   118,   118,   118,   118,   118,   118,
-      93,    10,    98,    99,   100,    49,    52,   118,    49,    52,
-      49,    11,    50,    55,    85,    56,    82,    89,    89,    89,
-      13,    65,    77,    13,    77,    49,    49,    49,    49,    49,
-       8,    28,   109,   118,     9,   101,   100,   120,   118,   118,
-      11,    86,    88,    56,    54,    54,    56,    79,    56,    56,
-      56,   118,    97,    93,    11,    51,    51,    22,    31,    73,
-      74,    75,    76,    73,    90,   118,    82,    49,    56,    88,
-      49,    78,    50,    56,    51,    75,    51,    56,    16,    82,
-      82,    82,    56
+      24,    25,    32,    33,    89,    93,    94,    95,    96,    97,
+      98,   105,   106,   107,   109,   110,   111,   112,   113,   115,
+     116,   117,   118,   119,   120,   125,    53,    80,    81,    89,
+      31,    90,     5,    17,    18,    26,    42,    46,    54,    58,
+      59,    60,    89,   123,   125,    89,   123,    54,   123,    54,
+      54,    11,    56,    10,   100,   101,   102,   103,    27,    99,
+      93,   108,   123,    93,     7,     8,    28,   114,    35,    53,
+      55,    81,    37,    88,    89,    91,    92,    68,    54,    54,
+      54,    54,   123,   123,   123,    54,    34,    36,    37,    38,
+      39,    40,    41,    42,    43,    44,    45,    47,    48,    56,
+      35,    89,   124,   125,   122,   123,   121,   122,    94,   123,
+       9,   104,   102,    99,    93,    11,     7,    30,    93,   123,
+     123,    89,   123,     3,    21,    82,    83,    84,    87,    89,
+      51,    52,    92,    14,    19,    69,    70,    71,    72,   123,
+     123,   123,   123,    49,   121,   123,   123,   123,   123,   123,
+     123,   123,   123,   123,   123,   123,   123,   123,   123,    49,
+      52,    49,    52,    49,    93,    11,   123,    11,    50,    55,
+      85,    56,    82,    89,    89,    89,    13,    65,    77,    13,
+      77,    49,    49,    49,    49,    49,   125,   123,   123,    11,
+      86,    88,    56,    54,    54,    56,    79,    56,    56,    56,
+      51,    51,    22,    31,    73,    74,    75,    76,    73,    90,
+     123,    82,    49,    56,    88,    49,    78,    50,    56,    51,
+      75,    51,    56,    16,    82,    82,    82,    56
   };
 
   const unsigned char
@@ -2137,13 +2357,13 @@ namespace cpsl {
       80,    80,    81,    82,    82,    82,    83,    84,    85,    85,
       86,    87,    88,    88,    89,    90,    90,    91,    91,    92,
       93,    93,    94,    94,    94,    94,    94,    94,    94,    94,
-      94,    94,    94,    95,    96,    97,    98,    98,    99,    99,
-     100,   101,   101,   102,   103,   104,   105,   106,   107,   108,
-     109,   109,   110,   111,   111,   112,   113,   114,   115,   116,
-     116,   117,   117,   118,   118,   118,   118,   118,   118,   118,
-     118,   118,   118,   118,   118,   118,   118,   118,   118,   118,
-     118,   118,   118,   118,   118,   118,   118,   118,   119,   119,
-     120,   120,   120
+      94,    94,    94,    95,    96,    97,    98,    99,   100,   100,
+     101,   101,   102,   103,   104,   104,   105,   106,   107,   108,
+     109,   110,   111,   112,   113,   114,   114,   115,   116,   116,
+     117,   118,   119,   120,   121,   121,   122,   122,   123,   123,
+     123,   123,   123,   123,   123,   123,   123,   123,   123,   123,
+     123,   123,   123,   123,   123,   123,   123,   123,   123,   123,
+     123,   123,   123,   124,   124,   125,   125,   125
   };
 
   const unsigned char
@@ -2155,13 +2375,13 @@ namespace cpsl {
        2,     1,     4,     1,     1,     1,     1,     3,     2,     0,
        4,     8,     3,     1,     1,     2,     0,     2,     1,     4,
        3,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     3,     6,     2,     1,     0,     2,     1,
-       3,     2,     0,     3,     3,     1,     1,     4,     4,     6,
-       1,     1,     1,     2,     1,     4,     4,     4,     0,     1,
-       0,     3,     1,     3,     3,     3,     3,     3,     3,     3,
-       3,     3,     3,     3,     3,     3,     2,     2,     3,     4,
-       4,     4,     4,     4,     1,     1,     1,     1,     3,     1,
-       3,     4,     1
+       1,     1,     1,     3,     4,     2,     2,     2,     1,     0,
+       2,     1,     2,     2,     2,     0,     3,     3,     1,     1,
+       4,     1,     4,     3,     4,     1,     1,     1,     2,     1,
+       4,     4,     4,     0,     1,     0,     3,     1,     3,     3,
+       3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
+       3,     2,     2,     3,     4,     4,     4,     4,     4,     1,
+       1,     1,     1,     3,     1,     3,     4,     1
   };
 
 
@@ -2189,31 +2409,32 @@ namespace cpsl {
   "typeDecl", "type", "simpleType", "recordType", "fields", "field",
   "arrayType", "identifierList", "identifier", "optVarDecl", "varDecls",
   "varDecl", "statementList", "statement", "assignment", "ifStatement",
-  "thenStatement", "optElseIfStatements", "elseIfStatements",
-  "elseIfStatement", "elseStatement", "whileStatement", "whileHdr",
-  "whileKey", "whileExpr", "repeatStatement", "forStatement", "forHead",
-  "optTo", "stopStatement", "returnStatement", "readStatement",
-  "writeStatement", "procedureCall", "nullStatement", "optExpressionList",
-  "expressionList", "expression", "lvalueList", "lvalue", YY_NULLPTR
+  "ifHdr", "ifKey", "thenStatement", "optElseIfStatements",
+  "elseIfStatements", "elseIfStatement", "elseIfHdr", "elseStatement",
+  "whileStatement", "whileHdr", "whileKey", "whileExpr", "repeatStatement",
+  "repeatHdr", "forStatement", "forHdr", "forBegin", "optTo",
+  "stopStatement", "returnStatement", "readStatement", "writeStatement",
+  "procedureCall", "nullStatement", "optExpressionList", "expressionList",
+  "expression", "lvalueList", "lvalue", YY_NULLPTR
   };
 
 #if YYDEBUG
   const unsigned short int
   Parser::yyrline_[] =
   {
-       0,   113,   113,   116,   119,   120,   123,   124,   127,   130,
-     131,   132,   135,   136,   139,   142,   143,   146,   149,   150,
-     153,   154,   157,   160,   161,   162,   165,   168,   171,   172,
-     175,   176,   179,   182,   183,   184,   187,   190,   193,   194,
-     196,   199,   202,   203,   206,   209,   210,   213,   214,   217,
-     220,   221,   224,   225,   226,   227,   228,   229,   230,   231,
-     232,   233,   234,   237,   240,   243,   246,   247,   250,   251,
-     254,   257,   258,   261,   264,   267,   270,   273,   276,   279,
-     282,   283,   286,   289,   290,   293,   296,   299,   302,   305,
-     306,   309,   310,   313,   314,   315,   316,   317,   318,   319,
-     320,   321,   322,   323,   324,   325,   326,   327,   328,   329,
-     330,   331,   332,   333,   334,   335,   336,   337,   340,   341,
-     344,   345,   346
+       0,   115,   115,   118,   121,   122,   125,   126,   129,   132,
+     133,   134,   137,   138,   141,   144,   145,   148,   151,   152,
+     155,   156,   159,   162,   163,   164,   167,   170,   173,   174,
+     177,   178,   181,   184,   185,   186,   189,   192,   195,   196,
+     198,   201,   204,   205,   208,   211,   212,   215,   216,   219,
+     222,   223,   226,   227,   228,   229,   230,   231,   232,   233,
+     234,   235,   236,   239,   242,   245,   248,   251,   254,   255,
+     258,   259,   262,   265,   268,   269,   272,   275,   278,   281,
+     284,   287,   290,   293,   296,   299,   300,   303,   306,   307,
+     310,   313,   316,   319,   322,   323,   326,   327,   330,   331,
+     332,   333,   334,   335,   336,   337,   338,   339,   340,   341,
+     342,   343,   344,   345,   346,   347,   348,   349,   350,   351,
+     352,   353,   354,   357,   358,   361,   362,   363
   };
 
   // Print the state stack on the debug stream.
@@ -2300,8 +2521,8 @@ namespace cpsl {
 
 #line 5 "parser.yy" // lalr1.cc:1167
 } // cpsl
-#line 2304 "parser.tab.cc" // lalr1.cc:1167
-#line 349 "parser.yy" // lalr1.cc:1168
+#line 2525 "parser.tab.cc" // lalr1.cc:1167
+#line 366 "parser.yy" // lalr1.cc:1168
 
 
 void cpsl::Parser::error(const location_type& l, const std::string& err_message)

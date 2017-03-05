@@ -1,0 +1,12 @@
+var i, j : integer;
+
+BEGIN 
+
+  for i := 0 to 5 do
+    write("i = ", i, "\n");
+    for j := 0 to 5 do
+        write("\tj = ", j, "\n");
+    end;
+  end;
+
+END.

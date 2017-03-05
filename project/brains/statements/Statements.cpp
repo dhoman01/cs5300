@@ -4,12 +4,13 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <vector>
 
 /**************
  *   PUBLIC   *
  *************/ 
-cpsl::Statements::Statements(std::shared_ptr<std::vector<cpsl::Register>> pool, std::shared_ptr<cpsl::LookUpTable<cpsl::Info>> table)
+cpsl::Statements::Statements(std::shared_ptr<std::vector<cpsl::Register>> pool, std::shared_ptr<cpsl::LookUpTable<cpsl::Info>> table, bool addNew)
 {
     // Start globalLocation at 8
     // because true is at 0($gp)
@@ -17,6 +18,7 @@ cpsl::Statements::Statements(std::shared_ptr<std::vector<cpsl::Register>> pool, 
     globalLocation = 8;
     regPool = pool;
     symbolTable = table;
+    addNewline = addNew;
 };
 
 int cpsl::Statements::WhileBegin()
@@ -30,8 +32,27 @@ int cpsl::Statements::WhileBegin()
 
 void cpsl::Statements::WhileHeader(int uid, cpsl::Expression expr)
 {
+    // Type check
+    if(expr.type != "boolean")
+        throw std::runtime_error("The value of " + std::to_string(expr.value) + " is not boolean.");
+
     std::string label = "WE" + std::to_string(uid);
     std::cout << "\n\t# While Header (label " << label << ")" << std::endl;
+    if(expr.isConstant)
+    {
+        if(expr.value)
+        {
+            std::cerr << "WARN: While condition is always true, this may lead to an infinite loop. I'll continue, but I sure hope you know what your doing..." << std::endl;
+        }
+        else
+        {
+            std::cerr << "WARN: While condition is always false, the while loop will never execute. It's wasteful, but I assume you know what your doing and will still emit the MIPS for your while loop..." << std::endl;
+        }
+        std::cout << "\t# Grapping register and loading " << (expr.value ? "1" : "0") << " into it for constant expression" << std::endl;
+        expr.reg = regPool->back();
+        std::cout << "\tli " << expr.reg.name << " " << (expr.value ? "1" : "0") << std::endl;
+    }
+
     std::cout << "\tbeq " << expr.reg.name << " $zero " << label;
     regPool->push_back(expr.reg);
 };
@@ -45,6 +66,151 @@ void cpsl::Statements::WhileEnd(int uid)
     std::cout << eLabel << ":" << std::endl;
 };
 
+int cpsl::Statements::RepeatBegin()
+{
+    int uid = cpsl::Statements::getLabel();
+    std::string label = "RP" + std::to_string(uid);
+    std::cout << "\n\t# Begin Repeat Statement (label " << label << ")" << std::endl;
+    std::cout << label << ":" << std::endl;
+    return uid;
+};
+
+void cpsl::Statements::RepeatEnd(int uid, cpsl::Expression expr)
+{
+    // Type check
+    if(expr.type != "boolean")
+        throw std::runtime_error("The value of " + std::to_string(expr.value) + " is not boolean.");
+
+    std::string label = "RP" + std::to_string(uid);
+    std::cout << "\n\t# Repeat Exit Condition (label " << label << ")" << std::endl;
+    if(expr.isConstant)
+    {
+        if(expr.value)
+        {
+            std::cerr << "WARN: Repeat condition is always true, this may lead to an infinite loop. I'll continue, but I sure hope you know what your doing..." << std::endl;
+        }
+        else
+        {
+            std::cerr << "WARN: Repeat condition is always false, the repeat loop will never execute. It's wasteful, but I assume you know what your doing and will still emit the MIPS for your repeat loop..." << std::endl;
+        }
+        std::cout << "\t# Grapping register and loading " << (expr.value ? "1" : "0") << " into it for constant expression" << std::endl;
+        expr.reg = regPool->back();
+        regPool->pop_back();
+        std::cout << "\tli " << expr.reg.name << " " << (expr.value ? "1" : "0") << std::endl;
+    }
+    std::cout << "\tbne " << expr.reg.name << " $zero " << label << std::endl;
+    regPool->push_back(expr.reg);
+};
+
+int cpsl::Statements::IfBegin(cpsl::Expression expr)
+{
+    // Type check
+    if(expr.type != "boolean")
+        throw std::runtime_error("The value of " + std::to_string(expr.value) + " is not boolean.");
+
+    int uid = cpsl::Statements::getLabel();
+    std::string label = "IE" + std::to_string(uid);
+    std::cout << "\n\t# Begin If Statement" << std::endl;
+    if(expr.isConstant)
+    {
+        if(expr.value)
+        {
+            std::cerr << "WARN: If(ElseIf) condition is always true. I'll continue, but I sure hope you know what your doing..." << std::endl;
+        }
+        else
+        {
+            std::cerr << "WARN: If(ElseIf) condition is always false, the if branch will never execute. It's wasteful, but I assume you know what your doing and will still emit the MIPS for your if branch..." << std::endl;
+        }
+        std::cout << "\t# Grapping register and loading " << (expr.value ? "1" : "0") << " into it for constant expression" << std::endl;
+        expr.reg = regPool->back();
+        regPool->pop_back();
+        std::cout << "\tli " << expr.reg.name << " " << (expr.value ? "1" : "0") << std::endl;
+    }
+    std::cout << "\tbeq " << expr.reg.name << " $zero " << label << std::endl;
+    regPool->push_back(expr.reg);
+    return uid;
+};
+
+void cpsl::Statements::IfHeader(int uid)
+{
+    std::string dLabel = "ID" + std::to_string(uid);
+    std::string eLabel = "IE" + std::to_string(uid);
+    std::cout << "\n\t# End If then block (label " << dLabel << ", " << eLabel << ")" << std::endl;
+    std::cout << "\tj " << dLabel << std::endl;
+    std::cout << eLabel << ":" << std::endl;
+};
+
+void cpsl::Statements::IfEnd(std::vector<int> uids)
+{
+    for(auto uid : uids)
+    {
+        std::string label = "ID" + std::to_string(uid);
+        std::cout << "\n\t# End If(ElseIf) Statement (label " << label << ")" << std::endl;
+        std::cout << label << ":" << std::endl;
+    }
+};
+
+cpsl::ForHeaderInfo cpsl::Statements::ForBegin(std::string id, cpsl::Expression expr)
+{
+    // Type check
+    if(expr.type != "integer")
+        throw std::runtime_error("Type mismatch: " + expr.type + " != integer in for loop condition");
+
+    std::cout << "\n\t# For Statement Begin" << std::endl;
+    cpsl::ForHeaderInfo info;
+    cpsl::Expression varExpr;
+    try
+    {
+        std::shared_ptr<cpsl::VariableInfo> var = std::dynamic_pointer_cast<cpsl::VariableInfo>(symbolTable->lookup(id));
+        cpsl::Statements::Assignment(id, expr);
+        varExpr = cpsl::Statements::LoadVariable(id);
+        info.var = var;
+    }
+    catch (const std::exception& ex)
+    {
+        // TODO: Create variable for user...
+        throw std::runtime_error("Declaring variables in for loops is not yet implemented...");
+    }
+
+    int uid = cpsl::Statements::getLabel();
+    std::string label = "FB" + std::to_string(uid);
+    std::cout << "\t# Start of Loop" << std::endl;
+    std::cout << label << ":" << std::endl;
+    info.varExpr = varExpr;
+    info.uid = uid;
+    return info;
+};
+
+void cpsl::Statements::ForHeader(cpsl::ForHeaderInfo& info, cpsl::Expression cond)
+{
+    // Type check
+    if(cond.type != "integer")
+            throw std::runtime_error("Type mismatch: " + cond.type + " != integer in for loop condition");
+
+    info.cond = cond;    
+    if(cond.isConstant)
+    {
+        cond.reg = regPool->back();
+        regPool->pop_back();
+        std::cout << "\t# Loading constant expression" << std::endl;
+        std::cout << "\tli " << cond.reg.name << " " << cond.value << std::endl;
+    }
+    
+    std::cout << "\taddi " << cond.reg.name << " " << cond.reg.name << " " << info.optTo << std::endl;
+    std::cout << "\tbeq " << info.varExpr.reg.name << " " << cond.reg.name << " FE" << info.uid << std::endl;
+};
+
+void cpsl::Statements::ForEnd(cpsl::ForHeaderInfo info)
+{
+    std::cout << "\taddi " << info.varExpr.reg.name << " " << info.varExpr.reg.name << " " << info.optTo << std::endl;
+    std::cout << "\tsw " << info.varExpr.reg.name << " " << info.var->location << "($gp)" << std::endl;
+    std::cout << "\tj FB" << info.uid << std::endl;
+    std::cout << "FE" << info.uid << ":" << std::endl;
+    std::cout << "\t# End of For Statement" << std::endl;
+    regPool->push_back(info.varExpr.reg);
+    regPool->push_back(info.cond.reg);
+};
+
 void cpsl::Statements::Assignment(std::string id, cpsl::Expression expr)
 {
     std::shared_ptr<cpsl::VariableInfo> var = std::dynamic_pointer_cast<cpsl::VariableInfo>(symbolTable->lookup(id));
@@ -54,19 +220,18 @@ void cpsl::Statements::Assignment(std::string id, cpsl::Expression expr)
     std::cout << "\n\t# Assigning " << id << " the value";
     if(expr.isConstant)
     {
-        cpsl::Register reg = regPool->back();
+        expr.reg = regPool->back();
         regPool->pop_back();
         std::cout << " " << var->id << std::endl;
-        std::cout << "\tli " << reg.name << " " << expr.value << std::endl;
-        std::cout << "\tsw " << reg.name << " " << var->location << "($gp)" << std::endl;
-        regPool->push_back(reg);
+        std::cout << "\tli " << expr.reg.name << " " << expr.value << std::endl;
     } 
     else
     {
         std::cout << " at " << expr.reg.name << std::endl;
-        std::cout << "\tsw " << expr.reg.name << " " << var->location << "($gp)" << std::endl;
-        regPool->push_back(expr.reg);
     }
+
+    std::cout << "\tsw " << expr.reg.name << " " << var->location << "($gp)" << std::endl;
+    regPool->push_back(expr.reg);
     std::cout << "\t# Finished assignment of " << id;
     return;
 }
@@ -145,11 +310,15 @@ void cpsl::Statements::WriteStatement(std::vector<cpsl::Expression> expressionLi
         cpsl::Statements::Write(e);
 
     // Emit MIPS for newline
-    std::cout << "\t# Newline at end of write()" << std::endl;
-    std::cout << "\taddi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR." << std::endl;
-    std::cout << "\taddi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character." << std::endl;
-    std::cout << "\tsyscall" << std::endl;
-    std::cout << "\t# Finished newline" << std::endl;
+    if(cpsl::Statements::addNewline)
+    {
+        std::cout << "\n\t# Newline at end of write()" << std::endl;
+        std::cout << "\taddi $a0 $0 0xA #ascii code for LF, if you have any trouble try 0xD for CR." << std::endl;
+        std::cout << "\taddi $v0 $0 0xB #syscall 11 prints the lower 8 bits of $a0 as an ascii character." << std::endl;
+        std::cout << "\tsyscall" << std::endl;
+        std::cout << "\t# Finished newline" << std::endl;
+    }
+
     return;
 }
 
