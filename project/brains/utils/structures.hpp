@@ -47,6 +47,7 @@ struct ForHeaderInfo {
     int uid;
     std::shared_ptr<cpsl::VariableInfo> var;
     std::string optTo;
+    bool exitScope;
 };
 
 };

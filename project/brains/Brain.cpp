@@ -141,7 +141,7 @@ void cpsl::Brain::InitPredefinedSymbols()
     // In the MIPS Init function 0($gp) is set to the value 1
     std::shared_ptr<cpsl::VariableInfo> trueConst = std::make_shared<cpsl::VariableInfo>();
     trueConst->id = "true";
-    trueConst->location = "0";
+    trueConst->location = "0($gp)";
     trueConst->type = booleanType;
     symbolTable->store("true", trueConst);
     symbolTable->store("TRUE", trueConst);
@@ -150,7 +150,7 @@ void cpsl::Brain::InitPredefinedSymbols()
     // In the MIPS Init function 4($gp) is set to the value 0
     std::shared_ptr<cpsl::VariableInfo> falseConst = std::make_shared<cpsl::VariableInfo>();
     falseConst->id = "false";
-    falseConst->location = "4";
+    falseConst->location = "4($gp)";
     falseConst->type = booleanType;
     symbolTable->store("false", falseConst);
     symbolTable->store("FALSE", falseConst);

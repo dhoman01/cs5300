@@ -11,17 +11,17 @@ main:
 
 
 	# Begin CPSL Program
-	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
-	# (NO MIPS EMITTED) Storing symbol j with type integer into symbol table
 
 	# For Statement Begin
+	# Entering new scope for for loop
+	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
 
 	# Assigning i the value i
 	li $25 0
-	sw $25 8($gp)
+	sw $25 0($fp)
 	# Finished assignment of i
-	# Loading value from 8($gp) with type integer
-	lw $25 8($gp)
+	# Loading value from 0($fp) with type integer
+	lw $25 0($fp)
 	# Loaded value from i
 	# Start of Loop
 FB1:
@@ -30,8 +30,8 @@ FB1:
 	addi $24 $24 1
 	beq $25 $24 FE1
 
-	# Loading value from 8($gp) with type integer
-	lw $23 8($gp)
+	# Loading value from 0($fp) with type integer
+	lw $23 0($fp)
 	# Loaded value from i
 
 	# Writing expression to output
@@ -59,13 +59,15 @@ FB1:
 	# Finished writing expression to output
 
 	# For Statement Begin
+	# Entering new scope for for loop
+	# (NO MIPS EMITTED) Storing symbol j with type integer into symbol table
 
 	# Assigning j the value j
 	li $23 0
-	sw $23 12($gp)
+	sw $23 8($gp)
 	# Finished assignment of j
-	# Loading value from 12($gp) with type integer
-	lw $23 12($gp)
+	# Loading value from 8($gp) with type integer
+	lw $23 8($gp)
 	# Loaded value from j
 	# Start of Loop
 FB2:
@@ -74,8 +76,8 @@ FB2:
 	addi $22 $22 1
 	beq $23 $22 FE2
 
-	# Loading value from 12($gp) with type integer
-	lw $21 12($gp)
+	# Loading value from 8($gp) with type integer
+	lw $21 8($gp)
 	# Loaded value from j
 
 	# Writing expression to output
@@ -102,15 +104,17 @@ FB2:
 	syscall
 	# Finished writing expression to output
 	addi $23 $23 1
-	sw $23 12($gp)
+	sw $23 8($gp)
 	j FB2
 FE2:
 	# End of For Statement
+	# Exited scope for for loop
 	addi $25 $25 1
-	sw $25 8($gp)
+	sw $25 0($fp)
 	j FB1
 FE1:
 	# End of For Statement
+	# Exited scope for for loop
 
 	# End of CPSL Program
 
