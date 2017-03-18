@@ -65,6 +65,15 @@ WB1:
 	syscall
 	# Finished writing expression to output
 
+	# Writing expression to output
+	# Loading string const
+	la $23 S2
+	# Loaded string S2
+	li $v0 4
+	ori $a0 $23 0
+	syscall
+	# Finished writing expression to output
+
 	# Loading value from 8($gp) with type integer
 	lw $23 8($gp)
 	# Loaded value from i
@@ -102,6 +111,7 @@ WE1:
 
 # Write out string constants
 S1: .asciiz "i "
+S2: .asciiz "\n"
 
 # Reset alignment to the nearest word and declare global area
 .align 2

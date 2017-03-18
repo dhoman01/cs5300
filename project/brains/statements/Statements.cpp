@@ -100,7 +100,7 @@ void cpsl::Statements::ForHeader(cpsl::ForHeaderInfo& info, cpsl::Expression con
 void cpsl::Statements::ForEnd(cpsl::ForHeaderInfo info)
 {
     // Increment counter
-    std::cout << "\t# Incrementing counter " << info.var.id << std::endl;
+    std::cout << "\t# Incrementing counter " << info.var->id << std::endl;
     std::cout << "\taddi " << info.varExpr.reg.name << " " << info.varExpr.reg.name << " " << info.optTo << std::endl;
     std::cout << "\tsw " << info.varExpr.reg.name << " " << info.var->location << std::endl;
     std::cout << "\tj FB" << info.uid << std::endl;
@@ -129,23 +129,30 @@ int cpsl::Statements::IfBegin(cpsl::Expression expr)
     int uid = cpsl::Statements::getUid();
     std::string label = "IE" + std::to_string(uid);
     std::cout << "\n\t# Begin If Statement" << std::endl;
+    
+    // Check for constant If Condition
     if(expr.isConstant)
     {   
+        // If condition is always true, no need to branch
         if(expr.value)
         {
-            std::cerr << "WARN: If(ElseIf) condition is always true. I'll continue, but I sure hope you know what your doing..." << std::endl;
+            std::cerr << "WARN: If(ElseIf) condition is always true. Skipping executing if condition..." << std::endl;
+            std::cout << "\t# No beq emitted because if condition is always true" << std::endl;
         }
+        // If condition is always false, just jump to the else block
         else
         {
-            std::cerr << "WARN: If(ElseIf) condition is always false, the if branch will never execute. It's wasteful, but I assume you know what your doing and will still emit the MIPS for your if branch..." << std::endl;
+            std::cerr << "WARN: If(ElseIf) condition is always false, the if branch will never execute. Jumping to else..." << std::endl;
+            std::cout << "\t# Jumping to else(elseif) because if condition is always false" << std::endl;
+            std::cout << "\tj " << label << std::endl;
         }
-        std::cout << "\t# Grapping register and loading " << (expr.value ? "1" : "0") << " into it for constant expression" << std::endl;
-        expr.reg = regPool->back();
-        regPool->pop_back();
-        std::cout << "\tli " << expr.reg.name << " " << (expr.value ? "1" : "0") << std::endl;
     }
-    std::cout << "\tbeq " << expr.reg.name << " $zero " << label << std::endl;
-    regPool->push_back(expr.reg);
+    else
+    {
+        std::cout << "\tbeq " << expr.reg.name << " $zero " << label << std::endl;
+        regPool->push_back(expr.reg);
+    }
+    
     return uid;
 };
 

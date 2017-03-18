@@ -51,5 +51,6 @@ echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
 java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/for_nested.asm > ${2}/for_nested.out
 
 echo -e "${GREEN}Finished Tests!!!!${NC}"
+echo -e "${DARK_GREY}Output of test files are at ${2}${NC}"
 
 exit

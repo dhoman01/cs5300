@@ -16,7 +16,7 @@ main:
 	# For Statement Begin
 
 	# Assigning i the value i
-	li $25 10
+	li $25 0
 	sw $25 8($gp)
 	# Finished assignment of i
 	# Loading value from 8($gp) with type integer
@@ -26,12 +26,21 @@ main:
 FB1:
 	# Loading constant expression
 	li $24 5
-	addi $24 $24 -1
+	addi $24 $24 1
 	beq $25 $24 FE1
 
 	# Loading value from 8($gp) with type integer
 	lw $23 8($gp)
 	# Loaded value from i
+
+	# Writing expression to output
+	# Loading string const
+	la $22 S1
+	# Loaded string S1
+	li $v0 4
+	ori $a0 $22 0
+	syscall
+	# Finished writing expression to output
 
 	# Writing expression to output
 	li $v0 1
@@ -41,13 +50,14 @@ FB1:
 
 	# Writing expression to output
 	# Loading string const
-	la $23 S1
-	# Loaded string S1
+	la $23 S2
+	# Loaded string S2
 	li $v0 4
 	ori $a0 $23 0
 	syscall
 	# Finished writing expression to output
-	addi $25 $25 -1
+	# Incrementing counter i
+	addi $25 $25 1
 	sw $25 8($gp)
 	j FB1
 FE1:
@@ -63,7 +73,8 @@ FE1:
 	.data
 
 # Write out string constants
-S1: .asciiz " \n"
+S1: .asciiz "i = "
+S2: .asciiz " \n"
 
 # Reset alignment to the nearest word and declare global area
 .align 2

@@ -41,7 +41,7 @@ public:
     void StopStatement();
     void WriteStatement(std::vector<Expression>);
 private:
-    int getLabel();
+    int getUid();
     void Read(std::string);
     void StoreSymbol(std::string, std::shared_ptr<Type>);
     void Write(Expression);
