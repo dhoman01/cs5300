@@ -76,3 +76,75 @@ main:
 
     # Write $t3
 ```
+
+## SWAP procedure
+*Procedures don't return anything (void functions)
+```cpsl
+procdure swap(ref a,b :integer);
+var t : integer;
+begin
+    t := a;
+    a := b;
+    b := t;
+end
+
+var a,b : integer;
+begin
+    a := 1;
+    b := 2;
+    swap(a,b);
+    write(a, " ", b)
+end.
+```
+
+Symbol Table
+--------------------------
+global:
+proc    swap(int&, int&)
+local:
+int&    a   0($fp)
+int&    b   4($fp)
+int     t   -4($fp)
+
+```mips
+swapP:
+    # Make room for t
+    addi $sp, $sp, -4
+
+    # t := a
+    lw $t0, 0($fp)
+    lw $t1, 0($t0)
+    sw $t1, -4($fp)
+
+    # a := b
+    lw $t0, 4($fp)
+    lw $t1, 0($t0)
+    lw $t0, 0($fp)
+    sw $t1, 0($t0)
+
+    # b := t
+    lw $t0, -4($fp)
+    lw $t1, 4($fp)
+    sw $t0, 0($t1)
+swapE:
+    addi $sp, $sp, 4
+    jr $ra
+
+main:
+    li $t0, 1
+    sw $t0, 0($gp)
+    li $t0, 2
+    sw $t0, 4($gp)
+    addi $sp, $sp -16
+    addi $t0, $gp, 0
+    sw $t0, 0($sp)
+    addi $t0, $gp, 4
+    sw $t0, 4($sp)
+    sw $ra, 8($sp)
+    sw $fp, 12($sp)
+    jal swapP
+    lw $ra, 8($sp)
+    lw $fp, 12($sp)
+    addi $sp, $sp, 16
+    # Do write
+```
