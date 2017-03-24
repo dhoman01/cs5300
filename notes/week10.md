@@ -148,3 +148,71 @@ main:
     addi $sp, $sp, 16
     # Do write
 ```
+
+## Spilling registers in Prolouge
+```cpsl
+procedure swap(ref a,b : integer);
+var t : integer;
+begin
+    t := a; 
+    a := b;
+    b := t;
+end
+```
+
+ST
+______________
+global:
+    swap(int&a, int&b)
+local:
+    a int& 0($fp)
+    b int& 4($fp)
+    t int -4($fp)
+
+```mips
+swapBegin:
+    lw $t0, 0($fp)
+    lw $t0, 0 ($t0)
+    sw $t0, -4($fp)
+    lw $t0, 4($fp)
+    lw $t0, 0($t0)
+    lw $t1, 0($fp)
+    sw $t0, 0($t1)
+    lw $t0, -4($fp)
+    lw $t1, 4($fp)
+    sw $t0, 0($t1)
+    j swapEp
+swap:
+    addi $sp, $sp, -12
+    sw $t0, 0($sp)
+    sw $t1, 4($sp)
+    j swapBegin
+swapEp:
+    lw $t0, 0($sp)
+    lw $t1, 4($sp)
+    addi $sp, $sp, 12
+    jr $ra
+```
+
+# User Defined Structures
+## Symbol Table
+* Greatest work
+* Code-gen is only affected by lvalue rules
+## Arrays
+```cpsl
+type array a : integer[1..10];
+b := 2;
+a[b] := 3;
+```
+
+```mips
+li $t0, 3
+lw $t1, 40($gp)
+addi $t1, $t1, -1
+li $t2, 4
+mult $t1, $t2
+mflo $t1
+add $t1, $t1, $gp
+addi $t1, $t1, 0
+sw $t0, 0($t1)
+```
