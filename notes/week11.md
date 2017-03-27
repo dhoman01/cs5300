@@ -1,0 +1,1 @@
+"C++ does not hold your hand. It'll happily load the gun and let you shoot yourself" - Dr. Sundberg
