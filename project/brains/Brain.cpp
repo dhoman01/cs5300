@@ -6,7 +6,7 @@
 
 cpsl::Brain::Brain()
 {
-    regPool = std::make_shared<std::vector<cpsl::Register>>();
+    regPool = std::make_shared<RegPool>();
     symbolTable = std::make_shared<cpsl::LookUpTable<cpsl::Info>>();
     Init();
     expressions = Expressions(regPool);
@@ -76,16 +76,6 @@ void cpsl::Brain::parse_helper(std::istream &stream)
     return;
 }
 
-void cpsl::Brain::InitRegPool()
-{
-    // Create registers $8-$25
-    for(int i = 8; i < 26; i++){
-        Register reg;
-        reg.name = "$" + std::to_string(i);
-        regPool->push_back(reg);
-    }
-}
-
 void cpsl::Brain::InitMIPS()
 {
     // Write HEAD matter for asm file
@@ -93,13 +83,17 @@ void cpsl::Brain::InitMIPS()
     // boolean constant definitions
     std::cout << ".globl main" << std::endl;
     std::cout << ".text\n" << std::endl;
+    std::cout << "j main" << std::endl;    
+}
 
+void cpsl::Brain::InitMain()
+{
     std::cout << "main:" << std::endl;
     std::cout << "\tla $gp, GA" << std::endl;
     std::cout << "\tori $fp, $sp, 0" << std::endl;
     std::cout << "\t# Store the true and false const values" << std::endl;
-    std::cout << "\tli $a3 1" << std::endl;
-    std::cout << "\tsw $a3, 0($gp)" << std::endl;
+    std::cout << "\tli $v0 1" << std::endl;
+    std::cout << "\tsw $v0, 0($gp)" << std::endl;
     std::cout << "\tsw $zero, 4($gp)" << std::endl;
     std::cout << "\n\n\t# Begin CPSL Program" << std::endl;
 }
@@ -161,8 +155,6 @@ void cpsl::Brain::InitPredefinedSymbols()
 
 void cpsl::Brain::Init()
 {
-    InitRegPool();
-
     InitMIPS();
 
     InitPredefinedSymbols();

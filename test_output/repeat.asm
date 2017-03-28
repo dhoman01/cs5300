@@ -1,147 +1,147 @@
 .globl main
 .text
 
+	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
 main:
 	la $gp, GA
 	ori $fp, $sp, 0
 	# Store the true and false const values
-	li $a3 1
-	sw $a3, 0($gp)
+	li $v0 1
+	sw $v0, 0($gp)
 	sw $zero, 4($gp)
 
 
 	# Begin CPSL Program
-	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
 
 	# Assigning i the value i
-	li $25 0
-	sw $25 8($gp)
+	li $s0 0
+	sw $s0 8($gp)
 	# Finished assignment of i
 	# Begin Repeat Statement (label RP1)
 RP1:
 
 	# Loading value from 8($gp) with type integer
-	lw $25 8($gp)
+	lw $s1 8($gp)
 	# Loaded value from i
 
 	# Writing expression to output
 	# Loading string const
-	la $24 S1
+	la $s2 S1
 	# Loaded string S1
 	li $v0 4
-	ori $a0 $24 0
+	ori $a0 $s2 0
 	syscall
 	# Finished writing expression to output
 
 	# Writing expression to output
 	li $v0 1
-	ori $a0 $25 0
+	ori $a0 $s1 0
 	syscall
 	# Finished writing expression to output
 
 	# Writing expression to output
 	# Loading string const
-	la $25 S2
+	la $s3 S2
 	# Loaded string S2
 	li $v0 4
-	ori $a0 $25 0
+	ori $a0 $s3 0
 	syscall
 	# Finished writing expression to output
 
 	# Loading value from 8($gp) with type integer
-	lw $25 8($gp)
+	lw $s4 8($gp)
 	# Loaded value from i
 
-	# Plus Expression: $25 + 1
-	addi $24 $25 1
+	# Plus Expression: $s4 + 1
+	addi $s5 $s4 1
 	# End Plus Expression
 
-	# Assigning i the value at $24
-	sw $24 8($gp)
+	# Assigning i the value at $s5
+	sw $s5 8($gp)
 	# Finished assignment of i
 	# Loading value from 8($gp) with type integer
-	lw $24 8($gp)
+	lw $s6 8($gp)
 	# Loaded value from i
 
-	# Lt Expression: $24 < 5
-	slti $25 $24 5
+	# Lt Expression: $s6 < 5
+	slti $s7 $s6 5
 	# End Lt Expression
 
 	# Repeat Exit Condition (label RP1)
-	bne $25 $zero RP1
+	bne $s7 $zero RP1
 
 	# Begin Repeat Statement (label RP2)
 RP2:
 
 	# Loading value from 8($gp) with type integer
-	lw $25 8($gp)
+	lw $t0 8($gp)
 	# Loaded value from i
 
 	# Writing expression to output
 	# Loading string const
-	la $24 S3
+	la $t1 S3
 	# Loaded string S3
 	li $v0 4
-	ori $a0 $24 0
+	ori $a0 $t1 0
 	syscall
 	# Finished writing expression to output
 
 	# Writing expression to output
 	li $v0 1
-	ori $a0 $25 0
+	ori $a0 $t0 0
 	syscall
 	# Finished writing expression to output
 
 	# Writing expression to output
 	# Loading string const
-	la $25 S4
+	la $t2 S4
 	# Loaded string S4
 	li $v0 4
-	ori $a0 $25 0
+	ori $a0 $t2 0
 	syscall
 	# Finished writing expression to output
 
 	# Loading value from 8($gp) with type integer
-	lw $25 8($gp)
+	lw $t3 8($gp)
 	# Loaded value from i
 
-	# Plus Expression: $25 + 1
-	addi $24 $25 1
+	# Plus Expression: $t3 + 1
+	addi $t4 $t3 1
 	# End Plus Expression
 
-	# Assigning i the value at $24
-	sw $24 8($gp)
+	# Assigning i the value at $t4
+	sw $t4 8($gp)
 	# Finished assignment of i
 	# Loading value from 8($gp) with type integer
-	lw $24 8($gp)
+	lw $t5 8($gp)
 	# Loaded value from i
 
-	# Lt Expression: $24 < 5
-	slti $25 $24 5
+	# Lt Expression: $t5 < 5
+	slti $t6 $t5 5
 	# End Lt Expression
 
 	# Repeat Exit Condition (label RP2)
-	bne $25 $zero RP2
+	bne $t6 $zero RP2
 
 	# Beginning While Loop (label WB3)
 WB3:
 
 	# Loading value from 8($gp) with type integer
-	lw $25 8($gp)
+	lw $t7 8($gp)
 	# Loaded value from i
 
-	# Lt Expression: $25 < 5
-	slti $24 $25 5
+	# Lt Expression: $t7 < 5
+	slti $a0 $t7 5
 	# End Lt Expression
 
 	# While Header (label WE3)
-	beq $24 $zero WE3
+	beq $a0 $zero WE3
 	# Writing expression to output
 	# Loading string const
-	la $24 S5
+	la $a1 S5
 	# Loaded string S5
 	li $v0 4
-	ori $a0 $24 0
+	ori $a0 $a1 0
 	syscall
 	# Finished writing expression to output
 

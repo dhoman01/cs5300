@@ -1,64 +1,64 @@
 .globl main
 .text
 
+	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
 main:
 	la $gp, GA
 	ori $fp, $sp, 0
 	# Store the true and false const values
-	li $a3 1
-	sw $a3, 0($gp)
+	li $v0 1
+	sw $v0, 0($gp)
 	sw $zero, 4($gp)
 
 
 	# Begin CPSL Program
-	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
 
 	# For Statement Begin
 
 	# Assigning i the value i
-	li $25 0
-	sw $25 8($gp)
+	li $s0 0
+	sw $s0 8($gp)
 	# Finished assignment of i
 	# Loading value from 8($gp) with type integer
-	lw $25 8($gp)
+	lw $s1 8($gp)
 	# Loaded value from i
 	# Start of Loop
 FB1:
 	# Loading constant expression
-	li $24 5
-	addi $24 $24 1
-	beq $25 $24 FE1
+	li $s2 5
+	addi $s2 $s2 1
+	beq $s1 $s2 FE1
 
 	# Loading value from 8($gp) with type integer
-	lw $23 8($gp)
+	lw $s3 8($gp)
 	# Loaded value from i
 
 	# Writing expression to output
 	# Loading string const
-	la $22 S1
+	la $s4 S1
 	# Loaded string S1
 	li $v0 4
-	ori $a0 $22 0
+	ori $a0 $s4 0
 	syscall
 	# Finished writing expression to output
 
 	# Writing expression to output
 	li $v0 1
-	ori $a0 $23 0
+	ori $a0 $s3 0
 	syscall
 	# Finished writing expression to output
 
 	# Writing expression to output
 	# Loading string const
-	la $23 S2
+	la $s5 S2
 	# Loaded string S2
 	li $v0 4
-	ori $a0 $23 0
+	ori $a0 $s5 0
 	syscall
 	# Finished writing expression to output
 	# Incrementing counter i
-	addi $25 $25 1
-	sw $25 8($gp)
+	addi $s1 $s1 1
+	sw $s1 8($gp)
 	j FB1
 FE1:
 	# End of For Statement

@@ -32,8 +32,8 @@ cpsl::Expression cpsl::Expressions::AndExpression(cpsl::Expression a, cpsl::Expr
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
+        
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -42,20 +42,20 @@ cpsl::Expression cpsl::Expressions::AndExpression(cpsl::Expression a, cpsl::Expr
         {
             std::cout << a.reg.name << " & " << b.reg.name << std::endl;
             std::cout << "\tand " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         }
         else if(a.isConstant)
         {
             std::cout << a.value << " & " << b.reg.name << std::endl;
             std::cout << "\tandi " << reg.name << " " << b.reg.name << " " << a.value << std::endl;
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         }
         else if(b.isConstant)
         {
             std::cout << a.reg.name << " & " << b.value << std::endl;
             std::cout << "\tandi " << reg.name << " " << a.reg.name << " " << b.value << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -91,8 +91,7 @@ cpsl::Expression cpsl::Expressions::OrExpression(cpsl::Expression a, cpsl::Expre
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -101,20 +100,20 @@ cpsl::Expression cpsl::Expressions::OrExpression(cpsl::Expression a, cpsl::Expre
         {
             std::cout << a.reg.name << " | " << b.reg.name << std::endl;
             std::cout << "\tor " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         }
         else if(a.isConstant)
         {
             std::cout << a.value << " | " << b.reg.name << std::endl;
             std::cout << "\tori " << reg.name << " " << b.reg.name << " " << a.value << std::endl;
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         }
         else if(b.isConstant)
         {
             std::cout << a.reg.name << " | " << b.value << std::endl;
             std::cout << "\tori " << reg.name << " " << a.reg.name << " " << b.value << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -147,8 +146,7 @@ cpsl::Expression cpsl::Expressions::EqExpression(cpsl::Expression a, cpsl::Expre
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -157,22 +155,22 @@ cpsl::Expression cpsl::Expressions::EqExpression(cpsl::Expression a, cpsl::Expre
         {
             std::cout << a.reg.name << " = " << b.reg.name << std::endl;
             std::cout << "\tseq " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         }
         else if(a.isConstant)
         {
             std::cout << a.value << " = " << b.reg.name << std::endl;
             std::cout << "\tli " << reg.name << " " << a.value << std::endl;
             std::cout << "\tseq " << reg.name << " " << reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         }
         else if(b.isConstant)
         {
             std::cout << a.reg.name << " = " << b.value << std::endl;
             std::cout << "\tli " << reg.name << " " << b.value << std::endl;
             std::cout << "\tseq " << reg.name << " " << a.reg.name << " " << reg.name << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -206,8 +204,7 @@ cpsl::Expression cpsl::Expressions::NotEqExpression(cpsl::Expression a, cpsl::Ex
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
         
@@ -216,22 +213,22 @@ cpsl::Expression cpsl::Expressions::NotEqExpression(cpsl::Expression a, cpsl::Ex
         {
             std::cout << a.reg.name << " <> " << b.reg.name << std::endl;
             std::cout << "\tsne " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         }
         else if(a.isConstant)
         {
             std::cout << a.value << " <> " << b.reg.name << std::endl;
             std::cout << "\tli " << reg.name << " " << a.value << std::endl;
             std::cout << "\tsne " << reg.name << " " << reg.name <<  " " << b.reg.name << std::endl;
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         }
         else if(b.isConstant)
         {
             std::cout << a.reg.name << " <> " << b.value << std::endl;
             std::cout << "\tli " << reg.name << " " << b.value << std::endl;
             std::cout << "\tsne " << reg.name << " " << a.reg.name << " " << reg.name << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -265,8 +262,7 @@ cpsl::Expression cpsl::Expressions::LtEqExpression(cpsl::Expression a, cpsl::Exp
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -275,22 +271,22 @@ cpsl::Expression cpsl::Expressions::LtEqExpression(cpsl::Expression a, cpsl::Exp
         {
             std::cout << a.reg.name << " <= " << b.reg.name << std::endl;
             std::cout << "\tsle " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         }
         else if(a.isConstant)
         {
             std::cout << a.value << " <= " << b.reg.name << std::endl;
             std::cout << "\tli " << reg.name << " " << a.value << std::endl;
             std::cout << "\tsle " << reg.name << " " << reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         }
         else if(b.isConstant)
         {
             std::cout << a.reg.name << " <= " << b.value << std::endl;
             std::cout << "\tli " << reg.name << " " << b.value << std::endl;
             std::cout << "\tsle " << reg.name << " " << a.reg.name << " " << reg.name << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -324,8 +320,7 @@ cpsl::Expression cpsl::Expressions::GtEqExpression(cpsl::Expression a, cpsl::Exp
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -334,22 +329,22 @@ cpsl::Expression cpsl::Expressions::GtEqExpression(cpsl::Expression a, cpsl::Exp
         {
             std::cout << a.reg.name << " >= " << b.reg.name << std::endl;
             std::cout << "\tsge " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         }
         else if(a.isConstant)
         {
             std::cout << a.value << " >= " << b.reg.name << std::endl;
             std::cout << "\tli " << reg.name << " " << a.value << std::endl;
             std::cout << "\tsge " << reg.name << " " << reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         }
         else if(b.isConstant)
         {
             std::cout << a.reg.name << " >= " << b.value << std::endl;
             std::cout << "\tli " << reg.name << " " << b.value << std::endl;
             std::cout << "\tsge " << reg.name << " " << a.reg.name << " " << reg.name << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -383,8 +378,7 @@ cpsl::Expression cpsl::Expressions::LtExpression(cpsl::Expression a, cpsl::Expre
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -393,21 +387,21 @@ cpsl::Expression cpsl::Expressions::LtExpression(cpsl::Expression a, cpsl::Expre
         {
             std::cout << a.reg.name << " < " << b.reg.name << std::endl;
             std::cout << "\tslt " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         }
         else if(a.isConstant)
         {
             std::cout << a.value << " < " << b.reg.name << std::endl;
             std::cout << "\tli " << reg.name << " " << a.value << std::endl;
             std::cout << "\tslti " << reg.name << " " << reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         }
         else if(b.isConstant)
         {
             std::cout << a.reg.name << " < " << b.value << std::endl;
             std::cout << "\tslti " << reg.name << " " << a.reg.name << " " << b.value << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -441,8 +435,7 @@ cpsl::Expression cpsl::Expressions::GtExpression(cpsl::Expression a, cpsl::Expre
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -451,22 +444,22 @@ cpsl::Expression cpsl::Expressions::GtExpression(cpsl::Expression a, cpsl::Expre
         {
             std::cout << a.reg.name << " > " << b.reg.name << std::endl;
             std::cout << "\tsgt " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         }
         else if(a.isConstant)
         {
             std::cout << a.value << " > " << b.reg.name << std::endl;
             std::cout << "\tli " << reg.name << " " << a.value << std::endl;
             std::cout << "\tsgt " << reg.name << " " << reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         }
         else if(b.isConstant)
         {
             std::cout << a.reg.name << " > " << b.value << std::endl;
             std::cout << "\tli " << reg.name << " " << b.value << std::endl;
             std::cout << "\tsgt " << reg.name << " " << a.reg.name << " " << reg.name << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -502,8 +495,7 @@ cpsl::Expression cpsl::Expressions::PlusExpression(cpsl::Expression a, cpsl::Exp
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -512,20 +504,20 @@ cpsl::Expression cpsl::Expressions::PlusExpression(cpsl::Expression a, cpsl::Exp
         {
             std::cout << a.reg.name << " + " << b.reg.name << std::endl;
             std::cout << "\tadd " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         }
         else if(a.isConstant)
         {
             std::cout << a.value << " + " << b.reg.name << std::endl;
             std::cout << "\addi " << reg.name << " " << b.reg.name << " " << a.value << std::endl;
-            regPool->push_back(b.reg);        
+            regPool->release(b.reg);        
         }
         else if(b.isConstant)
         {
             std::cout << a.reg.name << " + " << b.value << std::endl;
             std::cout << "\taddi " << reg.name << " " << a.reg.name << " " << b.value << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -561,8 +553,7 @@ cpsl::Expression cpsl::Expressions::MinusExpression(cpsl::Expression a, cpsl::Ex
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -571,21 +562,21 @@ cpsl::Expression cpsl::Expressions::MinusExpression(cpsl::Expression a, cpsl::Ex
         {
             std::cout << a.reg.name << " - " << b.reg.name << std::endl;
             std::cout << "\tsub " << reg.name << " " << a.reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         }
         else if(a.isConstant)
         {
             std::cout << a.value << " - " << b.reg.name << std::endl;
             std::cout << "\tli " << reg.name << " " << a.value << std::endl;
             std::cout << "\tsub " << reg.name << " " << reg.name << " " << b.reg.name << std::endl;
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         }
         else if(b.isConstant)
         {
             std::cout << a.reg.name << " - " << b.value << std::endl;
             std::cout << "\tsubi " << reg.name << " " << a.reg.name << " " << b.value << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -621,8 +612,7 @@ cpsl::Expression cpsl::Expressions::MultExpression(cpsl::Expression a, cpsl::Exp
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -632,8 +622,8 @@ cpsl::Expression cpsl::Expressions::MultExpression(cpsl::Expression a, cpsl::Exp
             std::cout << a.reg.name << " * " << b.reg.name << std::endl;
             std::cout << "\tmult " << a.reg.name << " " << b.reg.name << std::endl;
             std::cout << "\tmflo " << reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         } 
         else if(a.isConstant)
         {
@@ -641,7 +631,7 @@ cpsl::Expression cpsl::Expressions::MultExpression(cpsl::Expression a, cpsl::Exp
             std::cout << "\tli " << reg.name << " " << a.value << std::endl;
             std::cout << "\tmult " << reg.name << " " << b.reg.name << std::endl;
             std::cout << "\tmflo " << reg.name << std::endl;
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         } 
         else if(b.isConstant)
         {
@@ -649,7 +639,7 @@ cpsl::Expression cpsl::Expressions::MultExpression(cpsl::Expression a, cpsl::Exp
             std::cout << "\tli " << reg.name << " " << b.value << std::endl;
             std::cout << "\tmult " << a.reg.name << " " << reg.name << std::endl;
             std::cout << "\tmflo " << reg.name << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -685,8 +675,7 @@ cpsl::Expression cpsl::Expressions::DivExpression(cpsl::Expression a, cpsl::Expr
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -696,8 +685,8 @@ cpsl::Expression cpsl::Expressions::DivExpression(cpsl::Expression a, cpsl::Expr
             std::cout << a.reg.name << " / " << b.reg.name << std::endl;
             std::cout << "\tdiv " << a.reg.name << " " << b.reg.name << std::endl;
             std::cout << "\tmflo " << reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         } 
         else if(a.isConstant)
         {
@@ -705,7 +694,7 @@ cpsl::Expression cpsl::Expressions::DivExpression(cpsl::Expression a, cpsl::Expr
             std::cout << "\tli " << reg.name << " " << a.value << std::endl;
             std::cout << "\tdiv " << reg.name << " " << b.reg.name << std::endl;
             std::cout << "\tmflo " << reg.name << std::endl;
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         } 
         else if(b.isConstant)
         {
@@ -713,7 +702,7 @@ cpsl::Expression cpsl::Expressions::DivExpression(cpsl::Expression a, cpsl::Expr
             std::cout << "\tli " << reg.name << " " << b.value << std::endl;
             std::cout << "\tdiv " << a.reg.name << " " << reg.name << std::endl;
             std::cout << "\tmflo " << reg.name << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -749,8 +738,7 @@ cpsl::Expression cpsl::Expressions::ModExpression(cpsl::Expression a, cpsl::Expr
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
@@ -760,18 +748,16 @@ cpsl::Expression cpsl::Expressions::ModExpression(cpsl::Expression a, cpsl::Expr
             std::cout << a.reg.name << " % " << b.reg.name << std::endl;
             std::cout << "\tdiv " << a.reg.name << " " << b.reg.name << std::endl;
             std::cout << "\tmfhi " << reg.name << std::endl;
-            regPool->push_back(a.reg);
-            regPool->push_back(b.reg);
+            regPool->release(a.reg);
+            regPool->release(b.reg);
         } 
         else if(a.isConstant)
         {
             std::cout << a.value << " % " << b.reg.name << std::endl;
-            Register reg2 = regPool->back();
-            std::cout << "\tli " << reg2.name << " " << a.value << std::endl;
-            std::cout << "\tdiv " << reg2.name << " " << b.reg.name << std::endl;
+            std::cout << "\tli " << reg.name << " " << a.value << std::endl;
+            std::cout << "\tdiv " << reg.name << " " << b.reg.name << std::endl;
             std::cout << "\tmfhi " << reg.name << std::endl;
-            regPool->push_back(reg2);
-            regPool->push_back(b.reg);
+            regPool->release(b.reg);
         } 
         else if(b.isConstant)
         {
@@ -779,7 +765,7 @@ cpsl::Expression cpsl::Expressions::ModExpression(cpsl::Expression a, cpsl::Expr
             std::cout << "\tli " << reg.name << " " << b.value << std::endl;
             std::cout << "\tdiv " << a.reg.name << " " << reg.name << std::endl;
             std::cout << "\tmfhi " << reg.name << std::endl;
-            regPool->push_back(a.reg);
+            regPool->release(a.reg);
         }
     }
 
@@ -813,15 +799,14 @@ cpsl::Expression cpsl::Expressions::NotExpression(cpsl::Expression a)
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
         // Emit MIPS
         std::cout << a.reg.name << std::endl;
         std::cout << "\txori " << reg.name << " " << a.reg.name << " 1" << std::endl;
-        regPool->push_back(a.reg);
+        regPool->release(a.reg);
     }
 
     std::cout << "\t# End Not Expression" << std::endl;
@@ -854,15 +839,14 @@ cpsl::Expression cpsl::Expressions::UMinusExpression(cpsl::Expression a)
         // a || b are not constants. This is not
         // a constant expression. Grab a Register
         // and emit correct MIPS.
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
         expr.reg = reg;
         expr.isConstant = false;
 
         // Emit MIPS
         std::cout << a.reg.name << std::endl;
         std::cout << "\taddi " << reg.name << " " << a.reg.name << " -1" << std::endl;
-        regPool->push_back(a.reg);
+        regPool->release(a.reg);
     }
 
     std::cout << "\t# End Unary Minus Expression" << std::endl;

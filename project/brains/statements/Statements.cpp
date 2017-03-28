@@ -10,7 +10,7 @@
 /**************
  *   PUBLIC   *
  *************/ 
-cpsl::Statements::Statements(std::shared_ptr<std::vector<cpsl::Register>> pool, std::shared_ptr<cpsl::LookUpTable<cpsl::Info>> table, bool addNew)
+cpsl::Statements::Statements(std::shared_ptr<cpsl::RegPool> pool, std::shared_ptr<cpsl::LookUpTable<cpsl::Info>> table, bool addNew)
 {
     // Start globalLocation at 8
     // because true is at 0($gp)
@@ -86,8 +86,7 @@ void cpsl::Statements::ForHeader(cpsl::ForHeaderInfo& info, cpsl::Expression con
     if(cond.isConstant)
     {
         // If cond is constant load it into a new register
-        cond.reg = regPool->back();
-        regPool->pop_back();
+        cond.reg = regPool->acquire();
         std::cout << "\t# Loading constant expression" << std::endl;
         std::cout << "\tli " << cond.reg.name << " " << cond.value << std::endl;
     }
@@ -108,8 +107,8 @@ void cpsl::Statements::ForEnd(cpsl::ForHeaderInfo info)
     std::cout << "\t# End of For Statement" << std::endl;
 
     // Release registers
-    regPool->push_back(info.varExpr.reg);
-    regPool->push_back(info.cond.reg);
+    regPool->release(info.varExpr.reg);
+    regPool->release(info.cond.reg);
 
     // Exit scope if new variable was created for counter
     if(info.exitScope)
@@ -150,7 +149,7 @@ int cpsl::Statements::IfBegin(cpsl::Expression expr)
     else
     {
         std::cout << "\tbeq " << expr.reg.name << " $zero " << label << std::endl;
-        regPool->push_back(expr.reg);
+        regPool->release(expr.reg);
     }
     
     return uid;
@@ -203,12 +202,12 @@ void cpsl::Statements::RepeatEnd(int uid, cpsl::Expression expr)
             std::cerr << "WARN: Repeat condition is always false, the repeat loop will never execute. It's wasteful, but I assume you know what your doing and will still emit the MIPS for your repeat loop..." << std::endl;
         }
         std::cout << "\t# Grapping register and loading " << (expr.value ? "1" : "0") << " into it for constant expression" << std::endl;
-        expr.reg = regPool->back();
-        regPool->pop_back();
+        expr.reg = regPool->acquire();
+        
         std::cout << "\tli " << expr.reg.name << " " << (expr.value ? "1" : "0") << std::endl;
     }
     std::cout << "\tbne " << expr.reg.name << " $zero " << label << std::endl;
-    regPool->push_back(expr.reg);
+    regPool->release(expr.reg);
 };
 
 int cpsl::Statements::WhileBegin()
@@ -239,12 +238,12 @@ void cpsl::Statements::WhileHeader(int uid, cpsl::Expression expr)
             std::cerr << "WARN: While condition is always false, the while loop will never execute. It's wasteful, but I assume you know what your doing and will still emit the MIPS for your while loop..." << std::endl;
         }
         std::cout << "\t# Grapping register and loading " << (expr.value ? "1" : "0") << " into it for constant expression" << std::endl;
-        expr.reg = regPool->back();
+        expr.reg = regPool->acquire();
         std::cout << "\tli " << expr.reg.name << " " << (expr.value ? "1" : "0") << std::endl;
     }
 
     std::cout << "\tbeq " << expr.reg.name << " $zero " << label;
-    regPool->push_back(expr.reg);
+    regPool->release(expr.reg);
 };
 
 void cpsl::Statements::WhileEnd(int uid)
@@ -272,8 +271,8 @@ void cpsl::Statements::Assignment(std::string id, cpsl::Expression expr)
     std::cout << "\n\t# Assigning " << id << " the value";
     if(expr.isConstant)
     {
-        expr.reg = regPool->back();
-        regPool->pop_back();
+        expr.reg = regPool->acquire();
+        
         std::cout << " " << var->id << std::endl;
         std::cout << "\tli " << expr.reg.name << " " << expr.value << std::endl;
     } 
@@ -283,7 +282,7 @@ void cpsl::Statements::Assignment(std::string id, cpsl::Expression expr)
     }
 
     std::cout << "\tsw " << expr.reg.name << " " << var->location << std::endl;
-    regPool->push_back(expr.reg);
+    regPool->release(expr.reg);
     std::cout << "\t# Finished assignment of " << id;
     return;
 }
@@ -296,11 +295,11 @@ void cpsl::Statements::ConstDeclaration(std::string id, cpsl::Expression expr)
 
     std::cout << "\n\t# Loading constant " << expr.value << " into " << id << std::endl;
     if(expr.isConstant){
-        cpsl::Register reg = regPool->back();
-        regPool->pop_back();
+        cpsl::Register reg = regPool->acquire();
+        
         std::cout << "\tli " << reg.name << " " << expr.value << std::endl;
         std::cout << "\tsw " << reg.name << " " << var->location << std::endl;
-        regPool->push_back(reg);
+        regPool->release(reg);
     } 
     else
     {
@@ -316,8 +315,8 @@ cpsl::Expression cpsl::Statements::LoadVariable(std::string id)
     std::shared_ptr<cpsl::VariableInfo> var = std::dynamic_pointer_cast<cpsl::VariableInfo>(symbolTable->lookup(id));
     // Grab a Register
     // and emit correct MIPS.
-    cpsl::Register reg = regPool->back();
-    regPool->pop_back();
+    cpsl::Register reg = regPool->acquire();
+    
 
     std::cout << "\n\t# Loading value from " << var->location << " with type " << var->type->id << std::endl;
     std::cout << "\tlw " << reg.name << " " << var->location << std::endl;
@@ -430,15 +429,15 @@ void cpsl::Statements::Write(cpsl::Expression expr)
         std::cout << "\n\t# Writing expression to output" << std::endl;
         if(expr.isConstant)
         {
-            expr.reg = regPool->back();
-            regPool->pop_back();
+            expr.reg = regPool->acquire();
+            
             std::cout << "\tli " << expr.reg.name << " " << expr.value << std::endl;
         }
 
         if(expr.type == "string")
         {
-            cpsl::Register reg = regPool->back();
-            regPool->pop_back();
+            cpsl::Register reg = regPool->acquire();
+            
             std::cout << "\t# Loading string const" << std::endl;
             std::cout << "\tla " << reg.name << " " << expr.reg.name << std::endl;
             std::cout << "\t# Loaded string " << expr.reg.name << std::endl;
@@ -449,6 +448,6 @@ void cpsl::Statements::Write(cpsl::Expression expr)
         std::cout << "\tori $a0 " << expr.reg.name << " 0" << std::endl;
         std::cout << "\tsyscall" << std::endl;
         std::cout << "\t# Finished writing expression to output" << std::endl;
-        regPool->push_back(expr.reg);
+        regPool->release(expr.reg);
         return;
 }

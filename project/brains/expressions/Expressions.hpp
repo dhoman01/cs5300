@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../utils/structures.hpp"
+#include "../utils/RegPool.hpp"
 
 namespace cpsl
 {
@@ -14,7 +15,7 @@ class Expressions
 {
 public:
     Expressions() = default;
-    Expressions(std::shared_ptr<std::vector<Register>> pool)
+    Expressions(std::shared_ptr<RegPool> pool)
     {
         regPool = pool;
     };
@@ -41,7 +42,7 @@ public:
     Expression IntConstant(std::string);
     Expression CharConstant(char);
 private:
-    std::shared_ptr<std::vector<Register>> regPool = nullptr;
+    std::shared_ptr<RegPool> regPool = nullptr;
 };
 
 }

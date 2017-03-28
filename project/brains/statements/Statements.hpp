@@ -6,6 +6,7 @@
 
 #include "../utils/LookupTable.hpp"
 #include "../utils/structures.hpp"
+#include "../utils/RegPool.hpp"
 
 namespace cpsl
 {
@@ -15,7 +16,7 @@ class Statements
 public:
     /* Constructors */
     Statements() = default;
-    Statements(std::shared_ptr<std::vector<Register>>, std::shared_ptr<LookUpTable<Info>>, bool = false);
+    Statements(std::shared_ptr<RegPool>, std::shared_ptr<LookUpTable<Info>>, bool = false);
     
     /* Control Statements */
     ForHeaderInfo ForBegin(std::string, Expression);
@@ -50,7 +51,7 @@ private:
     int frameLocation;
     bool addNewline;
     std::shared_ptr<LookUpTable<Info>> symbolTable = nullptr;
-    std::shared_ptr<std::vector<Register>> regPool = nullptr;
+    std::shared_ptr<RegPool> regPool = nullptr;
 };
 
 } 

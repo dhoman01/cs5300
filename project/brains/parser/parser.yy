@@ -115,7 +115,7 @@
 program: progHead block DOT
     ;
 
-progHead: optConstDecl optTypeDecl optVarDecl optProcFuncs
+progHead: optConstDecl optTypeDecl optVarDecl optProcFuncs { brain.InitMain(); }
     ;
 
 optConstDecl: CONST_KEY constDecls
@@ -134,11 +134,14 @@ optProcFuncs: optProcFuncs procedureDecl
     |
     ;
 
-procedureDecl: procedureSig FORWARD_KEY SEMI_COL
-    | procedureSig body SEMI_COL
+procedure: procedureDecl SEMI_COL { brain.statements.brain.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
+    | procedureSig FORWARD_KEY
     ;
 
-procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL
+procedureDecl: procedureSig body { $$ = $1; brian.statements.FunctionBody($1); }
+    ;
+
+procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL { $$ = brain.statements.GetLabel($2); }
     ;
 
 functionDecl: functionSig FORWARD_KEY SEMI_COL 

@@ -5,8 +5,8 @@ main:
 	la $gp, GA
 	ori $fp, $sp, 0
 	# Store the true and false const values
-	li $a3 1
-	sw $a3, 0($gp)
+	li $v0 1
+	sw $v0, 0($gp)
 	sw $zero, 4($gp)
 
 
@@ -17,18 +17,18 @@ main:
 	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
 
 	# Assigning i the value i
-	li $25 0
-	sw $25 0($fp)
+	li $s0 0
+	sw $s0 0($fp)
 	# Finished assignment of i
 	# Loading value from 0($fp) with type integer
-	lw $25 0($fp)
+	lw $s1 0($fp)
 	# Loaded value from i
 	# Start of Loop
 FB1:
 	# Loading constant expression
-	li $24 5
-	addi $24 $24 1
-	beq $25 $24 FE1
+	li $s2 5
+	addi $s2 $s2 1
+	beq $s1 $s2 FE1
 
 	# Equal Expression: 1 = 0
 	# Folding constant expressions
@@ -40,10 +40,10 @@ FB1:
 
 	# Writing expression to output
 	# Loading string const
-	la $23 S1
+	la $s3 S1
 	# Loaded string S1
 	li $v0 4
-	ori $a0 $23 0
+	ori $a0 $s3 0
 	syscall
 	# Finished writing expression to output
 
@@ -52,30 +52,30 @@ FB1:
 IE2:
 
 	# Loading value from 0($fp) with type integer
-	lw $23 0($fp)
+	lw $s4 0($fp)
 	# Loaded value from i
 
 	# Writing expression to output
 	# Loading string const
-	la $22 S2
+	la $s5 S2
 	# Loaded string S2
 	li $v0 4
-	ori $a0 $22 0
+	ori $a0 $s5 0
 	syscall
 	# Finished writing expression to output
 
 	# Writing expression to output
 	li $v0 1
-	ori $a0 $23 0
+	ori $a0 $s4 0
 	syscall
 	# Finished writing expression to output
 
 	# Writing expression to output
 	# Loading string const
-	la $23 S3
+	la $s6 S3
 	# Loaded string S3
 	li $v0 4
-	ori $a0 $23 0
+	ori $a0 $s6 0
 	syscall
 	# Finished writing expression to output
 
@@ -87,18 +87,18 @@ ID2:
 	# (NO MIPS EMITTED) Storing symbol j with type integer into symbol table
 
 	# Assigning j the value j
-	li $23 0
-	sw $23 8($gp)
+	li $s7 0
+	sw $s7 8($gp)
 	# Finished assignment of j
 	# Loading value from 8($gp) with type integer
-	lw $23 8($gp)
+	lw $t0 8($gp)
 	# Loaded value from j
 	# Start of Loop
 FB3:
 	# Loading constant expression
-	li $22 5
-	addi $22 $22 1
-	beq $23 $22 FE3
+	li $t1 5
+	addi $t1 $t1 1
+	beq $t0 $t1 FE3
 
 	# Equal Expression: 1 = 1
 	# Folding constant expressions
@@ -108,30 +108,30 @@ FB3:
 	# No beq emitted because if condition is always true
 
 	# Loading value from 8($gp) with type integer
-	lw $21 8($gp)
+	lw $t2 8($gp)
 	# Loaded value from j
 
 	# Writing expression to output
 	# Loading string const
-	la $20 S4
+	la $t3 S4
 	# Loaded string S4
 	li $v0 4
-	ori $a0 $20 0
+	ori $a0 $t3 0
 	syscall
 	# Finished writing expression to output
 
 	# Writing expression to output
 	li $v0 1
-	ori $a0 $21 0
+	ori $a0 $t2 0
 	syscall
 	# Finished writing expression to output
 
 	# Writing expression to output
 	# Loading string const
-	la $21 S5
+	la $t4 S5
 	# Loaded string S5
 	li $v0 4
-	ori $a0 $21 0
+	ori $a0 $t4 0
 	syscall
 	# Finished writing expression to output
 
@@ -142,15 +142,15 @@ IE4:
 	# End If(ElseIf) Statement (label ID4)
 ID4:
 	# Incrementing counter j
-	addi $23 $23 1
-	sw $23 8($gp)
+	addi $t0 $t0 1
+	sw $t0 8($gp)
 	j FB3
 FE3:
 	# End of For Statement
 	# Exited scope for for loop
 	# Incrementing counter i
-	addi $25 $25 1
-	sw $25 0($fp)
+	addi $s1 $s1 1
+	sw $s1 0($fp)
 	j FB1
 FE1:
 	# End of For Statement

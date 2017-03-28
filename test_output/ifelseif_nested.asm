@@ -1,25 +1,23 @@
 .globl main
 .text
-
+	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
+	# (NO MIPS EMITTED) Storing symbol j with type integer into symbol table
 main:
-	la $gp, GA
 	ori $fp, $sp, 0
 	# Store the true and false const values
-	li $a3 1
-	sw $a3, 0($gp)
+	li $v0 1
+	sw $v0, 0($gp)
 	sw $zero, 4($gp)
 
 
 	# Begin CPSL Program
-	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
-	# (NO MIPS EMITTED) Storing symbol j with type integer into symbol table
 
 	# Writing expression to output
 	# Loading string const
-	la $25 S1
+	la $s0 S1
 	# Loaded string S1
 	li $v0 4
-	ori $a0 $25 0
+	ori $a0 $s0 0
 	syscall
 	# Finished writing expression to output
 
@@ -33,47 +31,47 @@ main:
 	# Finished reading input. Stored input in i at 8($gp)
 
 	# Assigning j the value j
-	li $25 1
-	sw $25 12($gp)
+	li $s1 1
+	sw $s1 12($gp)
 	# Finished assignment of j
 	# Loading value from 8($gp) with type integer
-	lw $25 8($gp)
+	lw $s2 8($gp)
 	# Loaded value from i
 
-	# Lt Expression: $25 < 5
-	slti $24 $25 5
+	# Lt Expression: $s2 < 5
+	slti $s3 $s2 5
 	# End Lt Expression
 
 	# Begin If Statement
-	beq $24 $zero IE1
+	beq $s3 $zero IE1
 
 	# Writing expression to output
 	# Loading string const
-	la $24 S2
+	la $s4 S2
 	# Loaded string S2
 	li $v0 4
-	ori $a0 $24 0
+	ori $a0 $s4 0
 	syscall
 	# Finished writing expression to output
 
 	# Loading value from 12($gp) with type integer
-	lw $24 12($gp)
+	lw $s5 12($gp)
 	# Loaded value from j
 
-	# Equal Expression: $24 = 1
-	li $25 1
-	seq $25 $24 $25
+	# Equal Expression: $s5 = 1
+	li $s6 1
+	seq $s6 $s5 $s6
 	# End Equal Expression
 
 	# Begin If Statement
-	beq $25 $zero IE2
+	beq $s6 $zero IE2
 
 	# Writing expression to output
 	# Loading string const
-	la $25 S3
+	la $s7 S3
 	# Loaded string S3
 	li $v0 4
-	ori $a0 $25 0
+	ori $a0 $s7 0
 	syscall
 	# Finished writing expression to output
 
@@ -89,23 +87,23 @@ ID2:
 IE1:
 
 	# Loading value from 8($gp) with type integer
-	lw $25 8($gp)
+	lw $t0 8($gp)
 	# Loaded value from i
 
-	# Equal Expression: $25 = 5
-	li $24 5
-	seq $24 $25 $24
+	# Equal Expression: $t0 = 5
+	li $t1 5
+	seq $t1 $t0 $t1
 	# End Equal Expression
 
 	# Begin If Statement
-	beq $24 $zero IE3
+	beq $t1 $zero IE3
 
 	# Writing expression to output
 	# Loading string const
-	la $24 S4
+	la $t2 S4
 	# Loaded string S4
 	li $v0 4
-	ori $a0 $24 0
+	ori $a0 $t2 0
 	syscall
 	# Finished writing expression to output
 
@@ -115,10 +113,10 @@ IE3:
 
 	# Writing expression to output
 	# Loading string const
-	la $24 S5
+	la $t3 S5
 	# Loaded string S5
 	li $v0 4
-	ori $a0 $24 0
+	ori $a0 $t3 0
 	syscall
 	# Finished writing expression to output
 

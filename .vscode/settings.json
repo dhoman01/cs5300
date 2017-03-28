@@ -26,7 +26,14 @@
         "*hpp*hpp*hpp*hpp*hppcstdarg": "cpp",
         "*hpp*hpp*hppcmath": "cpp",
         "system_error": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "cmath": "cpp",
+        "cstdarg": "cpp",
+        "ctime": "cpp",
+        "clocale": "cpp",
+        "initializer_list": "cpp",
+        "typeinfo": "cpp",
+        "slist": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceRoot}/project"
 }
