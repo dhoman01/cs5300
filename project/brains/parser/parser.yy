@@ -100,11 +100,13 @@
 %left DIV_OP MOD_OP MULT_OP
 %right UMINUS_OP
 
-%type<cpsl::Expression>                 expression
+%type<cpsl::Expression>                 expression whileExpr
 %type<std::vector<std::string>>         identifierList lvalueList
 %type<std::vector<cpsl::Expression>>    expressionList optExpressionList
-%type<int>                              constDecl assignment
-%type<std::string>                      lvalue type identifier simpleType
+%type<int>                              constDecl assignment whileHdr whileKey ifKey ifHdr elseIfHdr elseIfStatement repeatHdr
+%type<std::vector<int>>                 optElseIfStatements elseIfStatements
+%type<std::string>                      lvalue type identifier simpleType optTo
+%type<cpsl::ForHeaderInfo>                  forHdr forBegin
 
 %locations
 
@@ -113,7 +115,7 @@
 program: progHead block DOT
     ;
 
-progHead: optConstDecl optTypeDecl optVarDecl optProcFuncs
+progHead: optConstDecl optTypeDecl optVarDecl optProcFuncs { brain.InitMain(); }
     ;
 
 optConstDecl: CONST_KEY constDecls
@@ -132,11 +134,14 @@ optProcFuncs: optProcFuncs procedureDecl
     |
     ;
 
-procedureDecl: procedureSig FORWARD_KEY SEMI_COL
-    | procedureSig body SEMI_COL
+procedure: procedureDecl SEMI_COL { brain.statements.brain.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
+    | procedureSig FORWARD_KEY
     ;
 
-procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL
+procedureDecl: procedureSig body { $$ = $1; brian.statements.FunctionBody($1); }
+    ;
+
+procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL { $$ = brain.statements.GetLabel($2); }
     ;
 
 functionDecl: functionSig FORWARD_KEY SEMI_COL 
@@ -199,8 +204,8 @@ field: identifierList COL type SEMI_COL
 arrayType: ARRAY_KEY OPEN_SQ expression COL expression CLOSE_SQ OF_KEY type { }
     ;
 
-identifierList: identifierList COMMA identifier { $1.push_back($3); $$ = $1; }
-    | identifier                                { std::vector<std::string> list; list.push_back($1); $$ = list; }
+identifierList: identifierList COMMA identifier                 { $1.push_back($3); $$ = $1; }
+    | identifier                                                { std::vector<std::string> list; list.push_back($1); $$ = list; }
     ;
 
 identifier: IDENTIFIER { $$ = $1; }
@@ -214,7 +219,7 @@ varDecls: varDecls varDecl
     | varDecl
     ;
 
-varDecl: identifierList COL type SEMI_COL { brain.statements.VariableDeclaration($1, $3); }
+varDecl: identifierList COL type SEMI_COL                       { brain.statements.VariableDeclaration($1, $3); }
     ;
 
 statementList: statementList SEMI_COL statement
@@ -234,44 +239,68 @@ statement: assignment
     | nullStatement     
     ;
 
-assignment: lvalue ASSIGN_OP expression         { brain.statements.Assignment($1, $3); }
+assignment: lvalue ASSIGN_OP expression                         { brain.statements.Assignment($1, $3); }
     ;
 
-ifStatement: IF_KEY expression thenStatement optElseIfStatements elseStatement END_KEY
+ifStatement: ifHdr optElseIfStatements elseStatement END_KEY    { $2.push_back($1); brain.statements.IfEnd($2); }
+    ;
+
+ifHdr: ifKey thenStatement                                      { $$ = $1; brain.statements.IfHeader($1); }
+    ;
+
+ifKey: IF_KEY expression                                        { $$ = brain.statements.IfBegin($2); }
     ;
 
 thenStatement: THEN_KEY statementList
     ;
 
-optElseIfStatements: elseIfStatements
-    |
+optElseIfStatements: elseIfStatements                           { $$ = $1; }
+    |                                                           { $$ = std::vector<int>(0); }
     ;
 
-elseIfStatements: elseIfStatements elseIfStatement
-    | elseIfStatement
+elseIfStatements: elseIfStatements elseIfStatement              { $1.push_back($2); $$ = $1; }
+    | elseIfStatement                                           { std::vector<int> list; list.push_back($1); $$ = list; }
     ;
 
-elseIfStatement: ELSE_IF_KEY expression thenStatement
+elseIfStatement: elseIfHdr thenStatement                        { $$ = $1; brain.statements.IfHeader($1); }
+    ;
+
+elseIfHdr: ELSE_IF_KEY expression                               { $$ = brain.statements.IfBegin($2); }
     ;
 
 elseStatement: ELSE_KEY statementList
     |
     ;
 
-whileStatement: WHILE_KEY expression DO_KEY statementList END_KEY
+whileStatement: whileHdr statementList END_KEY                  { brain.statements.WhileEnd($1); }
     ;
 
-repeatStatement: REPEAT_KEY statementList UNTIL_KEY expression
+whileHdr: whileKey whileExpr DO_KEY                             { $$ = $1; brain.statements.WhileHeader($1, $2); }
     ;
 
-forStatement: forHead DO_KEY statementList END_KEY
+whileKey: WHILE_KEY                                             { $$ = brain.statements.WhileBegin(); }
     ;
 
-forHead: FOR_KEY identifier ASSIGN_OP expression optTo expression 
+whileExpr: expression                                           { $$ = $1; }
     ;
 
-optTo: TO_KEY       
-    | DOWN_TO_KEY   
+repeatStatement: repeatHdr statementList UNTIL_KEY expression   { brain.statements.RepeatEnd($1, $4); }
+    ;
+
+repeatHdr: REPEAT_KEY                                           { $$ = brain.statements.RepeatBegin(); }
+    ;
+                                                                
+forStatement: forHdr DO_KEY statementList END_KEY               { brain.statements.ForEnd($1); }
+    ;
+                                                                
+forHdr: forBegin optTo expression                               { $1.optTo = $2; brain.statements.ForHeader($1, $3); $$ = $1; }
+    ;
+
+forBegin: FOR_KEY identifier ASSIGN_OP expression               { $$ = brain.statements.ForBegin($2, $4); }
+    ;
+
+optTo: TO_KEY                                                   { $$ = "1"; }
+    | DOWN_TO_KEY                                               { $$ = "-1"; }
     ;
 
 stopStatement: STOP_KEY                                         { brain.statements.StopStatement(); }
@@ -293,48 +322,48 @@ procedureCall: identifier OPEN_PAR optExpressionList CLOSE_PAR
 nullStatement:
     ;
 
-optExpressionList: expressionList { $$ = $1;}
-    | { $$ = std::vector<cpsl::Expression>(); }
+optExpressionList: expressionList                               { $$ = $1;}
+    |                                                           { $$ = std::vector<cpsl::Expression>(); }
     ;
 
-expressionList: expressionList COMMA expression { $1.push_back($3); $$ = $1;}
-    | expression  { std::vector<cpsl::Expression> list; list.push_back($1); $$ = list;}
+expressionList: expressionList COMMA expression                 { $1.push_back($3); $$ = $1;}
+    | expression                                                { std::vector<cpsl::Expression> list; list.push_back($1); $$ = list;}
     ;
 
-expression: expression OR_OP expression                 { $$ = brain.expressions.OrExpression($1, $3); }            
-    | expression AND_OP expression                      { $$ = brain.expressions.AndExpression($1, $3); }              
-    | expression EQ_OP expression                       { $$ = brain.expressions.EqExpression($1, $3); } 
-    | expression NOT_EQ_OP expression                   { $$ = brain.expressions.NotEqExpression($1, $3); } 
-    | expression LT_EQ_OP expression                    { $$ = brain.expressions.LtEqExpression($1, $3); } 
-    | expression GT_EQ_OP expression                    { $$ = brain.expressions.GtEqExpression($1, $3); } 
-    | expression LT_OP expression                       { $$ = brain.expressions.LtExpression($1, $3); } 
-    | expression GT_OP expression                       { $$ = brain.expressions.GtExpression($1, $3); } 
-    | expression PLUS_OP expression                     { $$ = brain.expressions.PlusExpression($1, $3); } 
-    | expression MINUS_OP expression                    { $$ = brain.expressions.MinusExpression($1, $3); } 
-    | expression MULT_OP expression                     { $$ = brain.expressions.MultExpression($1, $3); }
-    | expression DIV_OP expression                      { $$ = brain.expressions.DivExpression($1, $3); } 
-    | expression MOD_OP expression                      { $$ = brain.expressions.ModExpression($1, $3); } 
-    | NOT_OP expression                                 { $$ = brain.expressions.NotExpression($2); }           
-    | MINUS_OP expression %prec UMINUS_OP               { $$ = brain.expressions.UMinusExpression($2); } 
-    | OPEN_PAR expression CLOSE_PAR                     { $$ = $2; } 
-    | identifier OPEN_PAR optExpressionList CLOSE_PAR   {  }
-    | CHR_KEY OPEN_PAR expression CLOSE_PAR             { $$ = brain.expressions.ChrExpression($3); }
-    | ORD_KEY OPEN_PAR expression CLOSE_PAR             { $$ = brain.expressions.OrdExpression($3); }
-    | PRED_KEY OPEN_PAR expression CLOSE_PAR            { $$ = brain.expressions.PredExpression($3); }
-    | SUCC_KEY OPEN_PAR expression CLOSE_PAR            { $$ = brain.expressions.SuccExpression($3); }
-    | INT_CONST                                         { $$ = brain.expressions.IntConstant($1); }
-    | CHR_CONST                                         { $$ = brain.expressions.CharConstant($1); }
-    | STRING_CONST                                      { $$ = brain.addString($1); } 
-    | lvalue                                            { $$ = brain.statements.LoadVariable($1); }
+expression: expression OR_OP expression                         { $$ = brain.expressions.OrExpression($1, $3); }            
+    | expression AND_OP expression                              { $$ = brain.expressions.AndExpression($1, $3); }              
+    | expression EQ_OP expression                               { $$ = brain.expressions.EqExpression($1, $3); } 
+    | expression NOT_EQ_OP expression                           { $$ = brain.expressions.NotEqExpression($1, $3); } 
+    | expression LT_EQ_OP expression                            { $$ = brain.expressions.LtEqExpression($1, $3); } 
+    | expression GT_EQ_OP expression                            { $$ = brain.expressions.GtEqExpression($1, $3); } 
+    | expression LT_OP expression                               { $$ = brain.expressions.LtExpression($1, $3); } 
+    | expression GT_OP expression                               { $$ = brain.expressions.GtExpression($1, $3); } 
+    | expression PLUS_OP expression                             { $$ = brain.expressions.PlusExpression($1, $3); } 
+    | expression MINUS_OP expression                            { $$ = brain.expressions.MinusExpression($1, $3); } 
+    | expression MULT_OP expression                             { $$ = brain.expressions.MultExpression($1, $3); }
+    | expression DIV_OP expression                              { $$ = brain.expressions.DivExpression($1, $3); } 
+    | expression MOD_OP expression                              { $$ = brain.expressions.ModExpression($1, $3); } 
+    | NOT_OP expression                                         { $$ = brain.expressions.NotExpression($2); }           
+    | MINUS_OP expression %prec UMINUS_OP                       { $$ = brain.expressions.UMinusExpression($2); } 
+    | OPEN_PAR expression CLOSE_PAR                             { $$ = $2; } 
+    | identifier OPEN_PAR optExpressionList CLOSE_PAR           {  }
+    | CHR_KEY OPEN_PAR expression CLOSE_PAR                     { $$ = brain.expressions.ChrExpression($3); }
+    | ORD_KEY OPEN_PAR expression CLOSE_PAR                     { $$ = brain.expressions.OrdExpression($3); }
+    | PRED_KEY OPEN_PAR expression CLOSE_PAR                    { $$ = brain.expressions.PredExpression($3); }
+    | SUCC_KEY OPEN_PAR expression CLOSE_PAR                    { $$ = brain.expressions.SuccExpression($3); }
+    | INT_CONST                                                 { $$ = brain.expressions.IntConstant($1); }
+    | CHR_CONST                                                 { $$ = brain.expressions.CharConstant($1); }
+    | STRING_CONST                                              { $$ = brain.addString($1); } 
+    | lvalue                                                    { $$ = brain.statements.LoadVariable($1); }
     ;
 
-lvalueList: lvalueList COMMA lvalue { $$ = $1; }
-    | lvalue { std::vector<std::string> list; list.push_back($1); $$ = list;}
+lvalueList: lvalueList COMMA lvalue                             { $$ = $1; }
+    | lvalue                                                    { std::vector<std::string> list; list.push_back($1); $$ = list;}
     ;
 
-lvalue: lvalue DOT identifier { }
-    | lvalue OPEN_SQ expression CLOSE_SQ { }
-    | identifier { $$ = $1;}
+lvalue: lvalue DOT identifier                                   { }
+    | lvalue OPEN_SQ expression CLOSE_SQ                        { }
+    | identifier                                                { $$ = $1;}
     ;
 
 %%

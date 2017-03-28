@@ -13,6 +13,7 @@
 #include "expressions/Expressions.hpp"
 #include "statements/Statements.hpp"
 #include "utils/LookupTable.hpp"
+#include "utils/RegPool.hpp"
 
 namespace cpsl
 {
@@ -28,6 +29,8 @@ public:
     void parse(const char* const filename);
     void parse(std::istream& iss);
 
+    void InitMain();
+
     Expression addString(std::string);
 
     Expressions expressions;
@@ -38,12 +41,11 @@ private:
     void Init();
     void InitMIPS();
     void InitPredefinedSymbols();
-    void InitRegPool();
 
     std::vector<std::string> stringConst;
 
     std::shared_ptr<LookUpTable<Info>> symbolTable;
-    std::shared_ptr<std::vector<Register>> regPool;
+    std::shared_ptr<RegPool> regPool;
 
     std::shared_ptr<Parser> parser = nullptr;
     std::shared_ptr<Scanner> scanner = nullptr;

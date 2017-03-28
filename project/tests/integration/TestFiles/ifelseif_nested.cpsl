@@ -3,7 +3,8 @@ VAR
 
 BEGIN
 
-  i := 5;
+  write("Enter an integer between 1 and 10:");
+  read(i);
   j := 1;
 
   if (i < 5)

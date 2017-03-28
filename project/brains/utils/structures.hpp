@@ -23,7 +23,10 @@ struct VariableInfo : Info {
 };
 
 struct Register {
+    Register(){};
+    Register(std::string n):name(n){};
     std::string name;
+    bool operator==(const Register& rhs){ name == rhs.name; };
 };
 
 struct Expression {
@@ -39,6 +42,15 @@ struct CharConst : Expression {
 
 struct StringConst : Expression {
     std::string value;
+};
+
+struct ForHeaderInfo {
+    cpsl::Expression varExpr;
+    cpsl::Expression cond;
+    int uid;
+    std::shared_ptr<cpsl::VariableInfo> var;
+    std::string optTo;
+    bool exitScope;
 };
 
 };

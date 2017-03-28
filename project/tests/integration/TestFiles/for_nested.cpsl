@@ -1,0 +1,16 @@
+BEGIN 
+
+  for i := 0 to 5 do
+    if 1 = 0 then
+      write("This shouldn't have been written");
+    else
+      write("i = ", i, "\n");
+    end;
+    for j := 0 to 5 do
+      if 1 = 1 then
+        write("\tj = ", j, "\n");
+      end;
+    end;
+  end;
+
+END.

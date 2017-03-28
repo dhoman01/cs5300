@@ -6,7 +6,7 @@
 
 cpsl::Brain::Brain()
 {
-    regPool = std::make_shared<std::vector<cpsl::Register>>();
+    regPool = std::make_shared<RegPool>();
     symbolTable = std::make_shared<cpsl::LookUpTable<cpsl::Info>>();
     Init();
     expressions = Expressions(regPool);
@@ -15,7 +15,9 @@ cpsl::Brain::Brain()
 
 void cpsl::Brain::Finalize()
 {
-    std::cout << "\t.data" << std::endl;
+    std::cout << "\n\t# End of CPSL Program" << std::endl;
+    cpsl::Brain::statements.StopStatement();
+    std::cout << "\n\t.data" << std::endl;
     if(stringConst.size() > 0)
     {
         std::cout << "\n# Write out string constants" << std::endl;
@@ -74,16 +76,6 @@ void cpsl::Brain::parse_helper(std::istream &stream)
     return;
 }
 
-void cpsl::Brain::InitRegPool()
-{
-    // Create registers $8-$25
-    for(int i = 8; i < 26; i++){
-        Register reg;
-        reg.name = "$" + std::to_string(i);
-        regPool->push_back(reg);
-    }
-}
-
 void cpsl::Brain::InitMIPS()
 {
     // Write HEAD matter for asm file
@@ -91,12 +83,17 @@ void cpsl::Brain::InitMIPS()
     // boolean constant definitions
     std::cout << ".globl main" << std::endl;
     std::cout << ".text\n" << std::endl;
+    std::cout << "j main" << std::endl;    
+}
 
-    std::cout << "main:   la $gp, GA" << std::endl;
+void cpsl::Brain::InitMain()
+{
+    std::cout << "main:" << std::endl;
+    std::cout << "\tla $gp, GA" << std::endl;
     std::cout << "\tori $fp, $sp, 0" << std::endl;
     std::cout << "\t# Store the true and false const values" << std::endl;
-    std::cout << "\tli $a3 1" << std::endl;
-    std::cout << "\tsw $a3, 0($gp)" << std::endl;
+    std::cout << "\tli $v0 1" << std::endl;
+    std::cout << "\tsw $v0, 0($gp)" << std::endl;
     std::cout << "\tsw $zero, 4($gp)" << std::endl;
     std::cout << "\n\n\t# Begin CPSL Program" << std::endl;
 }
@@ -138,7 +135,7 @@ void cpsl::Brain::InitPredefinedSymbols()
     // In the MIPS Init function 0($gp) is set to the value 1
     std::shared_ptr<cpsl::VariableInfo> trueConst = std::make_shared<cpsl::VariableInfo>();
     trueConst->id = "true";
-    trueConst->location = "0";
+    trueConst->location = "0($gp)";
     trueConst->type = booleanType;
     symbolTable->store("true", trueConst);
     symbolTable->store("TRUE", trueConst);
@@ -147,7 +144,7 @@ void cpsl::Brain::InitPredefinedSymbols()
     // In the MIPS Init function 4($gp) is set to the value 0
     std::shared_ptr<cpsl::VariableInfo> falseConst = std::make_shared<cpsl::VariableInfo>();
     falseConst->id = "false";
-    falseConst->location = "4";
+    falseConst->location = "4($gp)";
     falseConst->type = booleanType;
     symbolTable->store("false", falseConst);
     symbolTable->store("FALSE", falseConst);
@@ -158,8 +155,6 @@ void cpsl::Brain::InitPredefinedSymbols()
 
 void cpsl::Brain::Init()
 {
-    InitRegPool();
-
     InitMIPS();
 
     InitPredefinedSymbols();
