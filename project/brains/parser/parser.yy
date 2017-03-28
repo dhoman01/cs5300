@@ -126,7 +126,7 @@ constDecls: constDecls constDecl
     | constDecl
     ;
 
-constDecl: identifier EQ_OP expression SEMI_COL { brain.statements.ConstDeclaration($1, $3); }
+constDecl: identifier EQ_OP expression SEMI_COL
     ;
 
 optProcFuncs: optProcFuncs procedureDecl
@@ -134,14 +134,14 @@ optProcFuncs: optProcFuncs procedureDecl
     |
     ;
 
-procedure: procedureDecl SEMI_COL { brain.statements.brain.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
+procedure: procedureDecl SEMI_COL
     | procedureSig FORWARD_KEY
     ;
 
-procedureDecl: procedureSig body { $$ = $1; brian.statements.FunctionBody($1); }
+procedureDecl: procedureSig body
     ;
 
-procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL { $$ = brain.statements.GetLabel($2); }
+procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL
     ;
 
 functionDecl: functionSig FORWARD_KEY SEMI_COL 
