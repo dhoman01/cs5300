@@ -106,7 +106,10 @@
 %type<int>                              constDecl assignment whileHdr whileKey ifKey ifHdr elseIfHdr elseIfStatement repeatHdr
 %type<std::vector<int>>                 optElseIfStatements elseIfStatements
 %type<std::string>                      lvalue type identifier simpleType optTo
-%type<cpsl::ForHeaderInfo>                  forHdr forBegin
+%type<cpsl::ForHeaderInfo>              forHdr forBegin
+%type<cpsl::Procedure>                  procedureSig procedureDecl
+%type<cpsl::Parameter>                  formalParameter
+%type<std::vector<cpsl::Parameter>>     formalParameters optFormalParameters
 
 %locations
 
@@ -135,13 +138,13 @@ optProcFuncs: optProcFuncs procedureDecl
     ;
 
 procedure: procedureDecl SEMI_COL { brain.statements.brain.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
-    | procedureSig FORWARD_KEY
+    | procedureSig FORWARD_KEY SEMI_COL
     ;
 
 procedureDecl: procedureSig body { $$ = $1; brian.statements.FunctionBody($1); }
     ;
 
-procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL { $$ = brain.statements.GetLabel($2); }
+procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL { $$ = brain.statements.MakeProcedure($2, $4); }
     ;
 
 functionDecl: functionSig FORWARD_KEY SEMI_COL 
@@ -151,15 +154,15 @@ functionDecl: functionSig FORWARD_KEY SEMI_COL
 functionSig: FUNCTION_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR COL type SEMI_COL
     ;
 
-optFormalParameters: formalParameters {  }
-    | { }
+optFormalParameters: formalParameters { $$ = $1; }
+    | { $$ = std::vector<cpsl::Parameter>(); }
     ;
 
-formalParameters: formalParameters SEMI_COL formalParameter { }
-    | formalParameter { }
+formalParameters: formalParameters SEMI_COL formalParameter { $1.push_back($3); $$ = $1; }
+    | formalParameter { std::vector<cpsl::Parameter> list; list.push_back($1); $$ = list; }
     ;
 
-formalParameter: optVar identifierList COL type {  }
+formalParameter: optVar identifierList COL type { $$ = brain.statements.MakeParameter($1, $2); }
     ;
 
 optVar: VAR_KEY
