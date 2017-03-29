@@ -1,6 +1,7 @@
 .globl main
 .text
 
+j main
 main:
 	la $gp, GA
 	ori $fp, $sp, 0

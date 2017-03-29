@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace cpsl
 {
@@ -51,6 +52,22 @@ struct ForHeaderInfo {
     std::shared_ptr<cpsl::VariableInfo> var;
     std::string optTo;
     bool exitScope;
+};
+
+struct Parameter : VariableInfo {
+    bool isRef;
+};
+
+struct Procedure : Info {
+    Procedure(std::string i, std::vector<std::shared_ptr<cpsl::Parameter>> p) : parameters(p){
+        id = i;
+    };
+    std::vector<std::shared_ptr<cpsl::Parameter>> parameters;
+};
+
+struct Function : Procedure {
+    Function(std::string i, std::vector<std::shared_ptr<cpsl::Parameter>> p, VariableInfo r) : Procedure(i, p), returnValue(r){};
+    VariableInfo returnValue;
 };
 
 };

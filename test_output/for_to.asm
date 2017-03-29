@@ -1,6 +1,7 @@
 .globl main
 .text
 
+j main
 	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
 main:
 	la $gp, GA

@@ -12,11 +12,12 @@
  *************/ 
 cpsl::Statements::Statements(std::shared_ptr<cpsl::RegPool> pool, std::shared_ptr<cpsl::LookUpTable<cpsl::Info>> table, bool addNew)
 {
-    // Start globalLocation at 8
+    // Start globalOffset at 8
     // because true is at 0($gp)
     // and false is at 4($gp)
-    globalLocation = 8;
-    frameLocation = 0;
+    globalOffset = 8;
+    localOffset = 0;
+    paramOffset = 0;
     regPool = pool;
     symbolTable = table;
     addNewline = addNew;
@@ -255,13 +256,19 @@ void cpsl::Statements::WhileEnd(int uid)
     std::cout << eLabel << ":" << std::endl;
 };
 
-/****************
- * Helpers      *
- * - Assignment *
- * - Const Decl *
- * - Load Var   *
- * - Var Decl   *
- ***************/
+/*****************
+ * Helpers       *
+ * - Assignment  *
+ * - Const Decl  *
+ * - Func Body   *
+ * - Func Ep     *
+ * - Func Pro    *
+ * - Enter Scope *
+ * - Exit Scope  *
+ * - Load Var    *
+ * - Make Param  *
+ * - Var Decl    *
+ ****************/
 void cpsl::Statements::Assignment(std::string id, cpsl::Expression expr)
 {
     std::shared_ptr<cpsl::VariableInfo> var = std::dynamic_pointer_cast<cpsl::VariableInfo>(symbolTable->lookup(id));
@@ -279,6 +286,16 @@ void cpsl::Statements::Assignment(std::string id, cpsl::Expression expr)
     else
     {
         std::cout << " at " << expr.reg.name << std::endl;
+    }
+
+    std::shared_ptr<cpsl::Parameter> param = std::dynamic_pointer_cast<cpsl::Parameter>(var);
+    if(param && param->isRef)
+    {
+        cpsl::Register ref = regPool->acquire();
+        std::cout << "\t# Storing value to reference" << std::endl;
+        std::cout << "\tlw " << ref.name << " " << param->location << std::endl;
+        var->location = "0(" + ref.name + ")";
+        regPool->release(ref);
     }
 
     std::cout << "\tsw " << expr.reg.name << " " << var->location << std::endl;
@@ -310,6 +327,36 @@ void cpsl::Statements::ConstDeclaration(std::string id, cpsl::Expression expr)
     return;
 }
 
+void cpsl::Statements::EnterScope()
+{
+    symbolTable->enterScope();
+}
+
+void cpsl::Statements::ExitScope()
+{
+    symbolTable->exitScope();
+}
+
+void cpsl::Statements::FunctionBody(std::shared_ptr<cpsl::Procedure> procedure)
+{
+    std::cout << "\tj " << procedure->id << "Epilogue" << std::endl;
+}
+
+void cpsl::Statements::FunctionEpilogue(std::shared_ptr<cpsl::Procedure> procedure)
+{
+    std::cout << "\t# " << procedure->id << " Epilogue" << std::endl;
+    std::cout << procedure->id << "Epilogue" << std::endl;
+    std::cout << "\taddi $sp $sp " << localOffset << std::endl;
+    std::cout << "\tjr $ra" << std::endl;
+}
+
+void cpsl::Statements::FunctionPrologue(std::shared_ptr<cpsl::Procedure> procedure)
+{
+    std::cout << "\t# " << procedure->id << " Prolouge" << std::endl;
+    std::cout << procedure->id << std::endl;
+    std::cout << "\taddi $sp $sp -" <<  localOffset << std::endl;
+}
+
 cpsl::Expression cpsl::Statements::LoadVariable(std::string id)
 {
     std::shared_ptr<cpsl::VariableInfo> var = std::dynamic_pointer_cast<cpsl::VariableInfo>(symbolTable->lookup(id));
@@ -320,6 +367,16 @@ cpsl::Expression cpsl::Statements::LoadVariable(std::string id)
 
     std::cout << "\n\t# Loading value from " << var->location << " with type " << var->type->id << std::endl;
     std::cout << "\tlw " << reg.name << " " << var->location << std::endl;
+
+    std::shared_ptr<cpsl::Parameter> param = std::dynamic_pointer_cast<cpsl::Parameter>(var);
+    if(param && param->isRef)
+    {
+        cpsl::Register ref = regPool->acquire();
+        std::cout << "\t# Loading reference" << std::endl;
+        std::cout << "\tlw " << ref.name << " 0(" << reg.name << ")" << std::endl;
+        regPool->release(reg);
+        reg = ref;
+    }
     std::cout << "\t# Loaded value from " << id << std::endl;
 
     // Generate cpsl::Expression for loaded variable
@@ -329,6 +386,32 @@ cpsl::Expression cpsl::Statements::LoadVariable(std::string id)
     expr.type = var->type->id;
 
     return expr;
+}
+
+std::vector<std::shared_ptr<cpsl::Parameter>> cpsl::Statements::MakeParameters(std::string var_ref, std::vector<std::string> ids, std::string typeName)
+{
+    std::shared_ptr<cpsl::Type> type = std::dynamic_pointer_cast<cpsl::Type>(symbolTable->lookup(typeName));
+    std::vector<std::shared_ptr<cpsl::Parameter>> params;
+    for(auto id : ids)
+    {
+        std::shared_ptr<cpsl::Parameter> param = std::make_shared<cpsl::Parameter>();
+        param->id = id;
+        param->type = type;
+        param->isRef = (var_ref == "ref");
+        param->location = std::to_string(paramOffset) + "($fp)";
+        paramOffset += type->size;
+        symbolTable->store(id, param);
+        std::cout << "\t# (NO MIPS EMITTED) Storing " << (param->isRef ? "ref to" : "") << " parameter " << id << " with type " << type->id << " into symbol table" << std::endl;        
+        params.push_back(param);
+    }
+
+    return params;
+}
+
+std::shared_ptr<cpsl::Procedure> cpsl::Statements::MakeProcedure(std::string id, std::vector<std::shared_ptr<cpsl::Parameter>> params)
+{
+    std::shared_ptr<cpsl::Procedure> procedure = std::make_shared<cpsl::Procedure>(id, params);
+    symbolTable->store(id, procedure);
 }
 
 void cpsl::Statements::VariableDeclaration(std::vector<std::string> ids, std::string typeName)
@@ -411,13 +494,13 @@ void cpsl::Statements::StoreSymbol(std::string id, std::shared_ptr<cpsl::Type> t
     var->type = type;
     if(symbolTable->inLocalScope())
     {
-        var->location = std::to_string(frameLocation) + "($fp)";
-        frameLocation += type->size;
+        var->location = std::to_string(-1 * localOffset) + "($fp)";
+        localOffset += type->size;
     }
     else
     {
-        var->location = std::to_string(globalLocation) + "($gp)";
-        globalLocation += type->size;
+        var->location = std::to_string(globalOffset) + "($gp)";
+        globalOffset += type->size;
     }
     symbolTable->store(id, var);
     std::cout << "\t# (NO MIPS EMITTED) Storing symbol " << id << " with type " << type->id << " into symbol table" << std::endl;

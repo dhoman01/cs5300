@@ -1,8 +1,11 @@
 .globl main
 .text
+
+j main
 	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
 	# (NO MIPS EMITTED) Storing symbol j with type integer into symbol table
 main:
+	la $gp, GA
 	ori $fp, $sp, 0
 	# Store the true and false const values
 	li $v0 1
