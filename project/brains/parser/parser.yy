@@ -315,7 +315,7 @@ readStatement: READ_KEY OPEN_PAR lvalueList CLOSE_PAR                           
 writeStatement: WRITE_KEY OPEN_PAR expressionList CLOSE_PAR                                     { brain.statements.WriteStatement($3); }
     ;
 
-procedureCall: identifier OPEN_PAR optExpressionList CLOSE_PAR
+procedureCall: identifier OPEN_PAR optExpressionList CLOSE_PAR                                  { brain.expressions.ProcedureCall($2, $3); }
     ;
 
 nullStatement:
@@ -345,7 +345,7 @@ expression: expression OR_OP expression                                         
     | NOT_OP expression                                                                         { $$ = brain.expressions.NotExpression($2); }           
     | MINUS_OP expression %prec UMINUS_OP                                                       { $$ = brain.expressions.UMinusExpression($2); } 
     | OPEN_PAR expression CLOSE_PAR                                                             { $$ = $2; } 
-    | identifier OPEN_PAR optExpressionList CLOSE_PAR                                           {  }
+    | identifier OPEN_PAR optExpressionList CLOSE_PAR                                           { $$ = brain.expressions.FunctionCall($2, $3); }
     | CHR_KEY OPEN_PAR expression CLOSE_PAR                                                     { $$ = brain.expressions.ChrExpression($3); }
     | ORD_KEY OPEN_PAR expression CLOSE_PAR                                                     { $$ = brain.expressions.OrdExpression($3); }
     | PRED_KEY OPEN_PAR expression CLOSE_PAR                                                    { $$ = brain.expressions.PredExpression($3); }

@@ -946,3 +946,27 @@ cpsl::Expression cpsl::Expressions::CharConstant(char a)
     expr.value = static_cast<int>(a);
     return expr;
 }
+
+Expression FunctionCall(std::string id, std::vector<Expression> expressions)
+{
+    std::shared_ptr<cpsl::Function> function = std::dynamic_pointer_cast<cpsl::Function>(symbolTable->lookup(id));
+
+    auto offset = 8 + (regPool->inUse().size() * 4);
+
+    std::cout << "\t# " << function->id << " Precall" << std::endl;
+    std::cout << "\taddi $sp $sp -" << offset << std::endl;
+
+    auto stackOffset = 0;
+    for(auto reg : regPool->inUse())
+    {
+        std::cout << "\tsw " << reg.name << " " << stackOffset << "($sp)" << std::endl;
+        regPool->release(reg);
+        stackOffset += 4;
+    }
+
+    std::cout << "\tsw $fp " << stackOffset << " ($sp)" << std::endl;
+    stackOffset += 4;
+    std::cout << "\tsw $ra " << stackOffset << " ($sp)" << std::endl;
+    std::cout << "\tori $fp $sp 0" << std::endl;
+    std::cout << "\tjal " << id << std::endl;
+}
