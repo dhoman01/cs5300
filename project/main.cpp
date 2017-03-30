@@ -45,7 +45,7 @@ int main(const int argc, const char **argv)
           }
           catch (const std::exception& ex)
           {
-              std::cerr << "Runtime Error: " << ex.what() << std::endl;
+              std::cerr << "Compile Error: " << ex.what() << std::endl;
               return EXIT_FAILURE;
           }
       }
@@ -57,7 +57,7 @@ int main(const int argc, const char **argv)
           }
           catch (const std::exception& ex)
           {
-              std::cerr << "Runtime Error: " << ex.what() << std::endl;
+              std::cerr << "Compile Error: " << ex.what() << std::endl;
               return EXIT_FAILURE;
           }
       }

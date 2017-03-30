@@ -1,6 +1,7 @@
 #ifndef REG_POOL_HPP
 #define REG_POOL_HPP
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -11,10 +12,8 @@ namespace cpsl {
 class RegPool {
 public:
     RegPool():regPool({
-        Register("$a3"),
-        Register("$a2"),
-        Register("$a1"),
-        Register("$a0"),
+        Register("$t9"),
+        Register("$t8"),
         Register("$t7"),
         Register("$t6"),
         Register("$t5"),
@@ -34,10 +33,14 @@ public:
     }), locked(){};
     Register acquire();
     void release(Register);
+    void releaseAll();
+    void spill(Register);
     std::vector<Register> inUse();
+    std::vector<Register> unspill();
 private:
     std::vector<Register> regPool;
     std::vector<Register> locked;
+    std::vector<Register> spilled;
 };
 
 };

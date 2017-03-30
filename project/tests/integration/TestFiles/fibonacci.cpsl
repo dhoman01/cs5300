@@ -20,11 +20,11 @@ begin
 	counter := fib-1;
 	first:=0;
 	second:=1;
-	write(first, ", ", second,", ");
+	write(first, ", ", second);
 	$Write out the iterative form of the sequence to test control structure
-	while counter>0 do 
+	while counter > 0 do 
 		next:= first+second;
-		write(next, ", ");
+		write(", ", next);
 		first:=second;
 		second:=next;
 		counter:=counter-1;

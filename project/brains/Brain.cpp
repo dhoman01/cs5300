@@ -90,7 +90,6 @@ void cpsl::Brain::InitMain()
 {
     std::cout << "main:" << std::endl;
     std::cout << "\tla $gp, GA" << std::endl;
-    std::cout << "\tori $fp, $sp, 0" << std::endl;
     std::cout << "\t# Store the true and false const values" << std::endl;
     std::cout << "\tli $v0 1" << std::endl;
     std::cout << "\tsw $v0, 0($gp)" << std::endl;

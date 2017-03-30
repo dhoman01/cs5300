@@ -3,7 +3,7 @@ VAR
 
 PROCEDURE greeting(num : integer);
 BEGIN
-  write("Hi " + num + "\n");
+  write("Hi ", num, "\n");
 END;
 
 BEGIN

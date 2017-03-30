@@ -21,6 +21,7 @@ struct Type : Info {
 struct VariableInfo : Info {
     std::shared_ptr<Type> type;
     std::string location;
+    int offset;
 };
 
 struct Register {
@@ -35,6 +36,7 @@ struct Expression {
     Register reg;
     int value;
     std::string type;
+    int offset;
 };
 
 struct CharConst : Expression {
@@ -56,6 +58,7 @@ struct ForHeaderInfo {
 
 struct Parameter : VariableInfo {
     bool isRef;
+    Register reg;
 };
 
 struct Procedure : Info {
@@ -65,9 +68,13 @@ struct Procedure : Info {
     std::vector<std::shared_ptr<cpsl::Parameter>> parameters;
 };
 
+struct Return : VariableInfo {
+    std::string function;
+};
+
 struct Function : Procedure {
-    Function(std::string i, std::vector<std::shared_ptr<cpsl::Parameter>> p, VariableInfo r) : Procedure(i, p), returnValue(r){};
-    VariableInfo returnValue;
+    Function(std::string i, std::vector<std::shared_ptr<cpsl::Parameter>> p, std::shared_ptr<Return> r) : Procedure(i, p), returnValue(r){};
+    std::shared_ptr<Return> returnValue;
 };
 
 };

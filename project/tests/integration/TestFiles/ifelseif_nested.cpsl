@@ -14,8 +14,10 @@ BEGIN
     end;
   elseif (i = 5)
     then write("i is 5!");
+  elseif (i < 10)
+    then write("i is greater than 5, but less than 10!");
   else
-    write("i is greater than 5!");
+    write("i is 10!");
   end;
 
 END.

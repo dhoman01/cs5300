@@ -41,7 +41,6 @@ public:
     Expression SuccExpression(Expression);
     Expression IntConstant(std::string);
     Expression CharConstant(char);
-    Expression FunctionCall(std::string, std::vector<Expression>);
 private:
     std::shared_ptr<RegPool> regPool = nullptr;
 };

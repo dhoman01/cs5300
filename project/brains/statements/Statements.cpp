@@ -51,20 +51,17 @@ cpsl::ForHeaderInfo cpsl::Statements::ForBegin(std::string id, cpsl::Expression 
         cpsl::Statements::Assignment(id, expr);
         varExpr = cpsl::Statements::LoadVariable(id);
         info.var = var;
-        info.exitScope = false;
     }
     catch (const std::exception& ex)
     {
         // TODO: Create variable for user...
         std::cout << "\t# Entering new scope for for loop" << std::endl;
-        symbolTable->enterScope();
         std::shared_ptr<cpsl::Type> intType = std::dynamic_pointer_cast<cpsl::Type>(symbolTable->lookup("integer"));
         cpsl::Statements::StoreSymbol(id, intType);
         std::shared_ptr<cpsl::VariableInfo> var = std::dynamic_pointer_cast<cpsl::VariableInfo>(symbolTable->lookup(id));
         cpsl::Statements::Assignment(id, expr);        
         varExpr = cpsl::Statements::LoadVariable(id);
         info.var = var;
-        info.exitScope = true;
     }
 
     // Get a uid for for loop
@@ -95,6 +92,7 @@ void cpsl::Statements::ForHeader(cpsl::ForHeaderInfo& info, cpsl::Expression con
     // Add (subtract in downto) 1 from the condition for '=' operator
     std::cout << "\taddi " << cond.reg.name << " " << cond.reg.name << " " << info.optTo << std::endl;
     std::cout << "\tbeq " << info.varExpr.reg.name << " " << cond.reg.name << " FE" << info.uid << std::endl;
+    regPool->release(cond.reg);
 };
 
 void cpsl::Statements::ForEnd(cpsl::ForHeaderInfo info)
@@ -110,13 +108,6 @@ void cpsl::Statements::ForEnd(cpsl::ForHeaderInfo info)
     // Release registers
     regPool->release(info.varExpr.reg);
     regPool->release(info.cond.reg);
-
-    // Exit scope if new variable was created for counter
-    if(info.exitScope)
-    {
-        symbolTable->exitScope();
-        std::cout << "\t# Exited scope for for loop" << std::endl;
-    }
 };
 
 int cpsl::Statements::IfBegin(cpsl::Expression expr)
@@ -260,13 +251,9 @@ void cpsl::Statements::WhileEnd(int uid)
  * Helpers       *
  * - Assignment  *
  * - Const Decl  *
- * - Func Body   *
- * - Func Ep     *
- * - Func Pro    *
  * - Enter Scope *
  * - Exit Scope  *
  * - Load Var    *
- * - Make Param  *
  * - Var Decl    *
  ****************/
 void cpsl::Statements::Assignment(std::string id, cpsl::Expression expr)
@@ -329,32 +316,14 @@ void cpsl::Statements::ConstDeclaration(std::string id, cpsl::Expression expr)
 
 void cpsl::Statements::EnterScope()
 {
+    localOffset = 0;
+    paramOffset = 0;
     symbolTable->enterScope();
 }
 
 void cpsl::Statements::ExitScope()
 {
     symbolTable->exitScope();
-}
-
-void cpsl::Statements::FunctionBody(std::shared_ptr<cpsl::Procedure> procedure)
-{
-    std::cout << "\tj " << procedure->id << "Epilogue" << std::endl;
-}
-
-void cpsl::Statements::FunctionEpilogue(std::shared_ptr<cpsl::Procedure> procedure)
-{
-    std::cout << "\t# " << procedure->id << " Epilogue" << std::endl;
-    std::cout << procedure->id << "Epilogue" << std::endl;
-    std::cout << "\taddi $sp $sp " << localOffset << std::endl;
-    std::cout << "\tjr $ra" << std::endl;
-}
-
-void cpsl::Statements::FunctionPrologue(std::shared_ptr<cpsl::Procedure> procedure)
-{
-    std::cout << "\t# " << procedure->id << " Prolouge" << std::endl;
-    std::cout << procedure->id << std::endl;
-    std::cout << "\taddi $sp $sp -" <<  localOffset << std::endl;
 }
 
 cpsl::Expression cpsl::Statements::LoadVariable(std::string id)
@@ -382,36 +351,11 @@ cpsl::Expression cpsl::Statements::LoadVariable(std::string id)
     // Generate cpsl::Expression for loaded variable
     cpsl::Expression expr;
     expr.reg = reg;
+    expr.offset = var->offset;
     expr.isConstant = false;
     expr.type = var->type->id;
 
     return expr;
-}
-
-std::vector<std::shared_ptr<cpsl::Parameter>> cpsl::Statements::MakeParameters(std::string var_ref, std::vector<std::string> ids, std::string typeName)
-{
-    std::shared_ptr<cpsl::Type> type = std::dynamic_pointer_cast<cpsl::Type>(symbolTable->lookup(typeName));
-    std::vector<std::shared_ptr<cpsl::Parameter>> params;
-    for(auto id : ids)
-    {
-        std::shared_ptr<cpsl::Parameter> param = std::make_shared<cpsl::Parameter>();
-        param->id = id;
-        param->type = type;
-        param->isRef = (var_ref == "ref");
-        param->location = std::to_string(paramOffset) + "($fp)";
-        paramOffset += type->size;
-        symbolTable->store(id, param);
-        std::cout << "\t# (NO MIPS EMITTED) Storing " << (param->isRef ? "ref to" : "") << " parameter " << id << " with type " << type->id << " into symbol table" << std::endl;        
-        params.push_back(param);
-    }
-
-    return params;
-}
-
-std::shared_ptr<cpsl::Procedure> cpsl::Statements::MakeProcedure(std::string id, std::vector<std::shared_ptr<cpsl::Parameter>> params)
-{
-    std::shared_ptr<cpsl::Procedure> procedure = std::make_shared<cpsl::Procedure>(id, params);
-    symbolTable->store(id, procedure);
 }
 
 void cpsl::Statements::VariableDeclaration(std::vector<std::string> ids, std::string typeName)
@@ -462,6 +406,268 @@ void cpsl::Statements::WriteStatement(std::vector<cpsl::Expression> expressionLi
     return;
 }
 
+/************************
+ * Functions/Procedures *
+ * - Func Epilogue      *
+ * - Func Prologue      *
+ * - Make Params        *
+ * - Make Procedure     *
+ ***********************/
+void cpsl::Statements::FunctionEpilogue(std::shared_ptr<cpsl::Procedure> procedure)
+{
+    std::cout << "\t# " << procedure->id << " Epilogue" << std::endl;
+    std::cout << procedure->id << "Epilogue:" << std::endl;
+    if(localOffset != 0) std::cout << "\taddi $sp $sp " << localOffset << std::endl;
+    std::cout << "\tjr $ra" << std::endl;
+    cpsl::Statements::ExitScope();
+}
+
+void cpsl::Statements::FunctionPrologue(std::shared_ptr<cpsl::Procedure> procedure)
+{  
+    std::cout << "\tj " << procedure->id << "Epilogue" << std::endl;
+    std::cout << "\t# " << procedure->id << " Prolouge" << std::endl;
+    std::cout << procedure->id << ":" << std::endl;
+    if(localOffset != 0) std::cout << "\taddi $sp $sp -" <<  localOffset << std::endl;
+    std::cout << "\tj " << procedure->id << "Body" << std::endl;;
+}
+
+std::vector<std::shared_ptr<cpsl::Parameter>> cpsl::Statements::MakeParameters(std::string var_ref, std::vector<std::string> ids, std::string typeName)
+{
+    std::shared_ptr<cpsl::Type> type = std::dynamic_pointer_cast<cpsl::Type>(symbolTable->lookup(typeName));
+    std::vector<std::shared_ptr<cpsl::Parameter>> params;
+    for(auto id : ids)
+    {
+        std::shared_ptr<cpsl::Parameter> param = std::make_shared<cpsl::Parameter>();
+        param->id = id;
+        param->type = type;
+        param->isRef = (var_ref == "ref");
+        param->location = std::to_string(paramOffset) + "($fp)";
+        param->offset = paramOffset;
+        paramOffset += type->size;
+        std::cout << "\t# (NO MIPS EMITTED) Storing " << (param->isRef ? "ref to" : "") << " parameter " << id << " with type " << type->id << " into symbol table" << std::endl;        
+        params.push_back(param);
+    }
+
+    return params;
+}
+
+std::shared_ptr<cpsl::Procedure> cpsl::Statements::MakeFunction(std::string id, std::vector<std::shared_ptr<cpsl::Parameter>> params, std::string returnType)
+{
+    std::shared_ptr<cpsl::Type> type = std::dynamic_pointer_cast<cpsl::Type>(symbolTable->lookup(returnType));
+    std::shared_ptr<cpsl::Return> returnValue = std::make_shared<cpsl::Return>();
+    returnValue->id = "return";
+    returnValue->type = type;
+    returnValue->location = std::to_string(paramOffset) + "($fp)";
+    returnValue->offset = paramOffset;
+    returnValue->function = id;
+    paramOffset += type->size;
+    std::shared_ptr<cpsl::Function> function = std::make_shared<cpsl::Function>(id, params, returnValue);
+    symbolTable->store(id, function);
+    cpsl::Statements::EnterScope();
+    symbolTable->store(returnValue->id, returnValue);
+    for(auto param : params)
+        symbolTable->store(param->id, param);
+
+    std::cout << id << "Body:" << std::endl;
+
+    return function;
+}
+
+std::shared_ptr<cpsl::Procedure> cpsl::Statements::MakeProcedure(std::string id, std::vector<std::shared_ptr<cpsl::Parameter>> params)
+{
+    std::shared_ptr<cpsl::Procedure> procedure = std::make_shared<cpsl::Procedure>(id, params);
+    symbolTable->store(id, procedure);
+    cpsl::Statements::EnterScope();
+    for(auto param : params)
+        symbolTable->store(param->id, param);
+
+    std::cout << id << "Body:" << std::endl;
+
+    return procedure;
+}
+
+std::pair<int, std::shared_ptr<cpsl::Function>> cpsl::Statements::FunctionPrecall(std::string id, std::vector<cpsl::Expression> expressions)
+{
+    std::shared_ptr<cpsl::Function> function = std::dynamic_pointer_cast<cpsl::Function>(symbolTable->lookup(id));
+    auto numParams = function->parameters.size();
+    auto numExprs = expressions.size();
+    if(numParams != numExprs)
+        throw std::runtime_error("The function " + id + " is expecting " + std::to_string(numParams) + " parameters not " + std::to_string(numExprs) + "!");
+
+    auto offset = 8 + function->returnValue->type->size + (regPool->inUse().size() * 4) + (function->parameters.size() * 4);
+
+    std::cout << "\t# " << function->id << " Precall" << std::endl;
+    std::cout << "\taddi $sp $sp -" << offset << std::endl;
+
+    for(int i = 0; i < numParams; i++)
+    {
+        auto param = function->parameters[i];
+        auto expr = expressions[i];
+        if(param->type->id != expr.type)
+            throw std::runtime_error("The type " + expr.type + " cannot be convereted to the type " + param->type->id);
+        
+        if(expr.isConstant)
+        {
+            expr.reg = regPool->acquire();
+            std::cout << "\tli " << expr.reg.name << " " << expr.value << std::endl;
+        }
+        if(param->isRef)
+        {
+            std::cout << "\t# Storing ref to " << param->id << " from expr " << expr.reg.name << std::endl;
+            std::cout << "\taddi " << expr.reg.name << " $gp " << expr.offset << std::endl;
+        }
+        std::cout << "\tsw " << expr.reg.name << " " << i * 4 << "($sp)" << std::endl;
+        function->parameters[i]->reg = expr.reg;
+    }
+
+    auto stackOffset = numParams * 4 + function->returnValue->type->size;
+    for(auto reg : regPool->inUse())
+    {
+        std::cout << "\tsw " << reg.name << " " << stackOffset << "($sp)" << std::endl;
+        regPool->spill(reg);
+        stackOffset += 4;
+    }
+
+    regPool->releaseAll();  
+
+    std::cout << "\tsw $fp " << stackOffset << " ($sp)" << std::endl;
+    stackOffset += 4;
+    std::cout << "\tsw $ra " << stackOffset << " ($sp)" << std::endl;
+    std::cout << "\tori $fp $sp 0" << std::endl;
+    std::cout << "\tjal " << id << std::endl;
+    return std::make_pair(stackOffset, function);
+}
+
+cpsl::Expression cpsl::Statements::FunctionPostcall(std::pair<int, std::shared_ptr<cpsl::Function>> precall)
+{
+    auto stackOffset = precall.first;
+    std::cout << "\t# " << precall.second->id << " Postcall" << std::endl;
+    std::cout << "\tlw $ra " << stackOffset << "($sp)" << std::endl;
+    stackOffset -= 4;
+    std::cout << "\tlw $fp " << stackOffset << "($sp)" << std::endl;
+    stackOffset -= 4;
+    auto spilledRegs = regPool->unspill();
+    for(auto rit = spilledRegs.rbegin(); rit != spilledRegs.rend(); ++rit)
+    {
+        std::cout << "\tlw " << rit->name << " " << stackOffset << "($sp)" << std::endl;
+        stackOffset -= 4;
+    }
+
+    cpsl::Expression expr;
+    expr.isConstant = false;
+    expr.type = precall.second->returnValue->type->id;
+    expr.reg = regPool->acquire();
+    std::cout << "\t# Loading return value" << std::endl;
+    std::cout << "\tlw " << expr.reg.name << " " << precall.second->returnValue->offset << "($sp)" << std::endl;
+    std::cout << "\taddi $sp $sp " << precall.first + 4 << std::endl;
+    for(auto param : precall.second->parameters)
+        regPool->release(param->reg);
+    return expr; 
+}
+
+std::pair<int, std::shared_ptr<cpsl::Procedure>> cpsl::Statements::ProcedurePrecall(std::string id, std::vector<cpsl::Expression> expressions)
+{
+    std::shared_ptr<cpsl::Procedure> procedure = std::dynamic_pointer_cast<cpsl::Procedure>(symbolTable->lookup(id));
+    auto numParams = procedure->parameters.size();
+    auto numExprs = expressions.size();
+    if(numParams != numExprs)
+        throw std::runtime_error("The procedure " + id + " is expecting " + std::to_string(numParams) + " parameters not " + std::to_string(numExprs) + "!");
+    
+    auto offset = (numParams * 4) + 8 + (regPool->inUse().size() * 4); // Room for params, $fp & $ra, and spill regs
+    std::cout << "\t# " << id << " Precall" << std::endl;
+    std::cout << "\taddi $sp $sp -" << offset << std::endl;
+    for(int i = 0; i < numParams; i++)
+    {
+        auto param = procedure->parameters[i];
+        auto expr = expressions[i];
+        if(param->type->id != expr.type)
+            throw std::runtime_error("The type " + expr.type + " cannot be convereted to the type " + param->type->id);
+        
+        if(expr.isConstant)
+        {
+            expr.reg = regPool->acquire();
+            std::cout << "\tli " << expr.reg.name << " " << expr.value << std::endl;
+        }
+        if(param->isRef)
+        {
+            std::cout << "\t# Storing ref to " << param->id << " from expr " << expr.reg.name << std::endl;
+            std::cout << "\taddi " << expr.reg.name << " $gp " << expr.offset << std::endl;
+        }
+        std::cout << "\tsw " << expr.reg.name << " " << i * 4 << "($sp)" << std::endl;
+        procedure->parameters[i]->reg = expr.reg;
+    }
+
+    auto stackOffset = numParams * 4;
+
+    for(auto reg : regPool->inUse())
+    {
+        std::cout << "\tsw " << reg.name << " " << stackOffset << "($sp)" << std::endl;
+        stackOffset += 4;
+        regPool->spill(reg);
+    }
+
+    regPool->releaseAll();  
+
+    std::cout << "\tsw $fp " << stackOffset << "($sp)" << std::endl;
+    stackOffset += 4;
+    std::cout << "\tsw $ra " << stackOffset << "($sp)" << std::endl;
+
+    std::cout << "\tori $fp $sp 0" << std::endl;
+
+    std::cout << "\tjal " << id << std::endl;
+
+    return std::make_pair(stackOffset, procedure);
+}
+
+void cpsl::Statements::ProcedurePostcall(std::pair<int, std::shared_ptr<cpsl::Procedure>> precall)
+{
+    auto stackOffset = precall.first;
+    std::cout << "\t# " << precall.second->id << " Postcall" << std::endl;
+    std::cout << "\tlw $ra " << stackOffset << "($sp)" << std::endl;
+    stackOffset -= 4;
+    std::cout << "\tlw $fp " << stackOffset << "($sp)" << std::endl;
+    stackOffset -= 4;
+    auto spilledRegs = regPool->unspill();
+    for(auto rit = spilledRegs.rbegin(); rit != spilledRegs.rend(); ++rit)
+    {
+        std::cout << "\tlw " << rit->name << " " << stackOffset << "($sp)" << std::endl;
+        stackOffset -= 4;
+    }
+
+    std::cout << "\taddi $sp $sp " << precall.first + 4 << std::endl;
+    for(auto param : precall.second->parameters)
+        regPool->release(param->reg);
+}
+
+void cpsl::Statements::ReturnStatement()
+{
+    std::shared_ptr<cpsl::Return> returnValue = std::dynamic_pointer_cast<cpsl::Return>(symbolTable->lookup("return"));
+    std::cout << "\t# Returning ";
+    std::cout << "\tj " << returnValue->function << "Epilogue" << std::endl;
+}
+
+void cpsl::Statements::ReturnStatement(cpsl::Expression expr)
+{
+    std::shared_ptr<cpsl::Return> returnValue = std::dynamic_pointer_cast<cpsl::Return>(symbolTable->lookup("return"));
+    if(returnValue->type->id != expr.type)
+        throw std::runtime_error("Expecting to return type " + returnValue->type->id + " not " + expr.type + "!");
+    std::cout << "\t# Returning ";
+    if(expr.isConstant)
+    {
+        std::cout << expr.value << std::endl;
+        expr.reg = regPool->acquire();
+        std::cout << "\tli " << expr.reg.name << " " << expr.value << std::endl;
+    }
+    else
+    {
+        std::cout << expr.reg.name << std::endl;
+    }
+    std::cout << "\tsw " << expr.reg.name << " " << returnValue->location << std::endl;
+    std::cout << "\tj " << returnValue->function << "Epilogue" << std::endl;
+    regPool->release(expr.reg);
+}
+
+
 /***********
  * PRIVATE *
  **********/
@@ -494,12 +700,14 @@ void cpsl::Statements::StoreSymbol(std::string id, std::shared_ptr<cpsl::Type> t
     var->type = type;
     if(symbolTable->inLocalScope())
     {
-        var->location = std::to_string(-1 * localOffset) + "($fp)";
         localOffset += type->size;
+        var->location = std::to_string(-1 * localOffset) + "($fp)";
+        var->offset = -1 * localOffset;
     }
     else
     {
         var->location = std::to_string(globalOffset) + "($gp)";
+        var->offset = globalOffset;
         globalOffset += type->size;
     }
     symbolTable->store(id, var);

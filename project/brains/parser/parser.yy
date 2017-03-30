@@ -107,7 +107,7 @@
 %type<std::vector<int>>                                 optElseIfStatements elseIfStatements
 %type<std::string>                                      lvalue type identifier simpleType optTo optVar
 %type<cpsl::ForHeaderInfo>                              forHdr forBegin
-%type<std::shared_ptr<cpsl::Procedure>>                 procedureSig procedureDecl
+%type<std::shared_ptr<cpsl::Procedure>>                 procedureSig procedureDecl functionSig functionDecl
 %type<std::vector<std::shared_ptr<cpsl::Parameter>>>    formalParameter formalParameters optFormalParameters
 
 %locations
@@ -136,18 +136,18 @@ optProcFuncs: optProcFuncs procedureDecl
     |
     ;
 
-procedureDecl: procedureSig body SEMI_COL                                                       { brain.statements.FunctionBody($1); brain.statements.ExitScope(); brain.statements.FunctionEpilogue($1); }
+procedureDecl: procedureSig body SEMI_COL                                                       { brain.statements.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
     | procedureSig FORWARD_KEY SEMI_COL
     ;
 
-procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL          { brain.statements.EnterScope(); auto procd = brain.statements.MakeProcedure($2, $4); brain.statements.FunctionPrologue(procd); $$ = procd; }
+procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL          { $$ = brain.statements.MakeProcedure($2, $4); }
     ;
 
-functionDecl: functionSig FORWARD_KEY SEMI_COL 
-    | functionSig body SEMI_COL 
+functionDecl: functionSig FORWARD_KEY SEMI_COL                              
+    | functionSig body SEMI_COL                                                                 { brain.statements.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
     ;
 
-functionSig: FUNCTION_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR COL type SEMI_COL
+functionSig: FUNCTION_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR COL type SEMI_COL   { $$ = brain.statements.MakeFunction($2, $4, $7); }
     ;
 
 optFormalParameters: formalParameters                                                           { $$ = $1; }
@@ -305,8 +305,8 @@ optTo: TO_KEY                                                                   
 stopStatement: STOP_KEY                                                                         { brain.statements.StopStatement(); }
     ;
 
-returnStatement: RETURN_KEY expression
-    | RETURN_KEY
+returnStatement: RETURN_KEY expression                                                          { brain.statements.ReturnStatement($2); }
+    | RETURN_KEY                                                                                { brain.statements.ReturnStatement(); }
     ;
 
 readStatement: READ_KEY OPEN_PAR lvalueList CLOSE_PAR                                           { brain.statements.ReadStatement($3); }
@@ -315,7 +315,7 @@ readStatement: READ_KEY OPEN_PAR lvalueList CLOSE_PAR                           
 writeStatement: WRITE_KEY OPEN_PAR expressionList CLOSE_PAR                                     { brain.statements.WriteStatement($3); }
     ;
 
-procedureCall: identifier OPEN_PAR optExpressionList CLOSE_PAR                                  { brain.expressions.ProcedureCall($2, $3); }
+procedureCall: identifier OPEN_PAR optExpressionList CLOSE_PAR                                  { auto precall = brain.statements.ProcedurePrecall($1, $3); brain.statements.ProcedurePostcall(precall); }
     ;
 
 nullStatement:
@@ -345,7 +345,7 @@ expression: expression OR_OP expression                                         
     | NOT_OP expression                                                                         { $$ = brain.expressions.NotExpression($2); }           
     | MINUS_OP expression %prec UMINUS_OP                                                       { $$ = brain.expressions.UMinusExpression($2); } 
     | OPEN_PAR expression CLOSE_PAR                                                             { $$ = $2; } 
-    | identifier OPEN_PAR optExpressionList CLOSE_PAR                                           { $$ = brain.expressions.FunctionCall($2, $3); }
+    | identifier OPEN_PAR optExpressionList CLOSE_PAR                                           { auto precall = brain.statements.FunctionPrecall($1, $3); $$ = brain.statements.FunctionPostcall(precall); }
     | CHR_KEY OPEN_PAR expression CLOSE_PAR                                                     { $$ = brain.expressions.ChrExpression($3); }
     | ORD_KEY OPEN_PAR expression CLOSE_PAR                                                     { $$ = brain.expressions.OrdExpression($3); }
     | PRED_KEY OPEN_PAR expression CLOSE_PAR                                                    { $$ = brain.expressions.PredExpression($3); }
