@@ -588,6 +588,7 @@ cpsl::Expression cpsl::Statements::FunctionPostcall(std::pair<int, std::shared_p
     }
 
     cpsl::Expression expr;
+    expr.type = "void";
     if(function)
     {
         expr.isConstant = false;

@@ -39,3 +39,55 @@ begin
     $add the rest of the unfinished one
 end
 ```
+
+```mips
+# See CS6300 array_arg
+aBegin:
+    li $t0 'q'
+    li $t1 2
+    li $t2 2
+    sub $t3 $t1 $t2
+    li $t1 4
+    mult $t3 $t1
+    mflo $t3
+    add $t3 $t3 $fp
+    sw $t0 0($t3)
+    lw $t0 16($t3)
+    addi $t0 $t0 -2
+    li $t1 4
+    mult $t0 $t1
+    mflo $t0
+    add $t0 $t0 $fp
+    lw $t1 0($t0)
+    sw $t1 20($fp)
+    j aEpi
+a:
+    addi $sp $sp -24
+    sw $t0 0($sp)
+    sw $t1 4($sp)
+    sw $t2 8($sp)
+    sw $t3 12($sp)
+    j aBegin
+aEpi:
+    lw $t0 0($sp)
+    lw $t1 4($sp)
+    lw $t2 8($sp)
+    lw $t3 12($sp)
+    addi $sp $sp 24
+    ja $ra
+
+main:
+    # Load the array's values
+    # ...
+    # first write()
+    addi $sp $sp -24
+    lw $t0 0($gp)
+    sw $t0 0($sp)
+    lw $t0 4($gp)
+    sw $t0 4($sp)
+    lw $t0 8($gp)
+    sw $t0 8($sp)
+    .
+    .
+    .
+```

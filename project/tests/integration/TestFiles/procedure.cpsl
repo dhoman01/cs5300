@@ -18,7 +18,7 @@ end;
 begin
     i := 1;
     j := 2;
-    swap(i, j);
+    k := swap(i, j);
     write("After swap...\n");
     print(i, j);
 end.
