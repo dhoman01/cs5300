@@ -47,13 +47,11 @@ public:
     /* Functions/Procedures */
     void FunctionEpilogue(std::shared_ptr<Procedure>);
     void FunctionPrologue(std::shared_ptr<Procedure>);
-    std::shared_ptr<Procedure> MakeFunction(std::string, std::vector<std::shared_ptr<Parameter>>, std::string);
+    std::pair<int, std::shared_ptr<Procedure>> FunctionPrecall(std::string, std::vector<Expression>);
+    Expression FunctionPostcall(std::pair<int, std::shared_ptr<Procedure>>);
+    std::shared_ptr<Procedure> MakeFunction(std::string, std::vector<std::shared_ptr<Parameter>>, std::string, bool = false);
     std::vector<std::shared_ptr<Parameter>> MakeParameters(std::string, std::vector<std::string>, std::string);
-    std::shared_ptr<Procedure> MakeProcedure(std::string, std::vector<std::shared_ptr<Parameter>>);
-    std::pair<int, std::shared_ptr<Function>> FunctionPrecall(std::string, std::vector<Expression>);
-    Expression FunctionPostcall(std::pair<int, std::shared_ptr<Function>>);
-    std::pair<int, std::shared_ptr<cpsl::Procedure>> ProcedurePrecall(std::string, std::vector<Expression>);
-    void ProcedurePostcall(std::pair<int, std::shared_ptr<cpsl::Procedure>>);
+    std::shared_ptr<Procedure> MakeProcedure(std::string, std::vector<std::shared_ptr<Parameter>>, bool = false);
     void ReturnStatement();    
     void ReturnStatement(Expression);
 private:

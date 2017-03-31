@@ -5,7 +5,6 @@ j main
 	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
 main:
 	la $gp, GA
-	ori $fp, $sp, 0
 	# Store the true and false const values
 	li $v0 1
 	sw $v0, 0($gp)
@@ -17,26 +16,38 @@ main:
 	# Assigning i the value i
 	li $s0 3
 	sw $s0 8($gp)
+	# Releasing Register $s0
+	# Available Registers: 18
+	# Registers In Use:    0
 	# Finished assignment of i
 	# Loading value from 8($gp) with type integer
-	lw $s1 8($gp)
+	lw $s0 8($gp)
 	# Loaded value from i
 
-	# Lt Expression: $s1 < 5
-	slti $s2 $s1 5
+	# Lt Expression: $s0 < 5
+	slti $s1 $s0 5
+	# Releasing Register $s0
+	# Available Registers: 17
+	# Registers In Use:    1
 	# End Lt Expression
 
 	# Begin If Statement
-	beq $s2 $zero IE1
+	beq $s1 $zero IE1
+	# Releasing Register $s1
+	# Available Registers: 18
+	# Registers In Use:    0
 
 	# Writing expression to output
 	# Loading string const
-	la $s3 S1
+	la $s1 S1
 	# Loaded string S1
 	li $v0 4
-	ori $a0 $s3 0
+	ori $a0 $s1 0
 	syscall
 	# Finished writing expression to output
+	# Releasing Register $s1
+	# Available Registers: 18
+	# Registers In Use:    0
 
 	# End If then block (label ID1, IE1)
 	j ID1

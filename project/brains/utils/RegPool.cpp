@@ -16,6 +16,7 @@ cpsl::Register cpsl::RegPool::acquire()
 
 void cpsl::RegPool::release(cpsl::Register reg)
 {
+    if(reg.name.empty()) return;
     std::cout << "\t# Releasing Register " << reg.name << std::endl;
     auto it = std::find(regPool.begin(), regPool.end(), reg);
     if(it == regPool.end()){

@@ -1,8 +1,10 @@
-var i, j : integer;
+var i, j, k : integer;
 
+procedure print(var a, b : integer); forward;
 procedure swap(ref a, b : integer);
 var t : integer;
 begin
+    print(a, b);
     t := a; 
     a := b;
     b := t;
@@ -16,7 +18,6 @@ end;
 begin
     i := 1;
     j := 2;
-    print(i, j);
     swap(i, j);
     write("After swap...\n");
     print(i, j);

@@ -61,11 +61,13 @@ struct Parameter : VariableInfo {
     Register reg;
 };
 
+enum Forward { DEFINED, EMPTY };
 struct Procedure : Info {
     Procedure(std::string i, std::vector<std::shared_ptr<cpsl::Parameter>> p) : parameters(p){
         id = i;
     };
     std::vector<std::shared_ptr<cpsl::Parameter>> parameters;
+    Forward forward;    
 };
 
 struct Return : VariableInfo {

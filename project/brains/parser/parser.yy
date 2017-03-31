@@ -136,14 +136,14 @@ optProcFuncs: optProcFuncs procedureDecl
     |
     ;
 
-procedureDecl: procedureSig body SEMI_COL                                                       { brain.statements.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
-    | procedureSig FORWARD_KEY SEMI_COL
+procedureDecl: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL FORWARD_KEY SEMI_COL { brain.statements.MakeProcedure($2, $4, true); }
+    | procedureSig body SEMI_COL                                                                { brain.statements.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
     ;
 
 procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL          { $$ = brain.statements.MakeProcedure($2, $4); }
     ;
 
-functionDecl: functionSig FORWARD_KEY SEMI_COL                              
+functionDecl: FUNCTION_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR COL type SEMI_COL FORWARD_KEY SEMI_COL { brain.statements.MakeFunction($2, $4, $7, true); }                                               {  }
     | functionSig body SEMI_COL                                                                 { brain.statements.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
     ;
 
@@ -315,7 +315,7 @@ readStatement: READ_KEY OPEN_PAR lvalueList CLOSE_PAR                           
 writeStatement: WRITE_KEY OPEN_PAR expressionList CLOSE_PAR                                     { brain.statements.WriteStatement($3); }
     ;
 
-procedureCall: identifier OPEN_PAR optExpressionList CLOSE_PAR                                  { auto precall = brain.statements.ProcedurePrecall($1, $3); brain.statements.ProcedurePostcall(precall); }
+procedureCall: identifier OPEN_PAR optExpressionList CLOSE_PAR                                  { auto precall = brain.statements.FunctionPrecall($1, $3); brain.statements.FunctionPostcall(precall); }
     ;
 
 nullStatement:
@@ -326,7 +326,7 @@ optExpressionList: expressionList                                               
     ;
 
 expressionList: expressionList COMMA expression                                                 { $1.push_back($3); $$ = $1;}
-    | expression                                                                                { std::vector<cpsl::Expression> list; list.push_back($1); $$ = list;}
+    | expression                                                                                { std::vector<cpsl::Expression> list; list.push_back($1); $$ = list; }
     ;
 
 expression: expression OR_OP expression                                                         { $$ = brain.expressions.OrExpression($1, $3); }            
