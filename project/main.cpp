@@ -60,6 +60,8 @@ int main(const int argc, const char **argv)
           catch (const std::exception& ex)
           {
               std::cerr << "Compile Error: " << ex.what() << std::endl;
+              if(coutRestore)
+                std::cout.rdbuf(buffer);
               return EXIT_FAILURE;
           }
       }

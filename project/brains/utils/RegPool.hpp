@@ -41,6 +41,7 @@ private:
     std::vector<Register> regPool;
     std::vector<Register> locked;
     std::vector<Register> spilled;
+    bool verbose = false;
 };
 
 };

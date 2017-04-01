@@ -62,8 +62,8 @@ private:
 
     int globalOffset;
     int localOffset;
-    int paramOffset;
     bool addNewline;
+    bool verbose = false;
     std::shared_ptr<LookUpTable<Info>> symbolTable = nullptr;
     std::shared_ptr<RegPool> regPool = nullptr;
 };

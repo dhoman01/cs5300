@@ -23,13 +23,8 @@ public:
     {
         auto f = scopes.back().find(id);
         if(f != scopes.back().end())
-        {
-            auto procedure = std::dynamic_pointer_cast<cpsl::Procedure>(f->second);
-            if(procedure && procedure->forward == cpsl::Forward::EMPTY)
-                return;
-            else
-                throw std::runtime_error(id + " is already defined");
-        }
+            throw std::runtime_error(id + " is already defined");
+
         scopes.back()[id] = info;
     }
     std::shared_ptr<cpsl::Info> lookup(std::string id)
