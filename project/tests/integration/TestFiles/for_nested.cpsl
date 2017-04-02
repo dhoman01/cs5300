@@ -1,4 +1,4 @@
-var i, j : integer;
+$ var i, j : integer;
 
 BEGIN 
 

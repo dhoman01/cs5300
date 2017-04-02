@@ -1,10 +1,21 @@
+#include "Expressions.hpp"
+
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 
-#include "Expressions.hpp"
-
+/***************************
+* Boolean Expressions      *
+*  - And                   *
+*  - Or                    *
+*  - Equal                 *
+*  - Not Equal             *
+*  - Less than or equal    *
+*  - Greater than or equal *
+*  - Less than             *
+*  - Greater than          *
+****************************/
 cpsl::Expression cpsl::Expressions::AndExpression(cpsl::Expression a, cpsl::Expression b)
 {
     // Type check
@@ -468,6 +479,15 @@ cpsl::Expression cpsl::Expressions::GtExpression(cpsl::Expression a, cpsl::Expre
     return expr;
 }
 
+
+/*************************
+* Arithmetic Expressions *
+*  - Plus                *
+*  - Minus               *
+*  - Multiply            *
+*  - Divide              *
+*  - Modulus             *
+*************************/
 cpsl::Expression cpsl::Expressions::PlusExpression(cpsl::Expression a, cpsl::Expression b)
 {
     // Type check
@@ -774,11 +794,20 @@ cpsl::Expression cpsl::Expressions::ModExpression(cpsl::Expression a, cpsl::Expr
     return expr;
 }
 
+/********************
+* Unary Expressions *
+* - Not (negation)  *
+* - Minus           *
+* - Chr (cast'ish)  *
+* - Ord (cast'ish)  *
+* - Pred            *
+* - Succ            *
+********************/
 cpsl::Expression cpsl::Expressions::NotExpression(cpsl::Expression a)
 {
     // Type check
     if(a.type != "boolean")
-        throw std::runtime_error("The value of " + std::to_string(a.value) + " is not boolean.");
+        throw std::runtime_error("The type " + a.type + " is not boolean.");
     
     // Generate resulting cpsl::Expression
     cpsl::Expression expr;
@@ -929,6 +958,13 @@ cpsl::Expression cpsl::Expressions::SuccExpression(cpsl::Expression expr)
 
     return expr;
 }
+
+
+/***********************
+* Constant Expressions *
+*  - Int Constant      *
+*  - Char Constant     *
+***********************/
 cpsl::Expression cpsl::Expressions::IntConstant(std::string a)
 {
     cpsl::Expression expr;

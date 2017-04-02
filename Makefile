@@ -34,6 +34,5 @@ clean:
 	rm -r build/
 
 test:
-	mkdir -p test_output;
 	cd project/tests/integration/; \
-	./test.sh ../../../build/cpslc ../../../test_output;
+	./test.sh;

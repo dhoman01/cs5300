@@ -1,0 +1,19 @@
+var i : integer;
+
+procedure procedureTwo(a : integer); forward;
+procedure procedureOne(a : integer);
+BEGIN
+	write("Procedure One Recieved: ", a, ".\nCalling Procedure Two From Procedure One With ", a + 5, "\n");
+	procedureTwo(a + 5);
+END;
+
+procedure procedureTwo(a : integer);
+BEGIN
+	write("Procedure Two Recieved: ", a, "\n");
+END;
+
+BEGIN
+
+	write("Calling Procedure One With 5\n");
+    procedureOne(5);
+END.

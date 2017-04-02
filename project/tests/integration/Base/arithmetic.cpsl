@@ -1,0 +1,7 @@
+Beginning Program-----------------
+Assign a = 1 and b = 212
+a = a+b then b = a+b35
+a = a*b then b = a*b1575
+a = b/a then b = b/a515
+a = a%3 then b = b%a21
+a = b-a then b = a-b-1-2

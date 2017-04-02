@@ -48,7 +48,7 @@ c := d <> e;  $true   (1)
 write(c);
 
 write("\nc := ~d");
-c := ~d;      $false  (0)
+c := ~b;      $false  (0)
 write(c);
 
 write("\n--------------");

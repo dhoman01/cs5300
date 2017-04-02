@@ -16,7 +16,7 @@
 }
 
 %parse-param { Scanner& scanner }
-%parse-param { Brain& brain}
+%parse-param { Brain& brain     }
 
 %code{
     #include <iostream>
@@ -100,15 +100,15 @@
 %left DIV_OP MOD_OP MULT_OP
 %right UMINUS_OP
 
-%type<cpsl::Expression>                                 expression whileExpr
-%type<std::vector<std::string>>                         identifierList lvalueList
-%type<std::vector<cpsl::Expression>>                    expressionList optExpressionList
-%type<int>                                              constDecl assignment whileHdr whileKey ifKey ifHdr elseIfHdr elseIfStatement repeatHdr
-%type<std::vector<int>>                                 optElseIfStatements elseIfStatements
-%type<std::string>                                      lvalue type identifier simpleType optTo optVar
-%type<cpsl::ForHeaderInfo>                              forHdr forBegin
-%type<std::shared_ptr<cpsl::Procedure>>                 procedureSig procedureDecl functionSig functionDecl
-%type<std::vector<std::shared_ptr<cpsl::Parameter>>>    formalParameter formalParameters optFormalParameters
+%type<cpsl::Expression>                                                                         expression whileExpr
+%type<std::vector<std::string>>                                                                 identifierList lvalueList
+%type<std::vector<cpsl::Expression>>                                                            expressionList optExpressionList
+%type<int>                                                                                      constDecl assignment whileHdr whileKey ifKey ifHdr elseIfHdr elseIfStatement repeatHdr
+%type<std::vector<int>>                                                                         optElseIfStatements elseIfStatements
+%type<std::string>                                                                              lvalue type identifier simpleType optTo optVar funcId procedureId
+%type<cpsl::ForHeaderInfo>                                                                      forHdr forBegin
+%type<std::shared_ptr<cpsl::Procedure>>                                                         procedureSig funcSig
+%type<std::vector<std::shared_ptr<cpsl::Parameter>>>                                            formalParameter formalParameters optFormalParameters
 
 %locations
 
@@ -132,22 +132,28 @@ constDecl: identifier EQ_OP expression SEMI_COL                                 
     ;
 
 optProcFuncs: optProcFuncs procedureDecl
-    | optProcFuncs functionDecl
+    | optProcFuncs funcDecl
     |
     ;
 
-procedureDecl: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL FORWARD_KEY SEMI_COL { brain.statements.MakeProcedure($2, $4, true); }
+procedureDecl: procedureId OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL FORWARD_KEY SEMI_COL { brain.statements.MakeProcedure($1, $3, true); }
     | procedureSig body SEMI_COL                                                                { brain.statements.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
     ;
 
-procedureSig: PROCEDURE_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL          { $$ = brain.statements.MakeProcedure($2, $4); }
+procedureSig: procedureId OPEN_PAR optFormalParameters CLOSE_PAR SEMI_COL                        { $$ = brain.statements.MakeProcedure($1, $3); }
     ;
 
-functionDecl: FUNCTION_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR COL type SEMI_COL FORWARD_KEY SEMI_COL { brain.statements.MakeFunction($2, $4, $7, true); }                                               {  }
-    | functionSig body SEMI_COL                                                                 { brain.statements.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
+procedureId: PROCEDURE_KEY identifier                                                           { $$ = $2; }
     ;
 
-functionSig: FUNCTION_KEY identifier OPEN_PAR optFormalParameters CLOSE_PAR COL type SEMI_COL   { $$ = brain.statements.MakeFunction($2, $4, $7); }
+funcDecl: funcId OPEN_PAR optFormalParameters CLOSE_PAR COL type SEMI_COL FORWARD_KEY SEMI_COL  { brain.statements.MakeFunction($1, $3, $6, true); }                                               {  }
+    | funcSig body SEMI_COL                                                                     { brain.statements.FunctionPrologue($1); brain.statements.FunctionEpilogue($1); }
+    ;
+
+funcSig: funcId OPEN_PAR optFormalParameters CLOSE_PAR COL type SEMI_COL                        { $$ = brain.statements.MakeFunction($1, $3, $6); }
+    ;
+
+funcId: FUNCTION_KEY identifier                                                                 { $$ = $2; }
     ;
 
 optFormalParameters: formalParameters                                                           { $$ = $1; }
@@ -352,7 +358,7 @@ expression: expression OR_OP expression                                         
     | SUCC_KEY OPEN_PAR expression CLOSE_PAR                                                    { $$ = brain.expressions.SuccExpression($3); }
     | INT_CONST                                                                                 { $$ = brain.expressions.IntConstant($1); }
     | CHR_CONST                                                                                 { $$ = brain.expressions.CharConstant($1); }
-    | STRING_CONST                                                                              { $$ = brain.addString($1); } 
+    | STRING_CONST                                                                              { $$ = brain.AddString($1); } 
     | lvalue                                                                                    { $$ = brain.statements.LoadVariable($1); }
     ;
 
@@ -367,7 +373,9 @@ lvalue: lvalue DOT identifier                                                   
 
 %%
 
-void cpsl::Parser::error(const location_type& l, const std::string& err_message)
+void cpsl::Parser::error(const location_type& loc, const std::string& err_message)
 {
-    std::cerr << "Syntax Error: " << err_message << " at " << l << "\n";
+    std::cerr << "Syntax Error: " << err_message << " at ";
+    std::cerr << loc.begin.line << ":" << loc.begin.column << " - ";
+    std::cerr << loc.end.line << ":" << loc.end.column << "\n";
 }

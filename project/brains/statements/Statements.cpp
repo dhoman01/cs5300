@@ -54,13 +54,20 @@ cpsl::ForHeaderInfo cpsl::Statements::ForBegin(std::string id, cpsl::Expression 
     catch (const std::exception& ex)
     {
         // TODO: Create variable for user...
-        throw std::runtime_error("Declaring variables in for loops is not yet supported...");        
-        // std::shared_ptr<cpsl::Type> intType = std::dynamic_pointer_cast<cpsl::Type>(symbolTable->lookup("integer"));
-        // cpsl::Statements::StoreSymbol(id, intType);
-        // std::shared_ptr<cpsl::VariableInfo> var = std::dynamic_pointer_cast<cpsl::VariableInfo>(symbolTable->lookup(id));
-        // cpsl::Statements::Assignment(id, expr);        
-        // varExpr = cpsl::Statements::LoadVariable(id);
-        // info.var = var;
+        // throw std::runtime_error("Declaring variables in for loops is not yet supported...");        
+        std::shared_ptr<cpsl::Type> intType = std::dynamic_pointer_cast<cpsl::Type>(symbolTable->lookup("integer"));
+        cpsl::Statements::StoreSymbol(id, intType);
+
+        std::shared_ptr<cpsl::VariableInfo> var = std::dynamic_pointer_cast<cpsl::VariableInfo>(symbolTable->lookup(id));
+
+        // Get a location for the variable
+        var->location = std::to_string(globalOffset) + "($gp)";
+        globalOffset += intType->size;
+
+        cpsl::Statements::Assignment(id, expr);        
+        varExpr = cpsl::Statements::LoadVariable(id);
+        info.var = var;
+        info.adjustOffset = true;
     }
 
     // Get a uid for for loop
@@ -107,6 +114,10 @@ void cpsl::Statements::ForEnd(cpsl::ForHeaderInfo info)
     // Release registers
     regPool->release(info.varExpr.reg);
     regPool->release(info.cond.reg);
+
+    // Adjust offset if needed
+    if(info.adjustOffset)
+        globalOffset += info.var->type->size;
 };
 
 int cpsl::Statements::IfBegin(cpsl::Expression expr)
@@ -453,8 +464,12 @@ void cpsl::Statements::WriteStatement(std::vector<cpsl::Expression> expressionLi
  * Functions/Procedures *
  * - Func Epilogue      *
  * - Func Prologue      *
+ * - Func Precall       *
+ * - Func Postcall      *
+ * - Make Function      *
  * - Make Params        *
  * - Make Procedure     *
+ * - Return Statement   *
  ***********************/
 void cpsl::Statements::FunctionEpilogue(std::shared_ptr<cpsl::Procedure> procedure)
 {

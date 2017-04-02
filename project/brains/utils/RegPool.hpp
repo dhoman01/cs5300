@@ -31,17 +31,17 @@ public:
         Register("$s1"),
         Register("$s0")        
     }), locked(){};
-    Register acquire();
-    void release(Register);
-    void releaseAll();
-    void spill(Register);
-    std::vector<Register> inUse();
-    std::vector<Register> unspill();
+    Register acquire();                 // Locks a regsiter
+    void release(Register);             // Releases a register
+    void releaseAll();                  // Releases all locked registers
+    void spill(Register);               // Spills a regsiter
+    std::vector<Register> inUse();      // Returns regsiters that are locked
+    std::vector<Register> unspill();    // Unspills all spilled registers
 private:
     std::vector<Register> regPool;
     std::vector<Register> locked;
     std::vector<Register> spilled;
-    bool verbose = false;
+    bool verbose = false;               // Set true to print out regsiter use in MIPS
 };
 
 };

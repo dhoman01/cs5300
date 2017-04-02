@@ -12,9 +12,7 @@ begin
 end;
 
 begin
-    write("Enter ith: ");
-    read(i);
-    write("You entered: ", i, "\n");
-    write("Fib of ", i, " is ");
-    write(fib(i), "\n");
+    i := 9;
+    write("Computing 9th member of fibonacci sequence.\n");
+    write("Fib of ", i, " is ", fib(i));
 end.

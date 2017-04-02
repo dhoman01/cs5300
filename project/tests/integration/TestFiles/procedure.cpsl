@@ -1,4 +1,4 @@
-var i, j, k : integer;
+var i, j : integer;
 
 procedure print(var a, b : integer); forward;
 procedure swap(ref a, b : integer); forward;
