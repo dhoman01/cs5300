@@ -1,6 +1,7 @@
 all: compile
 
 compile: setup parser copy
+	echo "Compiling final executable";
 	cd build/brains; \
 	g++ ../main.cpp Brain.cpp expressions/Expressions.cpp statements/Statements.cpp utils/RegPool.cpp parser/*.cc --std=c++14 -o ../cpslc
 
