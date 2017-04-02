@@ -26,18 +26,18 @@ public:
 
     void Finalize();
 
-    void parse(const char* const filename);
-    void parse(std::istream& iss);
+    void Parse(const char* const filename);
+    void Parse(std::istream& iss);
 
     void InitMain();
 
-    Expression addString(std::string);
+    Expression AddString(std::string);
 
     Expressions expressions;
     Statements statements;
 
 private:
-    void parse_helper(std::istream &stream);
+    void ParseHelper(std::istream &stream);
     void Init();
     void InitMIPS();
     void InitPredefinedSymbols();

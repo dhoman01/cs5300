@@ -29,7 +29,7 @@ void cpsl::Brain::Finalize()
 }
 
 // Add a string to the collection
-cpsl::Expression cpsl::Brain::addString(std::string s)
+cpsl::Expression cpsl::Brain::AddString(std::string s)
 {
     int id = stringConst.size() + 1;
     
@@ -44,35 +44,32 @@ cpsl::Expression cpsl::Brain::addString(std::string s)
 }
 
 // Parse from file
-void cpsl::Brain::parse(const char * const filename)
+void cpsl::Brain::Parse(const char * const filename)
 {
     assert(filename != nullptr);
     std::ifstream in(filename);
     if(!in.good())
         exit(EXIT_FAILURE);
     
-    parse_helper(in);
+    ParseHelper(in);
     return;
 }
 
 // Parse from stdio
-void cpsl::Brain::parse( std::istream &stream )
+void cpsl::Brain::Parse(std::istream &stream)
 {
-   if( ! stream.good()  && stream.eof() )
+   if(!stream.good() && stream.eof())
        return;
    
-   parse_helper( stream ); 
+   ParseHelper(stream); 
    return;
 }
 
-void cpsl::Brain::parse_helper(std::istream &stream)
+void cpsl::Brain::ParseHelper(std::istream &stream)
 {
     scanner = std::make_shared<cpsl::Scanner>(&stream);
     parser = std::make_shared<cpsl::Parser>((*scanner.get()), (*this));
-    
-    if( parser->parse() != 0 )
-        std::cerr << "Failed to parse input!" << std::endl;
-
+    parser->parse();
     return;
 }
 
@@ -90,7 +87,6 @@ void cpsl::Brain::InitMain()
 {
     std::cout << "main:" << std::endl;
     std::cout << "\tla $gp, GA" << std::endl;
-    std::cout << "\tori $fp, $sp, 0" << std::endl;
     std::cout << "\t# Store the true and false const values" << std::endl;
     std::cout << "\tli $v0 1" << std::endl;
     std::cout << "\tsw $v0, 0($gp)" << std::endl;

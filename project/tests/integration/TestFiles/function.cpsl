@@ -1,0 +1,18 @@
+var i : integer;
+
+function fib(var n : integer) : integer;
+begin
+    if n = 0 then
+        return 0;
+    end;
+    if n = 1 then
+        return 1;
+    end;
+    return fib(n - 1) + fib(n - 2);
+end;
+
+begin
+    i := 9;
+    write("Computing 9th member of fibonacci sequence.\n");
+    write("Fib of ", i, " is ", fib(i));
+end.

@@ -31,16 +31,16 @@ end;
 
 function factorial (n : integer) : integer;
 begin
-  if(n = 0) then
+  if n = 0 then
     return 1;
   end;
 
-  return factorial(n-1) * n;
+  return factorial(n - 1) * n;
 end;
 
-function lotsOfArgs(a,b,c,d,e,f,g,h : integer) : integer;
+function lotsOfArgs(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q : integer) : integer;
 begin
-  return a+b+c+d+f+g+h;
+  return a+b+c+d+e+f+g+h+i+j+k+l+m+n+o+p+q;
 end;
 
 begin
@@ -52,15 +52,21 @@ begin
   printGlobal();
 
   print(20,13);
-  write("\na: ", a,'\n', "add(12,3)=", add(12,3), '\n');
+  write("\na: ", a,'\n', "add(12,3)=");
+  write(add(12,3), '\n');
 
-  write("\nfactorial(1) = ", factorial(1));
-  write("\nfactorial(2) = ", factorial(2));
-  write("\nfactorial(3) = ", factorial(3));
-  write("\nfactorial(4) = ", factorial(4));
-  write("\nfactorial(5) = ", factorial(5));
+  write("\nfactorial(1) = ");
+  write(factorial(1));
+  write("\nfactorial(2) = ");
+  write(factorial(2));
+  write("\nfactorial(3) = ");
+  write(factorial(3));
+  write("\nfactorial(4) = ");
+  write(factorial(4));
+  write("\nfactorial(5) = ");
+  write(factorial(5));
 
   write('\n');
 
-  write("\nLots of args = ", lotsOfArgs(1,1,1,1,1,1,1,1));
+  write("\nLots of args = ", lotsOfArgs(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1));
 end.

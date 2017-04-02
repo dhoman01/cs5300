@@ -64,26 +64,18 @@ end;
 
 
 
-	write("Enter A: ");
-	read(a);
-	write("Enter B: ");
-	read(b);
+	a := 1;
+	b := 2;
+	c := 3;
+	d := 4;
+	e := 10;
+	f := 10;
 
 	if a < b
 	  	then write(a, " < ", b, '\n');
 
-	  	write("Enter C: ");
-		read(c);
-		write("Enter D: ");
-		read(d);
-
 		if c <= d 
 			then write(c, " <= ", d, '\n');
-
-			write("Enter E: ");
-			read(e);
-			write("Enter F: ");
-			read(f);
 
 			if e > f
 				then write(e, " > ", f, '\n');

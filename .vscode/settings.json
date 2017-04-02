@@ -35,5 +35,18 @@
         "typeinfo": "cpp",
         "slist": "cpp"
     },
-    "cmake.sourceDirectory": "${workspaceRoot}/project"
+    "cmake.sourceDirectory": "${workspaceRoot}/project",
+    "LineCount.excludes": [
+        "**/.vscode/**",
+        "**/node_modules/**",
+        "**/*_output/**",
+        "**/build/**",
+        "**/notes/**",
+        "*.pdf"
+    ],
+    "LineCount.output": {
+        "txt": false,
+        "json": false,
+        "outdir": "out"
+    }
 }

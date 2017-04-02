@@ -3,8 +3,7 @@ VAR
 
 BEGIN
 
-  write("Enter an integer between 1 and 10:");
-  read(i);
+  i := 3;
   j := 1;
 
   if (i < 5)
@@ -14,8 +13,10 @@ BEGIN
     end;
   elseif (i = 5)
     then write("i is 5!");
+  elseif (i < 10)
+    then write("i is greater than 5, but less than 10!");
   else
-    write("i is greater than 5!");
+    write("i is 10!");
   end;
 
 END.

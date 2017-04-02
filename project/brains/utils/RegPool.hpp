@@ -1,6 +1,7 @@
 #ifndef REG_POOL_HPP
 #define REG_POOL_HPP
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -11,10 +12,8 @@ namespace cpsl {
 class RegPool {
 public:
     RegPool():regPool({
-        Register("$a3"),
-        Register("$a2"),
-        Register("$a1"),
-        Register("$a0"),
+        Register("$t9"),
+        Register("$t8"),
         Register("$t7"),
         Register("$t6"),
         Register("$t5"),
@@ -32,12 +31,17 @@ public:
         Register("$s1"),
         Register("$s0")        
     }), locked(){};
-    Register acquire();
-    void release(Register);
-    std::vector<Register> inUse();
+    Register acquire();                 // Locks a regsiter
+    void release(Register);             // Releases a register
+    void releaseAll();                  // Releases all locked registers
+    void spill(Register);               // Spills a regsiter
+    std::vector<Register> inUse();      // Returns regsiters that are locked
+    std::vector<Register> unspill();    // Unspills all spilled registers
 private:
     std::vector<Register> regPool;
     std::vector<Register> locked;
+    std::vector<Register> spilled;
+    bool verbose = false;               // Set true to print out regsiter use in MIPS
 };
 
 };

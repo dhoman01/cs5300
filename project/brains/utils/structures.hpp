@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace cpsl
 {
@@ -20,6 +21,7 @@ struct Type : Info {
 struct VariableInfo : Info {
     std::shared_ptr<Type> type;
     std::string location;
+    int offset;
 };
 
 struct Register {
@@ -34,6 +36,7 @@ struct Expression {
     Register reg;
     int value;
     std::string type;
+    int offset;
 };
 
 struct CharConst : Expression {
@@ -50,7 +53,30 @@ struct ForHeaderInfo {
     int uid;
     std::shared_ptr<cpsl::VariableInfo> var;
     std::string optTo;
-    bool exitScope;
+    bool adjustOffset;
+};
+
+struct Parameter : VariableInfo {
+    bool isRef;
+    Register reg;
+};
+
+enum Forward { DEFINED, EMPTY };
+struct Procedure : Info {
+    Procedure(std::string i, std::vector<std::shared_ptr<cpsl::Parameter>> p) : parameters(p){
+        id = i;
+    };
+    std::vector<std::shared_ptr<cpsl::Parameter>> parameters;
+    Forward forward;    
+};
+
+struct Return : VariableInfo {
+    std::string function;
+};
+
+struct Function : Procedure {
+    Function(std::string i, std::vector<std::shared_ptr<cpsl::Parameter>> p, std::shared_ptr<Return> r) : Procedure(i, p), returnValue(r){};
+    std::shared_ptr<Return> returnValue;
 };
 
 };

@@ -1,5 +1,5 @@
 VAR 
-  i : integer;
+  i, a, k : integer;
 
 BEGIN
 
@@ -8,15 +8,36 @@ i := 0;
 repeat 
   write("i: ", i, " \n");
   i := i+1;
-until i < 5;
+until i > 5;
 
 repeat
   write("should only happen once ", i, " \n");
-  i := i+1;
-until i < 5;
+  i := succ(i);
+until i > 5;
 
 while (i < 5) do
   write("should not happen");
+end;
+
+k := 2;
+write("k is ", k > 1, " greater than 1\n");
+write("k is ", k < 4, " less than 4\n");
+
+for a := 0 to 4 do
+  k := 0;
+  repeat
+    if k = 0 then
+      write("0=", k,", ");
+    elseif 1 = k then
+      write("1=", k,", ");
+    elseif k<>3 then
+      write("2=", k,", ");
+    else
+      write("else=", k,", ");
+    end;
+    k := succ(k);  
+  until k > 3;
+  write("a=", a,'\n');
 end;
 
 END.

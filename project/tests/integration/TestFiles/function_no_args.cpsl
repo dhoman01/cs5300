@@ -1,8 +1,11 @@
+var a : integer;
+
 FUNCTION returnNumber () : integer;
 BEGIN
   return 10;
 END;
 
 BEGIN
-  returnNumber();
+  a :=  returnNumber();
+  write(a);
 END.

@@ -4,52 +4,66 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-MARSDIR=./
+on_die()
+{
+  echo
+  exit 0;
+}
+
+cd `dirname "$0"`
+
+TESTDIR=TestFiles/ #test files directory (where all test.cpsl files are)
+RESULTS=Result/ #results folder (where to store cpsl run results for comparison)
+BASE=Base/ #base folder name (contains results to compare against)
+
+CPSLDIR=../../../build/ #where cpsl compiler binary lives
+BINARY=cpslc #binary name
+ASM=asm/ #tmp directory for asm files for mars to run
+
+MARSDIR=~/
 MARSJAR=mars.jar
 
 if [ -z $1 ]; then
-    echo "usage: test.sh /path/to/compiler /path/to/store/ASM"
-    exit 1;
+  pushd . >> /dev/null
+  cd ${TESTDIR}
+  files=`ls *.cpsl`
+  popd >>/dev/null
+else
+  files=$1
 fi
 
-echo -e "${DARK_GREY}using ${1} to compile test programs${NC}"
-mkdir -p ${2}
+#create these directories if they don't exist already
+mkdir -p $ASM $RESULTS
 
-echo -e "${GREEN}Testing While statement using TestFiles/while.cpsl${NC}"
-${1} TestFiles/while.cpsl -o ${2}/while.asm
-echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
-java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/while.asm > ${2}/while.out
+trap on_die SIGINT
+trap on_die TERM
 
-echo -e "${GREEN}Testing Repeat statement using TestFiles/repeat.cpsl${NC}"
-${1} TestFiles/repeat.cpsl -o ${2}/repeat.asm
-echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
-java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/repeat.asm > ${2}/repeat.out
+for file in $files; do
+    filename=$(basename "$file")
+    filename="${filename%.*}.asm"
 
-echo -e "${GREEN}Testing Simple If statement using TestFiles/ifelseif_simple.cpsl${NC}"
-${1} TestFiles/ifelseif_simple.cpsl -o ${2}/ifelseif_simple.asm
-echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
-java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/ifelseif_simple.asm > ${2}/ifelseif_simple.out
+    if [[ ! -f ${TESTDIR}${file} ]]; then
+        echo -e "${RED}File '${file}' not found${NC}"
+        continue
+    fi
 
-echo -e "${GREEN}Testing Nested If statement using TestFiles/ifelseif_nested.cpsl${NC}"
-${1} TestFiles/ifelseif_nested.cpsl -o ${2}/ifelseif_nested.asm
-echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
-java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/ifelseif_nested.asm | tee ${2}/ifelseif_nested.out
+    ${CPSLDIR}${BINARY} ${TESTDIR}${file} -o ${ASM}${filename}
 
-echo -e "${GREEN}Testing Simple For To statement using TestFiles/for_to.cpsl${NC}"
-${1} TestFiles/for_to.cpsl -o ${2}/for_to.asm
-echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
-java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/for_to.asm > ${2}/for_to.out
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Error running: ${CPSLDIR}${BINARY} ${TESTDIR}${file} > ${ASM}${filename}${NC}"
+        continue
+    fi
 
-echo -e "${GREEN}Testing Simple For Down To statement using TestFiles/for_down.cpsl${NC}"
-${1} TestFiles/for_down.cpsl -o ${2}/for_down.asm
-echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
-java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/for_down.asm > ${2}/for_down.out
+    printf "${DARK_GREY}Executing: %-40s" ${file}
+    java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${ASM}${filename} > ${RESULTS}${file}
 
-echo -e "${GREEN}Testing Nested For statements using TestFiles/for_nested.cpsl${NC}"
-${1} TestFiles/for_nested.cpsl -o ${2}/for_nested.asm
-echo -e "${DARK_GREY} Using MARS to run resulting ASM${NC}"
-java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${2}/for_nested.asm > ${2}/for_nested.out
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Error running: java -jar nc 1000000 ${MARSDIR}${MARSJAR} ${ASM}${filename} > ${RESULTS}${file}${NC}"
+        continue
+    fi
+    printf "${GREEN}%4b${NC}\n" "\u2713"
 
-echo -e "${GREEN}Finished Tests!!!!${NC}"
+    cmp ${RESULTS}${file} ${BASE}${file}
+done
 
 exit

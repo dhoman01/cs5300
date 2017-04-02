@@ -1,0 +1,26 @@
+var i, j : integer;
+
+procedure print(var a, b : integer); forward;
+procedure swap(ref a, b : integer); forward;
+
+procedure swap(ref a, b : integer);
+var t : integer;
+begin
+    print(a, b);
+    t := a; 
+    a := b;
+    b := t;
+end;
+
+procedure print(var a, b : integer);
+begin
+    write("i: ", i , "\nj: ", j, "\n");
+end;
+
+begin
+    i := 1;
+    j := 2;
+    swap(i, j);
+    write("After swap...\n");
+    print(i, j);
+end.

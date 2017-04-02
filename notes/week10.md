@@ -172,7 +172,7 @@ local:
 ```mips
 swapBegin:
     lw $t0, 0($fp)
-    lw $t0, 0 ($t0)
+    lw $t0, 0($t0)
     sw $t0, -4($fp)
     lw $t0, 4($fp)
     lw $t0, 0($t0)

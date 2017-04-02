@@ -1,0 +1,12 @@
+Beginning Program-----------------
+a=true (1) and b=false(0)d=10 and e=20
+c := a & b0
+c := a | b0
+c := d > e0
+c := d >= e0
+c := d < e1
+c := d <= e1
+c := d = e0
+c := d <> e1
+c := ~a1
+--------------Ending Program
