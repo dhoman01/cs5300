@@ -44,11 +44,13 @@ private:
 
     std::vector<std::string> stringConst;
 
-    std::shared_ptr<LookUpTable<Info>> symbolTable;
-    std::shared_ptr<RegPool> regPool;
+    symbol_table symbolTable;
+    register_pool regPool;
 
     std::shared_ptr<Parser> parser = nullptr;
     std::shared_ptr<Scanner> scanner = nullptr;
+
+    std::vector<Type> predefinedTypes;
 
 };
 

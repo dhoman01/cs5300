@@ -101,14 +101,20 @@
 %right UMINUS_OP
 
 %type<cpsl::Expression>                                                                         expression whileExpr
-%type<std::vector<std::string>>                                                                 identifierList lvalueList
+%type<std::vector<std::string>>                                                                 identifierList
+%type<std::vector<std::shared_ptr<cpsl::LValue>>>                                               lvalueList
+%type<std::shared_ptr<cpsl::LValue>>                                                            lvalue
 %type<std::vector<cpsl::Expression>>                                                            expressionList optExpressionList
 %type<int>                                                                                      constDecl assignment whileHdr whileKey ifKey ifHdr elseIfHdr elseIfStatement repeatHdr
 %type<std::vector<int>>                                                                         optElseIfStatements elseIfStatements
-%type<std::string>                                                                              lvalue type identifier simpleType optTo optVar funcId procedureId
+%type<std::string>                                                                              identifier optTo optVar funcId procedureId
 %type<cpsl::ForHeaderInfo>                                                                      forHdr forBegin
 %type<std::shared_ptr<cpsl::Procedure>>                                                         procedureSig funcSig
 %type<std::vector<std::shared_ptr<cpsl::Parameter>>>                                            formalParameter formalParameters optFormalParameters
+%type<std::vector<cpsl::Field>>                                                                 fields field
+%type<std::shared_ptr<cpsl::Record>>                                                            recordType
+%type<std::shared_ptr<cpsl::Array>>                                                             arrayType
+%type<std::shared_ptr<cpsl::Type>>                                                              type simpleType
 
 %locations
 
@@ -186,34 +192,34 @@ typeDecls: typeDecls typeDecl
     | typeDecl
     ;
 
-typeDecl: identifier EQ_OP type SEMI_COL  
+typeDecl: identifier EQ_OP type SEMI_COL                                                        { brain.statements.DeclareType($1, $3); }
     ;
 
-type: simpleType  { $$ = $1; }
-    | recordType  { }
-    | arrayType   { }
+type: simpleType                                                                                { $$ = $1; }
+    | recordType                                                                                { $$ = $1; }
+    | arrayType                                                                                 { $$ = $1; }
     ;
 
-simpleType: identifier { $$ = $1; }
+simpleType: identifier                                                                          { $$ = brain.statements.TypeLookup($1); }
     ;
 
-recordType: RECORD_KEY fields END_KEY { }
+recordType: RECORD_KEY fields END_KEY                                                           { $$ = brain.statements.MakeRecord($2); }
     ;
 
-fields: fields field
-    |
-    ;
-field: identifierList COL type SEMI_COL
+fields: fields field                                                                            { $1.insert($1.end(), $2.begin(), $2.end()); $$ = $1; }
+    |                                                                                           { $$ = std::vector<cpsl::Field>(); }
+    ;   
+field: identifierList COL type SEMI_COL                                                         { $$ = brain.statements.MakeFields($1, $3); }
     ;
 
-arrayType: ARRAY_KEY OPEN_SQ expression COL expression CLOSE_SQ OF_KEY type                     { }
+arrayType: ARRAY_KEY OPEN_SQ expression COL expression CLOSE_SQ OF_KEY type                     { $$ = brain.statements.MakeArray($3, $5, $8); }
     ;
 
 identifierList: identifierList COMMA identifier                                                 { $1.push_back($3); $$ = $1; }
     | identifier                                                                                { std::vector<std::string> list; list.push_back($1); $$ = list; }
     ;
 
-identifier: IDENTIFIER { $$ = $1; }
+identifier: IDENTIFIER                                                                          { $$ = $1; }
     ;
 
 optVarDecl: VAR_KEY varDecls
@@ -359,16 +365,16 @@ expression: expression OR_OP expression                                         
     | INT_CONST                                                                                 { $$ = brain.expressions.IntConstant($1); }
     | CHR_CONST                                                                                 { $$ = brain.expressions.CharConstant($1); }
     | STRING_CONST                                                                              { $$ = brain.AddString($1); } 
-    | lvalue                                                                                    { $$ = brain.statements.LoadVariable($1); }
+    | lvalue                                                                                    { $$ = brain.statements.MakeLValueExpression($1); }
     ;
 
 lvalueList: lvalueList COMMA lvalue                                                             { $$ = $1; }
-    | lvalue                                                                                    { std::vector<std::string> list; list.push_back($1); $$ = list;}
+    | lvalue                                                                                    { std::vector<std::shared_ptr<cpsl::LValue>> list; list.push_back($1); $$ = list;}
     ;
 
-lvalue: lvalue DOT identifier                                                                   { }
-    | lvalue OPEN_SQ expression CLOSE_SQ                                                        { }
-    | identifier                                                                                { $$ = $1;}
+lvalue: lvalue DOT identifier                                                                   { $$ = brain.statements.LoadRecordMember($1, $3); }
+    | lvalue OPEN_SQ expression CLOSE_SQ                                                        { $$ = brain.statements.LoadArrayElement($1, $3); }
+    | identifier                                                                                { $$ = brain.statements.LoadVariable($1);}
     ;
 
 %%

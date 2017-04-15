@@ -7,6 +7,7 @@
 
 #include "../utils/structures.hpp"
 #include "../utils/RegPool.hpp"
+#include "../utils/LookupTable.hpp"
 
 namespace cpsl
 {
@@ -15,9 +16,10 @@ class Expressions
 {
 public:
     Expressions() = default;
-    Expressions(std::shared_ptr<RegPool> pool)
+    Expressions(register_pool pool, symbol_table st)
     {
         regPool = pool;
+        symbolTable = st;
     };
     
     // Boolean Expressions
@@ -49,7 +51,10 @@ public:
     Expression IntConstant(std::string);
     Expression CharConstant(char);
 private:
-    std::shared_ptr<RegPool> regPool = nullptr;
+    int getUID();
+
+    register_pool regPool = nullptr;
+    symbol_table symbolTable = nullptr;
 };
 
 }
