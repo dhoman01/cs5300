@@ -28,6 +28,7 @@ void cpsl::RegPool::release(cpsl::Register reg)
     // they have no name so we need
     // to catch that here
     if(reg.name.empty()) return;
+    if(reg.name[0] == 'S') return;
 
     if(verbose) std::cout << "\n\t# Releasing Register " << reg.name << std::endl;
 

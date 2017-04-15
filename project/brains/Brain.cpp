@@ -6,10 +6,10 @@
 
 cpsl::Brain::Brain()
 {
-    regPool = std::make_shared<RegPool>();
+    regPool = std::make_shared<cpsl::RegPool>();
     symbolTable = std::make_shared<cpsl::LookUpTable<cpsl::Info>>();
     Init();
-    expressions = Expressions(regPool);
+    expressions = Expressions(regPool, symbolTable);
     statements = Statements(regPool, symbolTable);
 };
 
@@ -36,7 +36,7 @@ cpsl::Expression cpsl::Brain::AddString(std::string s)
     cpsl::Expression expr;
     expr.reg.name = "S" + std::to_string(id);
     expr.isConstant = false;
-    expr.type = "string";
+    expr.type = std::dynamic_pointer_cast<cpsl::Type>(cpsl::Brain::symbolTable->lookup("string"));
 
     stringConst.push_back(s);
     
@@ -87,10 +87,6 @@ void cpsl::Brain::InitMain()
 {
     std::cout << "main:" << std::endl;
     std::cout << "\tla $gp, GA" << std::endl;
-    std::cout << "\t# Store the true and false const values" << std::endl;
-    std::cout << "\tli $v0 1" << std::endl;
-    std::cout << "\tsw $v0, 0($gp)" << std::endl;
-    std::cout << "\tsw $zero, 4($gp)" << std::endl;
     std::cout << "\n\n\t# Begin CPSL Program" << std::endl;
 }
 
@@ -100,48 +96,50 @@ void cpsl::Brain::InitPredefinedSymbols()
     symbolTable->enterScope();
 
     // Create integer type
-    std::shared_ptr<cpsl::Type> integerType = std::make_shared<cpsl::Type>();
+    auto integerType = std::make_shared<cpsl::Type>();
     integerType->size = 4;
     integerType->id = "integer";
     symbolTable->store("integer", integerType);
     symbolTable->store("INTEGER", integerType);
 
     // Create char type
-    std::shared_ptr<cpsl::Type> characterType = std::make_shared<cpsl::Type>();
+    auto characterType = std::make_shared<cpsl::Type>();
     characterType->size = 4;
     characterType->id = "char";
     symbolTable->store("char", characterType);
     symbolTable->store("CHAR", characterType);
 
     // Create boolean type
-    std::shared_ptr<cpsl::Type> booleanType = std::make_shared<cpsl::Type>();
+    auto booleanType = std::make_shared<cpsl::Type>();
     booleanType->size = 4;
     booleanType->id = "boolean";
     symbolTable->store("boolean", booleanType);
     symbolTable->store("BOOLEAN", booleanType);
 
     // Create string type
-    std::shared_ptr<cpsl::Type> stringType = std::make_shared<cpsl::Type>();
+    auto stringType = std::make_shared<cpsl::Type>();
     stringType->size = 4;
     stringType->id = "string";
     symbolTable->store("string", stringType);
     symbolTable->store("STRING", stringType);
 
     // Create true constant
-    // In the MIPS Init function 0($gp) is set to the value 1
-    std::shared_ptr<cpsl::VariableInfo> trueConst = std::make_shared<cpsl::VariableInfo>();
+    auto trueConst = std::make_shared<cpsl::ConstantLValue>();
     trueConst->id = "true";
-    trueConst->location = "0($gp)";
+    trueConst->expr.isConstant = true;
+    trueConst->expr.value = true;
     trueConst->type = booleanType;
+    trueConst->expr.type = booleanType;
     symbolTable->store("true", trueConst);
     symbolTable->store("TRUE", trueConst);
 
     // Create false constant
-    // In the MIPS Init function 4($gp) is set to the value 0
-    std::shared_ptr<cpsl::VariableInfo> falseConst = std::make_shared<cpsl::VariableInfo>();
+    auto falseConst = std::make_shared<cpsl::ConstantLValue>();
     falseConst->id = "false";
-    falseConst->location = "4($gp)";
+    falseConst->expr.isConstant = true;
+    falseConst->expr.value = false;
     falseConst->type = booleanType;
+    falseConst->expr.type = booleanType;
     symbolTable->store("false", falseConst);
     symbolTable->store("FALSE", falseConst);
 

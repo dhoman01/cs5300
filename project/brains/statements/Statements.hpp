@@ -16,7 +16,7 @@ class Statements
 public:
     /* Constructors */
     Statements() = default;
-    Statements(std::shared_ptr<RegPool>, std::shared_ptr<LookUpTable<Info>>, bool = false);
+    Statements(register_pool, symbol_table, bool = false);
     
     /* Control Statements */
     ForHeaderInfo ForBegin(std::string, Expression);
@@ -32,15 +32,25 @@ public:
     void WhileEnd(int);
 
     /* Helpers */
-    void Assignment(std::string, Expression);
+    void Assignment(std::shared_ptr<LValue>, Expression);
     void ConstDeclaration(std::string, Expression);
     void EnterScope();
     void ExitScope();
-    Expression LoadVariable(std::string);
-    void VariableDeclaration(std::vector<std::string>, std::string);
+    std::shared_ptr<LValue> LoadArrayElement(std::shared_ptr<LValue>, Expression);
+    std::shared_ptr<LValue> LoadRecordMember(std::shared_ptr<LValue>, std::string id);
+    std::shared_ptr<LValue> LoadVariable(std::string);
+    Expression MakeLValueExpression(std::shared_ptr<LValue>);
+    void VariableDeclaration(std::vector<std::string>, std::shared_ptr<Type>);
+
+    /* Types */
+    std::shared_ptr<Type> TypeLookup(std::string);
+    void DeclareType(std::string, std::shared_ptr<Type>);
+    std::shared_ptr<Array> MakeArray(Expression, Expression, std::shared_ptr<Type>);
+    std::shared_ptr<Record> MakeRecord(std::vector<Field>);
+    std::vector<Field> MakeFields(std::vector<std::string>, std::shared_ptr<Type>);
 
     /* Simple Statements */
-    void ReadStatement(std::vector<std::string>);
+    void ReadStatement(std::vector<std::shared_ptr<LValue>>);
     void StopStatement();
     void WriteStatement(std::vector<Expression>);
 
@@ -49,14 +59,15 @@ public:
     void FunctionPrologue(std::shared_ptr<Procedure>);
     std::pair<int, std::shared_ptr<Procedure>> FunctionPrecall(std::string, std::vector<Expression>);
     Expression FunctionPostcall(std::pair<int, std::shared_ptr<Procedure>>);
-    std::shared_ptr<Procedure> MakeFunction(std::string, std::vector<std::shared_ptr<Parameter>>, std::string, bool = false);
-    std::vector<std::shared_ptr<Parameter>> MakeParameters(std::string, std::vector<std::string>, std::string);
+    std::shared_ptr<Procedure> MakeFunction(std::string, std::vector<std::shared_ptr<Parameter>>, std::shared_ptr<Type>, bool = false);
+    std::vector<std::shared_ptr<Parameter>> MakeParameters(std::string, std::vector<std::string>, std::shared_ptr<Type>);
     std::shared_ptr<Procedure> MakeProcedure(std::string, std::vector<std::shared_ptr<Parameter>>, bool = false);
     void ReturnStatement();    
     void ReturnStatement(Expression);
 private:
-    int getUid();
-    void Read(std::string);
+    void DeepCopy(std::string src, std::string dest, std::size_t size, int offset);
+    int getUID();
+    void Read(std::shared_ptr<LValue>);
     void StoreSymbol(std::string, std::shared_ptr<Type>);
     void Write(Expression);
 
@@ -64,8 +75,8 @@ private:
     int localOffset;
     bool addNewline;
     bool verbose = false;
-    std::shared_ptr<LookUpTable<Info>> symbolTable = nullptr;
-    std::shared_ptr<RegPool> regPool = nullptr;
+    symbol_table symbolTable = nullptr;
+    register_pool regPool = nullptr;
 };
 
 } 

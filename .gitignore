@@ -3,4 +3,7 @@ logs/
 *logs/
 *_output.txt
 *_output
-compiled_mips
+compiled_mips/
+Results/
+asm/
+Asm/

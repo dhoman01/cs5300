@@ -5,7 +5,7 @@ BEGIN
   True := false;
   False := true;
 
-  write("True = ",True,'\n');
-  write("False = ",False,'\n');
+  write("True = ", True, '\n');
+  write("False = ", False, '\n');
 
 END.

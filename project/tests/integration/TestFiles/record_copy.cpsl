@@ -1,0 +1,30 @@
+TYPE user = record
+                id, age : integer;
+                gender : char;
+                active : boolean;
+            end;
+
+VAR user1, user2 : user;
+
+BEGIN
+    $ Define User 1
+    user1.id := 1;
+    user1.age := 28;
+    user1.gender := 'M';
+    user1.active := true;
+
+    $ Print User 1's attributes
+    write("User 1:\n", "\tid: ", user1.id, '\n');
+    write("\tage: ", user1.age, '\n');
+    write("\tgender: ", user1.gender, '\n');
+    write("\tactive: ", user1.active, '\n', '\n');
+
+    $ Deep copy User 1 to User 2
+    user2 := user1;
+
+    $ Print User 2's attributes (should be the same as User 1)
+    write("User 2:\n", "\tid: ", user2.id, '\n');
+    write("\tage: ", user2.age, '\n');
+    write("\tgender: ", user2.gender, '\n');
+    write("\tactive: ", user2.active, '\n', '\n');
+END.
