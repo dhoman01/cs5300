@@ -7,20 +7,22 @@
 #include <string>
 #include <vector>
 
-#include "structures.hpp"
-
 namespace cpsl
 {
 
-using scope = std::vector< std::map<std::string, std::shared_ptr<cpsl::Info>> >;
+struct Info {
+    Info(){};
+    virtual ~Info() {};
+    std::string id;
+};
 
-template<typename Info>
+template<typename I>
 class LookUpTable
 {
 public:
     LookUpTable(){};
 
-    void store(std::string id, std::shared_ptr<cpsl::Info> info)
+    void store(std::string id, std::shared_ptr<I> info)
     {
         // Check if id exits in curr scope
         auto f = scopes.back().find(id);
@@ -32,7 +34,7 @@ public:
         // Else store in curr scope
         scopes.back()[id] = info;
     }
-    std::shared_ptr<cpsl::Info> lookup(std::string id)
+    std::shared_ptr<I> lookup(std::string id)
     {
         // Start at curr scope and look up for the id
         for(int i = scopes.size() - 1; i >= 0; --i)
@@ -59,9 +61,19 @@ public:
     {
         return scopes.size() == 3u;
     }
+    std::vector<std::shared_ptr<I>> getScopeMembers()
+    {
+        std::vector<std::shared_ptr<I>> members;
+        for(auto m : scopes.back())
+            members.push_back(m.second);
+
+        return members;
+    }
 private:
-    scope scopes;
+    std::vector< std::map<std::string, std::shared_ptr<I>> > scopes;
 };
+
+using symbol_table = std::shared_ptr<LookUpTable<Info>>;
 
 };
 

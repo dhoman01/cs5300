@@ -1,0 +1,61 @@
+TYPE charArr = array[0:50] of char;
+     phoneNumber = array[1:10] of integer;
+     person = record
+                name : charArr;
+                age : integer;
+                number : phoneNumber;
+              end;
+
+var example, example2 : person;
+    j : integer;
+
+procedure printPerson(ref p : person);
+var i : integer;
+begin
+    write("Name: ");
+    for i := 0 to 50 do
+        write(p.name[i]);
+    end;
+    write('\n');
+    write("Age: ", p.age, '\n');
+    write("Phone #: ");
+    for i := 1 to 3 do
+        write(p.number[i]);
+    end;
+    write('-');
+    for i := 4 to 6 do
+        write(p.number[i]);
+    end;
+    write('-');
+    for i := 7 to 10 do
+        write(p.number[i]);
+    end;
+    write('\n');
+end;
+
+begin
+    example.name[0] := 'E';
+    example.name[1] := 'x';
+    example.name[2] := 'a';
+    example.name[3] := 'm';
+    example.name[4] := 'p';
+    example.name[5] := 'l';
+    example.name[6] := 'e';
+    example.name[7] := ' ';
+    example.name[8] := 'A';
+    example.name[9] := '.';
+    example.age := 28;
+    
+    for j := 1 to 10 do
+        example.number[j] := 5;
+    end;
+
+    write("Printing the original!\n\n");
+    printPerson(example);
+
+    example2 := example;
+
+    write("\n\nPrinting the copy!\n\n");
+    printPerson(example2);
+
+end.

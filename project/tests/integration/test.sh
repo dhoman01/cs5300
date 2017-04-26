@@ -13,14 +13,14 @@ on_die()
 cd `dirname "$0"`
 
 TESTDIR=TestFiles/ #test files directory (where all test.cpsl files are)
-RESULTS=Result/ #results folder (where to store cpsl run results for comparison)
+RESULTS=Results/ #results folder (where to store cpsl run results for comparison)
 BASE=Base/ #base folder name (contains results to compare against)
 
 CPSLDIR=../../../build/ #where cpsl compiler binary lives
 BINARY=cpslc #binary name
-ASM=asm/ #tmp directory for asm files for mars to run
+ASM=Asm/ #tmp directory for asm files for mars to run
 
-MARSDIR=~/
+MARSDIR=./
 MARSJAR=mars.jar
 
 if [ -z $1 ]; then

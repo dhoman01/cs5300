@@ -12,6 +12,7 @@ function mean(var a:nums) : integer;
 begin
 	total := 0;
 	for i := 1 to 12 do
+		write("The value of a at ", i, " is ", a[i], '\n');
 		total := total + a[i];
 	end;
 	mean := total / 12;
@@ -21,6 +22,7 @@ end;
 begin
 	for x := 1 to 12 do
 		arr[x] := 5 + x * x;
+		write("The value of arr at ", x, " is ", arr[x], '\n');
 	end;
 
 	write("The mean of the array is: ", mean(arr), '\n');

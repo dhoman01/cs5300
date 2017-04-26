@@ -15,41 +15,41 @@ e := 20;
 write("a=true (1) and b=false(0)");
 write("d=10 and e=20");
 
-write("\nc := a & b");
+write("\nc := a & b\n");
 c := a & b;   $false  (0)
-write(c);
+write("c = ", c);
 
-write("\nc := a | b");
+write("\nc := a | b\n");
 c := a | b;   $true   (1)
-write(c);
+write("c = ", c);
 
-write("\nc := d > e");
+write("\nc := d > e\n");
 c := d > e;   $false   (0)
-write(c);
+write("c = ", c);
 
-write("\nc := d >= e");
+write("\nc := d >= e\n");
 c := d >= e;  $false  (0)
-write(c);
+write("c = ", c);
 
-write("\nc := d < e");
+write("\nc := d < e\n");
 c := d < e;   $true   (1)
-write(c);
+write("c = ", c);
 
-write("\nc := d <= e");
+write("\nc := d <= e\n");
 c := d <= e;  $true   (1)
-write(c);
+write("c = ", c);
 
-write("\nc := d = e");
+write("\nc := d = e\n");
 c := d = e;   $false  (0)
-write(c);
+write("c = ", c);
 
-write("\nc := d <> e");
+write("\nc := d <> e\n");
 c := d <> e;  $true   (1)
-write(c);
+write("c = ", c);
 
-write("\nc := ~a");
+write("\nc := ~a\n");
 c := ~a;      $false  (0)
-write(c);
+write("c = ", c);
 
 write("\n--------------");
 write("Ending Program");

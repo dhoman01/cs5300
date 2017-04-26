@@ -1,0 +1,18 @@
+CONST SIZE = 10;
+TYPE arr = array[1:SIZE] of integer;
+
+VAR a, b : arr;
+    i    : integer;
+
+BEGIN
+    for i := 1 to SIZE do
+        a[i] := (i + 2) * 16;
+        write("a[", i, "] = ", a[i], '\n');
+    end;
+    b := a;
+    write('\n');
+    for i := 1 to SIZE do
+        write("b[", i, "] = ", b[i], '\n');
+    end;
+    
+END.
