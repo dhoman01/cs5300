@@ -58,8 +58,6 @@ int main(const int argc, const char **argv)
             return EXIT_FAILURE;
         }
 
-        brain.Finalize();
-
         if(coutRestore)
             std::cout.rdbuf(buffer);
     }

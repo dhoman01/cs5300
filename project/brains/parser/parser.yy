@@ -120,7 +120,7 @@
 
 %%
 
-program: progHead block DOT
+program: progHead block DOT                                                                     { brain.Finalize(); }
     ;
 
 progHead: optConstDecl optTypeDecl optVarDecl optProcFuncs                                      { brain.InitMain(); }
