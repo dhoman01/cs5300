@@ -746,7 +746,7 @@ std::pair<int, std::shared_ptr<cpsl::Procedure>> cpsl::Statements::FunctionPreca
         }
         else
         {
-            if(expr.type->id == "string")
+            if(expr.type->id == "string" && expr.reg.name[0] == 'S')
             {
                 cpsl::Statements::LoadStringExp(expr);
             }

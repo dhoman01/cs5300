@@ -1,4 +1,5 @@
 var x, y, z : integer;
+    s : string;
 
 $ Simple Procedure
 procedure hello(name : string);
@@ -74,7 +75,8 @@ begin
 end;
 
 begin
-    hello("Dave");
+    s:= "Dave";
+    hello(s);
     x := 2;
     y := 2;
     write("2 + 2 = ", add(x,y), '\n');

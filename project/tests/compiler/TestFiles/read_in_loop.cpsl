@@ -1,0 +1,26 @@
+var high, low, mid : integer;
+    y : char;
+
+begin
+    write("Pick a number between 1 - 100!\n\n");
+    high := 100;
+    low := 1;
+
+    $ AHHHHHHH! INFINITE LOOP!!!!!!
+    while( true ) do
+        if mid = (high + low) / 2 then write("You CHEATER!"); stop; end;
+        mid := (high + low) / 2;
+        write("Is your number, ", mid, " 'y' for yes, 'h' for high, 'l' for low ", '\n');
+        read(y);
+        if y = 'y' then
+            write("I won!");
+            stop;
+        elseif y = 'h' then
+            high := mid;
+        elseif y = 'l' then
+            low := mid + 1;
+        else
+            write("Not a valid choice!");
+        end;
+    end;
+end.

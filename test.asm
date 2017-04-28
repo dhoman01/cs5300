@@ -2,210 +2,160 @@
 .text
 
 j main
-	# Loaded constant lvalue SIZE with value 30 and type integer
-	# Making array type with size 120 of integers
-	# (NO MIPS EMITTED) Storing symbol powTwo with type array1 into symbol table
-	# (NO MIPS EMITTED) Storing reference parameter a with type array1 into symbol table
 
-printBody:
+	# DEBUG: 1:9
 
-	# For Statement Begin
-	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
+	# DEBUG: 1:5
+	# (NO MIPS EMITTED) Storing symbol s with type string into symbol table
 
-	# Assigning i the value i
-	li $s0 1
-	sw $s0 120($gp)
-	# Finished assignment of i
+	# DEBUG: 2:28
 
-	# Loading value from 120($gp) with type integer
-	lw $s0 120($gp)
-	# Loaded value from i
-	# Start of Loop
-FB1:
-	# Loaded constant lvalue SIZE with value 30 and type integer
-	# Loading constant expression
-	li $s1 30
-	addi $s1 $s1 1
-	beq $s0 $s1 FE1
+	# DEBUG: 2:17
+	# (NO MIPS EMITTED) Storing  parameter name with type string and offset of 0 into symbol table
 
-	# Loading value from 120($gp) with type integer
-	lw $s1 120($gp)
-	# Loaded value from i
+	# DEBUG: 2:1
 
-	# Loading value from 120($gp) with type integer
-	lw $s2 120($gp)
-	# Loaded value from i
-	# Loading array member from a and index at $s2
-	# Shifting index of array a
-	addi $s2 $s2 -1
-	li $s3 4
-	mult $s2 $s3
-	mflo $s2
-	# Loading reference
-	lw $s3 0($fp)
-	add $s2 $s2 $s3
+helloBody:
 
-	# Loading value from 0($s2) with type integer
-	lw $s3 0($s2)
-	# Loaded value from 
+	# DEBUG: 4:7
+
+	# DEBUG: 4:17
+	# Loading lvalue name from symbol table
+
+	# DEBUG: 4:17
+	# Loading value from 0($fp) with type string
+	lw $s0 0($fp)
+	# Loaded value from name
+
+	# DEBUG: 4:23
+
+	# DEBUG: 4:28
+
+	# DEBUG: 4:1
 
 	# Writing expression to output
 	# Loading string const
-	la $s4 S1
+	la $s1 S1
 	# Loaded string S1
 	li $v0 4
-	ori $a0 $s4 0
-	syscall
-	# Finished writing expression to output
-
-	# Writing expression to output
-	li $v0 1
 	ori $a0 $s1 0
 	syscall
 	# Finished writing expression to output
 
+	# Releasing Register $s1
+	# Available Registers: 17
+	# Registers In Use:    1
+
+
 	# Writing expression to output
-	# Loading string const
-	la $s1 S2
-	# Loaded string S2
 	li $v0 4
-	ori $a0 $s1 0
+	ori $a0 $s0 0
 	syscall
 	# Finished writing expression to output
 
-	# Writing expression to output
-	li $v0 1
-	ori $a0 $s3 0
-	syscall
-	# Finished writing expression to output
+	# Releasing Register $s0
+	# Available Registers: 18
+	# Registers In Use:    0
+
 
 	# Writing expression to output
-	li $s3 10
+	li $s0 33
 	li $v0 11
-	ori $a0 $s3 0
+	ori $a0 $s0 0
 	syscall
 	# Finished writing expression to output
-	# Incrementing counter i
-	addi $s0 $s0 1
-	sw $s0 120($gp)
-	j FB1
-FE1:
-	# End of For Statement
-	j printEpilogue
 
-	# print Prolouge
-print:
-	addi $sp $sp -4
-	j printBody
+	# Releasing Register $s0
+	# Available Registers: 18
+	# Registers In Use:    0
 
-	# print Epilogue
-printEpilogue:
-	addi $sp $sp 4
+
+	# Writing expression to output
+	li $s0 10
+	li $v0 11
+	ori $a0 $s0 0
+	syscall
+	# Finished writing expression to output
+
+	# Releasing Register $s0
+	# Available Registers: 18
+	# Registers In Use:    0
+
+
+	# DEBUG: 2:1
+	j helloEpilogue
+
+	# hello Prolouge
+hello:
+	j helloBody
+
+	# hello Epilogue
+helloEpilogue:
 	jr $ra
 main:
 	la $gp, GA
 
 
 	# Begin CPSL Program
-	# Loading array member from powTwo and index of 1
 
-	# Assigning  the value 
-	li $s2 2
-	sw $s2 0($gp)
-	# Finished assignment of 
+	# DEBUG: 8:1
+	# Loading lvalue s from symbol table
 
-	# For Statement Begin
-	# (NO MIPS EMITTED) Storing symbol i with type integer into symbol table
+	# DEBUG: 8:5
 
-	# Assigning i the value i
-	li $s2 2
-	sw $s2 132($gp)
-	# Finished assignment of i
+	# DEBUG: 8:1
 
-	# Loading value from 132($gp) with type integer
-	lw $s2 132($gp)
-	# Loaded value from i
-	# Start of Loop
-FB2:
-	# Loaded constant lvalue SIZE with value 30 and type integer
-	# Loading constant expression
-	li $s0 30
-	addi $s0 $s0 1
-	beq $s2 $s0 FE2
+	# Assigning s the value at S2
+la $s0 S2
+sw $s0 0($gp)
 
-	# Loading value from 132($gp) with type integer
-	lw $s0 132($gp)
-	# Loaded value from i
-	# Loading array member from powTwo and index at $s0
-	# Shifting index of array powTwo
-	addi $s0 $s0 -1
-	li $s3 4
-	mult $s0 $s3
-	mflo $s0
-	add $s0 $s0 $gp
+	# Releasing Register $s0
+	# Available Registers: 18
+	# Registers In Use:    0
 
-	# Loading value from 132($gp) with type integer
-	lw $s3 132($gp)
-	# Loaded value from i
+	# Finished assignment of s
 
-	# Minus Expression: $s3 - 1
-	subi $s1 $s3 1
-	# End Minus Expression
-	# Loading array member from powTwo and index at $s1
-	# Shifting index of array powTwo
-	addi $s1 $s1 -1
-	li $s3 4
-	mult $s1 $s3
-	mflo $s1
-	add $s1 $s1 $gp
+	# DEBUG: 9:7
+	# Loading lvalue s from symbol table
 
-	# Loading value from 0($s1) with type integer
-	lw $s3 0($s1)
-	# Loaded value from 
+	# DEBUG: 9:7
+	# Loading value from 0($gp) with type string
+	lw $s0 0($gp)
+	# Loaded value from s
 
-	# Mult Expression: $s3 * 2
-	li $s4 2
-	mult $s3 $s4
-	mflo $s4
-	# End Mult Expression
+	# DEBUG: 9:1
 
-	# Assigning  the value at $s4
-	sw $s4 0($s0)
-	# Finished assignment of 
-	# Incrementing counter i
-	addi $s2 $s2 1
-	sw $s2 132($gp)
-	j FB2
-FE2:
-	# End of For Statement
-
-	# Loading value from 0($gp) with type array1
-	lw $s2 0($gp)
-	# Loading array location
-	addi $s2 $gp 0
-	# Loaded value from powTwo
-
-	# print Precall
-	addi $sp $sp -24
-	# Storing ref to a from expr $s2
-	addi $s2 $gp 0
-	sw $s2 0($sp)
+	# hello Precall
+	addi $sp $sp -16
+	sw $s0 0($sp)
 
 	# Spilling Registers
 	sw $s0 4($sp)
-	sw $s1 8($sp)
-	sw $s2 12($sp)
-	sw $fp 16($sp)
-	sw $ra 20($sp)
+
+	# Releasing Register $s0
+	# Available Registers: 18
+	# Registers In Use:    0
+
+
+	# Spilling Register:      $s0
+	# # of Spilled Registers: 1
+
+	sw $fp 8($sp)
+	sw $ra 12($sp)
 	ori $fp $sp 0
-	jal print
-	# print Postcall
-	lw $ra 20($sp)
-	lw $fp 16($sp)
-	lw $s2 12($sp)
-	lw $s1 8($sp)
+	jal hello
+
+	# DEBUG: 9:1
+	# hello Postcall
+	lw $ra 12($sp)
+	lw $fp 8($sp)
 	lw $s0 4($sp)
-	addi $sp $sp 24
+	addi $sp $sp 16
+
+	# Releasing Register $s0
+	# Available Registers: 18
+	# Registers In Use:    0
+
 
 	# End of CPSL Program
 
@@ -217,8 +167,8 @@ FE2:
 	.data
 
 # Write out string constants
-S1: .asciiz "2^"
-S2: .asciiz " is "
+S1: .asciiz "Hello "
+S2: .asciiz "Dave"
 
 # Reset alignment to the nearest word and declare global area
 .align 2
