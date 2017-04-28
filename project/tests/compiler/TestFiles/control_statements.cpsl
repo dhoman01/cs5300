@@ -38,7 +38,7 @@ BEGIN
         write("i is greater than 0\n");
     ELSE
         write("Should not have been printed.");
-        stop;
+        STOP;
     end;
 
     write("\nNested Loops:\n");

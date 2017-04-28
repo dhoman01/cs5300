@@ -42,6 +42,7 @@
         "**/*_output/**",
         "**/build/**",
         "**/notes/**",
+        "**/tests/**",
         "*.pdf"
     ],
     "LineCount.output": {
