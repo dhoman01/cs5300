@@ -20,7 +20,7 @@ begin
         elseif y = 'l' then
             low := mid + 1;
         else
-            write("Not a valid choice!");
+            write(y, " is not a valid choice!");
         end;
     end;
 end.

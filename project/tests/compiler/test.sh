@@ -40,7 +40,7 @@ trap on_die TERM
 
 for file in $files; do
     filename=$(basename "$file")
-    filename="${filename%.*}.asm"
+    filename="${filename%.*}"
 
     if [[ ! -f ${TESTDIR}${file} ]]; then
         echo -e "${RED}File '${file}' not found${NC}"
@@ -50,15 +50,19 @@ for file in $files; do
     ${CPSLDIR}${BINARY} ${TESTDIR}${file} -o ${ASM}${filename}
 
     if [ $? -ne 0 ]; then
-        echo -e "${RED}Error running: ${CPSLDIR}${BINARY} ${TESTDIR}${file} > ${ASM}${filename}${NC}"
+        echo -e "${RED}Error running: ${CPSLDIR}${BINARY} ${TESTDIR}${file} -o ${ASM}${filename}.asm${NC}"
         continue
     fi
 
     printf "${DARK_GREY}Executing: %-40s" ${file}
-    java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${ASM}${filename} > ${RESULTS}${file}
+    if [[ $filename =~ .*input.* ]]; then
+        java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${ASM}${filename}.asm < ${TESTDIR}${filename}.input > ${RESULTS}${file}
+    else
+        java -Djava.awt.headless=true -jar ${MARSDIR}${MARSJAR} nc 1000000 ${ASM}${filename}.asm > ${RESULTS}${file}
+    fi
 
     if [ $? -ne 0 ]; then
-        echo -e "${RED}Error running: java -jar nc 1000000 ${MARSDIR}${MARSJAR} ${ASM}${filename} > ${RESULTS}${file}${NC}"
+        echo -e "${RED}Error running: java -jar nc 1000000 ${MARSDIR}${MARSJAR} ${ASM}${filename}.asm > ${RESULTS}${file}${NC}"
         continue
     fi
     printf "${GREEN}%4b${NC}\n" "\u2713"
