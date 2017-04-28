@@ -17,7 +17,7 @@ public:
     /* Constructors */
     Statements() = default;
     Statements(register_pool, symbol_table, bool = false);
-    
+
     /* Control Statements */
     ForHeaderInfo ForBegin(std::string, Expression);
     void ForHeader(ForHeaderInfo&, Expression);
@@ -41,6 +41,8 @@ public:
     std::shared_ptr<LValue> LoadVariable(std::string);
     Expression MakeLValueExpression(std::shared_ptr<LValue>);
     void VariableDeclaration(std::vector<std::string>, std::shared_ptr<Type>);
+    void PrintDebugLine(int, int);
+    void ResetParamOffset();
 
     /* Types */
     std::shared_ptr<Type> TypeLookup(std::string);
@@ -70,9 +72,11 @@ private:
     void Read(std::shared_ptr<LValue>);
     void StoreSymbol(std::string, std::shared_ptr<Type>);
     void Write(Expression);
+    void LoadStringExp(Expression& expr);
 
     int globalOffset;
     int localOffset;
+    int paramOffset;
     bool addNewline;
     bool verbose = false;
     symbol_table symbolTable = nullptr;

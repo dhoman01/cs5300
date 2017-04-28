@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
+#include <sstream>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -115,7 +116,10 @@ void cpsl::Statements::ForEnd(cpsl::ForHeaderInfo info)
 
     // Adjust offset if needed
     if(info.adjustOffset)
+    {
         globalOffset += info.lvalue->type->size;
+        symbolTable->remove(info.lvalue->id);
+    }
 };
 
 int cpsl::Statements::IfBegin(cpsl::Expression expr)
@@ -286,6 +290,7 @@ void cpsl::Statements::Assignment(std::shared_ptr<cpsl::LValue> lvalue, cpsl::Ex
     
     std::cout << "\n\t# Assigning " << lvalue->id << " the value";
 
+
     // If expr is constant acquire
     // register and load imm
     if(expr.isConstant)
@@ -310,14 +315,19 @@ void cpsl::Statements::Assignment(std::shared_ptr<cpsl::LValue> lvalue, cpsl::Ex
         auto ref = regPool->acquire();
         std::cout << "\t# Storing value to reference" << std::endl;
         std::cout << "\tlw " << ref.name << " " << param->getLocation() << std::endl;
-        lvalue->offset = 0;
-        lvalue->location = ref.name;
+        std::cout << "\tsw " << expr.reg.name << " 0(" << ref.name << ")" << std::endl;
         regPool->release(ref);
-        std::cout << "\tsw " << expr.reg.name << " " << lvalue->getLocation() << std::endl;
     }
     else if(array || record)
     {
         cpsl::Statements::DeepCopy(expr.reg.name, lvalue->location, lvalue->type->size, lvalue->offset);
+    }
+    else if(lvalue->type == symbolTable->lookup("string"))
+    {
+        auto reg = regPool->acquire();
+        std::cout << "la " << reg.name << " " << expr.reg.name << std::endl;
+        std::cout << "sw " << reg.name << " " << lvalue->getLocation() << std::endl;
+        expr.reg = reg;
     }
     else
     {
@@ -437,7 +447,10 @@ std::shared_ptr<cpsl::LValue> cpsl::Statements::LoadRecordMember(std::shared_ptr
 std::shared_ptr<cpsl::LValue> cpsl::Statements::LoadVariable(std::string id)
 {
     // Lookup variable in symbol table (throws runtime if not found)
-    return std::dynamic_pointer_cast<cpsl::LValue>(symbolTable->lookup(id));
+    std::cout << "\t# Loading lvalue " << id << " from symbol table" << std::endl;
+    auto lvalue = std::dynamic_pointer_cast<cpsl::LValue>(symbolTable->lookup(id));
+    if(!lvalue) throw std::runtime_error("Failed to load lvalue with id " + id + "... Maybe your passing a function as a parameter instead of passing its return value?");
+    return lvalue;
 }
 
 cpsl::Expression cpsl::Statements::MakeLValueExpression(std::shared_ptr<cpsl::LValue> lvalue)
@@ -455,7 +468,7 @@ cpsl::Expression cpsl::Statements::MakeLValueExpression(std::shared_ptr<cpsl::LV
     // and emit correct MIPS.
     auto reg = regPool->acquire();   
 
-    std::cout << "\n\t# Loading value from " << lvalue->getLocation() << " with type " << lvalue->type->id << std::endl;
+    std::cout << "\t# Loading value from " << lvalue->getLocation() << " with type " << lvalue->type->id << std::endl;
     std::cout << "\tlw " << reg.name << " " << lvalue->getLocation() << std::endl;
 
     // If variable is a reference parameter
@@ -493,6 +506,16 @@ void cpsl::Statements::VariableDeclaration(std::vector<std::string> ids, std::sh
         cpsl::Statements::StoreSymbol(id, type);
 
     return;
+}
+
+void cpsl::Statements::PrintDebugLine(int line, int col)
+{
+    std::cout <<"\n\t# DEBUG: " << line << ":" << col << std::endl;    
+}
+
+void cpsl::Statements::ResetParamOffset()
+{
+    cpsl::Statements::paramOffset = 0;
 }
 
 /*********************
@@ -684,11 +707,23 @@ std::pair<int, std::shared_ptr<cpsl::Procedure>> cpsl::Statements::FunctionPreca
         auto param = procedure->parameters[i];
         auto expr = expressions[i];
         if(param->type != expr.type)
-            throw std::runtime_error("The type " + expr.type->id + " cannot be convereted to the type " + param->type->id);
+        {
+            std::stringstream ss;
+            ss << "Expecting " << id << " to be called like `" << id << "(";
+            for(auto p : procedure->parameters)
+                ss << p->type->id << std::string(p != procedure->parameters.back() ? "," : ")`\n");
+            ss << "\t\tbut got `" << id << "(";
+            for(auto e : expressions)
+                ss << e.type->id << std::string(e != expressions.back() ? "," : ")`");
+            throw std::runtime_error(ss.str());
+        }
+
+        if(param->isRef && expr.isConstant)
+            throw std::runtime_error("Constants cannot be references. Parameter " + std::to_string(i + 1) + " of " + id + " is a reference.");
         
         // If expr is constant
         // acquire register and load imm
-        if(expr.isConstant)
+        if(expr.isConstant && expr.type->id != "string")
         {
             expr.reg = regPool->acquire();
             std::cout << "\tli " << expr.reg.name << " " << expr.value << std::endl;
@@ -710,6 +745,10 @@ std::pair<int, std::shared_ptr<cpsl::Procedure>> cpsl::Statements::FunctionPreca
         }
         else
         {
+            if(expr.type->id == "string")
+            {
+                cpsl::Statements::LoadStringExp(expr);
+            }
             std::cout << "\tsw " << expr.reg.name << " " << stackOffset << "($sp)" << std::endl;
             stackOffset += param->type->size;
         }
@@ -843,17 +882,25 @@ std::vector<std::shared_ptr<cpsl::Parameter>> cpsl::Statements::MakeParameters(s
 
     // Create parameters for each
     // id in the identifier list
-    auto offset = 0;
     for(auto id : ids)
     {
+        try
+        {
+            auto f = symbolTable->lookup(id);
+            std::cerr << "WARN: The parameter " << id << " of hides a global variable of the same id." << std::endl;
+        }
+        catch (const std::exception& ex)
+        {
+            // Do nothing
+        }
         auto param = std::make_shared<cpsl::Parameter>();
         param->id = id;
         param->type = type;
         param->isRef = (var_ref == "ref");
         param->location = "$fp";
-        param->offset = offset;
-        offset += type->size;
-        std::cout << "\t# (NO MIPS EMITTED) Storing " << (param->isRef ? "reference" : "") << " parameter " << id << " with type " << type->id << " into symbol table" << std::endl;        
+        param->offset = cpsl::Statements::paramOffset;
+        cpsl::Statements::paramOffset += type->size;
+        std::cout << "\t# (NO MIPS EMITTED) Storing " << (param->isRef ? "reference" : "") << " parameter " << id << " with type " << type->id << " and offset of " << param->offset << " into symbol table" << std::endl;        
         params.push_back(param);
     }
 
@@ -907,7 +954,7 @@ void cpsl::Statements::ReturnStatement()
     auto returnValue = std::dynamic_pointer_cast<cpsl::Return>(symbolTable->lookup("return"));
     
     // Emit j to epilouge on return with no value
-    std::cout << "\n\t# Returning ";
+    std::cout << "\n\t# Returning " << std::endl;
     std::cout << "\tj " << returnValue->function << "Epilogue" << std::endl;
 }
 
@@ -1020,18 +1067,9 @@ void cpsl::Statements::Write(cpsl::Expression expr)
             std::cout << "\tli " << expr.reg.name << " " << expr.value << std::endl;
         }
 
-        // If expr is a string
-        // load string from address
-        if(expr.type->id == "string")
+        if(expr.type->id == "string" && expr.reg.name[0] == 'S')
         {
-            cpsl::Register reg = regPool->acquire();
-            
-            std::cout << "\t# Loading string const" << std::endl;
-            std::cout << "\tla " << reg.name << " " << expr.reg.name << std::endl;
-            std::cout << "\t# Loaded string " << expr.reg.name << std::endl;
-            expr.reg = reg;
-            // DO NOT RELEASE the expr's previous
-            // register as it is an address (i.e. S1)
+            cpsl::Statements::LoadStringExp(expr);
         }
         
         // Emit MIPS sycall to print to stdout
@@ -1041,4 +1079,18 @@ void cpsl::Statements::Write(cpsl::Expression expr)
         std::cout << "\t# Finished writing expression to output" << std::endl;
         regPool->release(expr.reg);
         return;
+}
+
+void cpsl::Statements::LoadStringExp(cpsl::Expression& expr)
+{
+    // If expr is a string
+    // load string from address
+    cpsl::Register reg = regPool->acquire();
+    
+    std::cout << "\t# Loading string const" << std::endl;
+    std::cout << "\tla " << reg.name << " " << expr.reg.name << std::endl;
+    std::cout << "\t# Loaded string " << expr.reg.name << std::endl;
+    expr.reg = reg;
+    // DO NOT RELEASE the expr's previous
+    // register as it is an address (i.e. S1)
 }

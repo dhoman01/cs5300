@@ -49,6 +49,16 @@ public:
         // Couldn't find id, therefore it was not defined
         throw std::runtime_error(id + " is not defined");
     }
+    void remove(std::string id)
+    {
+        for(int i = scopes.size() - 1; i >= 0; --i)
+        {
+            auto f = scopes[i].find(id);
+
+            if(f != scopes[i].end())
+                scopes[i].erase(f);
+        }
+    }
     void enterScope()
     {
         scopes.emplace_back();

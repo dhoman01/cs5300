@@ -1,0 +1,7 @@
+VAR i : INTEGER;
+
+BEGIN
+    write("Simple Loops:\n");
+    write("---------------------\n");
+    write("While Loop (0<=i<10):   ")
+END;

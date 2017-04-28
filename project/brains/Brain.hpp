@@ -32,10 +32,13 @@ public:
     void InitMain();
 
     Expression AddString(std::string);
+    void PrintError(std::string what);
 
     Expressions expressions;
     Statements statements;
-
+    int line;
+    int column;
+    // cpsl::Parser::location_type begin;
 private:
     void ParseHelper(std::istream &stream);
     void Init();

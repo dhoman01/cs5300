@@ -1,0 +1,76 @@
+var i, j, k : integer;
+    a, b : boolean;
+    c : char;
+    s : string;
+
+begin
+    i := 1;
+    j := 2;
+    k := i + j;
+    a := true;
+    b := false;
+    c := 'c';
+    s := "Dave";
+
+    write("Assignment:\n");
+    write("----------------------------\n");
+    write("i=", i, '\n');
+    write("j=", j, '\n');
+    write("k=", k, '\n');
+    write("a=", a, '\n');
+    write("b=", b, '\n');
+    write("c=", c, '\n');
+    write("s=", s, '\n');
+
+    write("\nArithmetic Expressions:\n");
+    write("----------------------------\n");
+    write("1 + 1 = ", 1 + 1, '\n');
+    write("i + j = ", i + j, '\n');
+    write("2 * 2 = ", 2 * 2, '\n');
+    write("i * j = ", i * j, '\n');
+    write("4 / 2 = ", 4 / 2, '\n');
+    write("j / i = ", j / i, '\n');
+    write("4 % 2 = ", 4 % 2, '\n');
+    write("k % j = ", k % j, '\n');
+
+    write("\nBoolean Experssions:\n");
+    write("----------------------------\n");
+    write("true & false is ", true & false, '\n');
+    write("a & b is ", a & b, '\n');
+    write("true | false is ", true | false, '\n');
+    write("a | b is ", a | b, '\n');
+    write("2 <> 2 is ", 2<>2, '\n');
+    write("b <> a is ", b<>a, '\n');
+    write("i <> j is ", i<>j, '\n');
+    write("s <> \"Scott\" is ", s <> "Scott", '\n');
+    write("1 = 2 is ", 1=2, '\n');
+    write("a = true is ", a=true, '\n');
+    write("i = j is ", i=j, '\n');
+    write("s = \"Dave\" is ", s = "Dave", '\n');
+    write("1 < 2 is ", 1 < 2, '\n');
+    write("i < j is ", i < j, '\n');
+    write("1 > 2 is ", 1 > 2, '\n');
+    write("i > j is ", i > j, '\n');
+    write("2 <= 3 is ", 2 <= 3, '\n');
+    write("j <= j is ", j <= j, '\n');
+    write("2 >= 3 is ", 2 >= 3, '\n');
+    write("j >= j is ", j >= j, '\n');
+
+    write("\nUnary Expressions:\n");
+    write("----------------------------\n");
+    write("~true is ", ~true, '\n');
+    write("~a is ", ~a, '\n');
+    write("~(i = j) is ", ~(i = j), '\n');
+    write("-k is ", -k, '\n');
+    write("chr(65) is ", chr(65), '\n');
+    write("chr(k) is ", chr(k), '\n');
+    write("ord('A') is ", ord('A'), '\n');
+    write("ord(c) is ", ord(c), '\n');
+    write("pred(2) is ", pred(2), '\n');
+    write("pred(a) is ", pred(a), '\n');
+    write("pred(i) is ", pred(i), '\n');
+    write("succ(2) is ", succ(2), '\n');
+    write("succ(a) is ", succ(a), '\n');
+    write("succ(i) is ", succ(i), '\n');
+    
+end.

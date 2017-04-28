@@ -1,4 +1,4 @@
-TYPE charArr = array[0:50] of char;
+type charArr = array[0:50] of char;
      phoneNumber = array[1:10] of integer;
      person = record
                 name : charArr;

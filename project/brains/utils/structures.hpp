@@ -37,6 +37,9 @@ struct Expression {
     std::shared_ptr<Type> type;
     int value;
     int offset;
+    bool operator!=(const Expression& rhs){
+        return !(this->isConstant == rhs.isConstant && this->reg.name == rhs.reg.name && type == type && value == value && offset == offset);
+    }
 };
 
 struct ConstantLValue : LValue {

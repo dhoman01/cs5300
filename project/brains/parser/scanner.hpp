@@ -16,7 +16,7 @@ class Scanner : public yyFlexLexer
 public:
     Scanner(std::istream *in) : yyFlexLexer(in)
     {
-        loc = new cpsl::Parser::location_type();
+        loc = new Parser::location_type();
     };
 
     virtual ~Scanner()
@@ -26,11 +26,12 @@ public:
 
     using FlexLexer::yylex;
 
-    virtual int yylex(cpsl::Parser::semantic_type* const lval,
-              cpsl::Parser::location_type* location);
+    virtual int yylex(Parser::semantic_type* const lval,
+              Parser::location_type* location);
+    Parser::location_type* GetLocation() { return loc; }
 private:
-    cpsl::Parser::semantic_type* yylval = nullptr;
-    cpsl::Parser::location_type* loc = nullptr;
+    Parser::semantic_type* yylval = nullptr;
+    Parser::location_type* loc = nullptr;
 };
 
 }

@@ -22,6 +22,8 @@ public:
         symbolTable = st;
     };
     
+    Expression StrCmp(Expression, Expression, bool = true);
+
     // Boolean Expressions
     Expression AndExpression(Expression, Expression);
     Expression OrExpression(Expression, Expression);

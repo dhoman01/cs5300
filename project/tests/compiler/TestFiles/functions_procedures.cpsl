@@ -1,0 +1,95 @@
+var x, y, z : integer;
+
+$ Simple Procedure
+procedure hello(name : string);
+begin
+    write("Hello ", name, '\n');
+end;
+
+$ Simple Function
+function add(var a, b : integer) : integer;
+begin
+    return a + b;
+end;
+
+$ Procedure with ref and local
+procedure swap(ref a, b : integer);
+var temp : integer;
+begin
+    temp := a;
+    a := b;
+    b := temp;
+end;
+
+$ Function with ref and local
+function pow(var a :integer; ref b : integer) : integer;
+var i : integer;
+begin
+    for i := 2 to b do
+        a := a * a;
+    end;
+    return a;
+end;
+
+$ Procedure with mixed types
+procedure convert(var a : integer; c : char);
+begin
+    write(a, " to char is ", chr(a), '\n');
+    write(c, " to int is ", ord(c), '\n');
+end;
+
+$ Function with mixed types
+function addChrToInt(var a : integer; c : char) : integer;
+begin
+    return a + ord(c);
+end;
+
+$ Forward procedure and function
+procedure foo(); forward;
+function bar() : char; forward;
+
+procedure foo();
+begin
+    write("Foo ", bar(), '\n');
+end;
+
+function bar() : char;
+begin
+    return 'B';
+end;
+
+$ Recursive procedure
+procedure countTo5(var count : integer);
+begin
+    write(count, " ");
+    if count < 5 then countTo5(succ(count)) end;
+end;
+
+$ Recursive Function
+function fib(var n : integer) : integer;
+begin
+    if n = 0 then return 0 end;
+    if n = 1 then return 1 end;
+    return fib(n - 1) + fib(n - 2);
+end;
+
+begin
+    hello("Dave");
+    x := 2;
+    y := 2;
+    write("2 + 2 = ", add(x,y), '\n');
+    x := 1;
+    y := 3;
+    write("x is ", x, " and y is ", y,'\n');
+    swap(x,y);
+    write("now x is ", x, " and y is ", y, '\n');
+    write("x^y is ", pow(x, y), '\n');
+    convert(64,'A');
+    z := addChrToInt(x, 'A');
+    write("z := addCharToInt(", x, ", 'A') is ", z, '\n');
+
+    foo();
+
+    countTo5(1);
+    write("\nfib of x is ", fib(x), '\n');
+end.

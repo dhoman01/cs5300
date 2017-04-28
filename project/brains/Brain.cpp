@@ -153,3 +153,11 @@ void cpsl::Brain::Init()
 
     InitPredefinedSymbols();
 }
+
+void cpsl::Brain::PrintError(std::string what)
+{
+    std::cerr << "Compile Error: " << what;
+    std::cerr << " (" << line;
+    std::cerr << ":" << column << ")";
+    std::cerr << std::endl;
+}
