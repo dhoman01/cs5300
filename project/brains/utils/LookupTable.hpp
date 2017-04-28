@@ -56,7 +56,10 @@ public:
             auto f = scopes[i].find(id);
 
             if(f != scopes[i].end())
+            {
+                std::cout << "\t# Removing " << (*f).first << " from the symbol table" << std::endl;
                 scopes[i].erase(f);
+            }
         }
     }
     void enterScope()

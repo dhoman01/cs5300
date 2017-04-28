@@ -1,4 +1,4 @@
-VAR i : INTEGER;
+VAR i, j : INTEGER;
 
 BEGIN
     write("Simple Loops:\n");
@@ -7,16 +7,18 @@ BEGIN
     while( i < 10) do
         write("i = ", i);
         if i <> 9 then write(',') end;
+        i := i + 1;
     end;
 
     write("\nRepeat Loop (10<=i<20): ");
     repeat
         write("i = ", i);
-        if i <> 10 then write(',') end;
-    until i > 10;
+        if i <> 20 then write(',') end;
+        i := i + 1;
+    until i > 20;
 
     write("\nFor Loop (j: 0 to 10):  ");
-    for j := 0 to 10 do
+    for j := 0 TO 10 do
         write("j = ", j);
         if j <> 10 then write(',') end;
     end;
@@ -24,17 +26,17 @@ BEGIN
     write("\nFor loop (i: 20 to 10): ");
     for i := 20 downto 10 do
         write("i = ", i);
-        if j <> 10 then write(',') end;
+        if i <> 10 then write(',') end;
     end;
 
     write("\n\nSimple If/Elseif/Else Statement:\n");
     write("-----------------------------------\n");
-    if i = 0 then
+    IF i = 0 then
         write("Should not have been printed.");
         stop;
-    elseif i > 0 then
+    ELSEIF i > 0 then
         write("i is greater than 0\n");
-    else
+    ELSE
         write("Should not have been printed.");
         stop;
     end;
@@ -46,10 +48,10 @@ BEGIN
     j := 0;
     while( i < 10) do
         write("i = ", i, "\n\t");
-        while( j < 10) do
+        WHILE( j < 10) do
             write("j = ", j);
             if j <> 9 then write(',') end;
-            j := succ(j);
+            j := SUCC(j);
         end;
         j := 0;
         write('\n');
@@ -59,31 +61,32 @@ BEGIN
     write("\nNested Repeat Loop:\n");
     repeat
         write("i = ", i, "\n\t");
-        repeat
+        REPEAT
             write("j = ", j);
-            if j <> 0 then write(',') end;
-            j := pred(j);
-        until j > 0;
+            if j >= 0 then write(',') end;
+            j := succ(j);
+        until j > 10;
         j := 0;
         write('\n');
-        i := pred(i);
-    until i > 0;
+        i := PRED(i);
+    UNTIL i < 0;
 
     write("\nNested For Loop:\n");
-    for i := 0 to 10 do
+    for i := 0 to 10 DO
         write("i = ", i, "\n\t");
         for j := 10 downto 0 do
             write("j = ", j);
-            if j <> 0 then write(',') end;
+            if j <> 0 THEN write(',') end;
         end;
+        write('\n');
     end;
 
     write("\nNested If/Elseif/Else Statement:\n");
     write("-----------------------------------\n");
-    if true = true then
+    if TRUE = true then
         write("true is true\n");
-        if false = false then
-            write("false is false\n");
+        if false = FALSE then
+            WRITE("false is false\n");
         else
             write("false is true?");
             stop;
@@ -94,4 +97,5 @@ BEGIN
     else
         write("RUN, RUN FAR AWAY!");
         stop;
-END;
+    end;
+END.

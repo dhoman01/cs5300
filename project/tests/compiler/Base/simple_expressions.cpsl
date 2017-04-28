@@ -1,0 +1,61 @@
+Assignment:
+----------------------------
+i=1
+j=2
+k=3
+a=1
+b=0
+c=c
+s=Dave
+
+Arithmetic Expressions:
+----------------------------
+1 + 1 = 2
+i + j = 3
+2 * 2 = 4
+i * j = 2
+4 / 2 = 2
+j / i = 2
+4 % 2 = 0
+k % j = 1
+
+Boolean Experssions:
+----------------------------
+true & false is 0
+a & b is 0
+true | false is 1
+a | b is 1
+2 <> 2 is 0
+b <> a is 1
+i <> j is 1
+s <> "Scott" is 1
+1 = 2 is 0
+a = true is 1
+i = j is 0
+s = "Dave" is 1
+1 < 2 is 1
+i < j is 1
+1 > 2 is 0
+i > j is 0
+2 <= 3 is 1
+j <= j is 1
+2 >= 3 is 0
+j >= j is 1
+
+Unary Expressions:
+----------------------------
+~true is 0
+~a is 0
+~(i = j) is 1
+-k is 2
+chr(65) is A
+chr(k) is 
+ord('A') is 65
+ord(c) is 99
+pred(2) is 1
+pred(a) is 0
+pred(i) is 0
+succ(2) is 3
+succ(a) is 0
+succ(i) is 2
+

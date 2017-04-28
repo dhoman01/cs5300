@@ -42,7 +42,7 @@ private:
     std::vector<Register> regPool;
     std::vector<Register> locked;
     std::vector<Register> spilled;
-    bool verbose = false;               // Set true to print out regsiter use in MIPS
+    bool verbose = true;               // Set true to print out regsiter use in MIPS
 };
 
 using register_pool = std::shared_ptr<RegPool>;

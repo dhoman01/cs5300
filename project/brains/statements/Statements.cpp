@@ -49,6 +49,7 @@ cpsl::ForHeaderInfo cpsl::Statements::ForBegin(std::string id, cpsl::Expression 
         cpsl::Statements::Assignment(lvalue, expr);
         varExpr = cpsl::Statements::MakeLValueExpression(lvalue);
         info.lvalue = lvalue;
+        info.adjustOffset = false;
     }
     catch (const std::exception& ex)
     {

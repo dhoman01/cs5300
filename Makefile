@@ -37,3 +37,5 @@ clean:
 test:
 	cd project/tests/integration/; \
 	./test.sh;
+	cd project/tests/compiler/; \
+	./test.sh;

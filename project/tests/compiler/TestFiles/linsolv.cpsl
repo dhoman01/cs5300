@@ -1,0 +1,85 @@
+const SIZE = 2;
+type vector = array[0:SIZE] of integer;
+     matrix = array[0:SIZE] of vector;
+     pair = record
+                a : matrix;
+                v : vector;
+            end;
+
+var x, b : vector;
+    A : matrix;
+    i, j, k : integer;
+    P : pair;
+
+procedure printMatrix(var M : matrix); forward;
+procedure printVector(var v : vector); forward;
+
+function back_substitution(var U : matrix; var v : vector) : vector;
+var x : vector;
+begin
+    for k := SIZE - 1 downto 0 do
+        x[k] := v[k];
+        for j := k + 1 to SIZE - 1 do
+            x[k] := x[k] - U[k][j] * x[j];
+        end;
+        x[k] := x[k] / U[k][k];
+    end;
+    return x;
+end;
+
+function gaussian_elimination(var M : matrix; var v : vector) : pair;
+var l : integer;
+    p : pair;
+begin
+    for k := 0 to SIZE - 2 do
+        for i := k + 1 to SIZE - 1 do
+            l := M[i][k] / M[k][k];
+            for j := k + 1 to SIZE - 1 do
+                M[i][j] := M[i][j] - l * M[k][j];
+            end;
+            l := l * v[k];
+            v[i] := v[i] - l;
+        end;
+    end;
+    p.a := M;
+    p.v := v;
+    return p;
+end;
+
+procedure printMatrix(var M : matrix);
+begin
+    for i := 0 to SIZE - 1 do
+        for j := 0 to SIZE - 1 do
+            write(M[i][j], ' ');
+        end;
+        write('\n');
+    end;
+end;
+
+procedure printVector(var v : vector);
+begin
+    for i := 0 to SIZE - 1 do
+        write(v[i], '\n');
+    end;
+end;
+
+begin
+    A[0][0] := 2;
+    A[0][1] := 2;
+    A[1][0] := 2;
+    A[1][1] := 0 - 2;
+
+
+    b[0] := 4;
+    b[1] := 0;
+
+    printMatrix(A);
+    write('\n');
+    printVector(b);
+
+    write("\n\nApplying gaussian elimination\n\n");
+
+    P := gaussian_elimination(A, b);
+    x := back_substitution(P.a, P.v);
+    printVector(x);
+end.
